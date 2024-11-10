@@ -1,7 +1,9 @@
 package com.example.project.emotionCore.Service;
 
 import com.example.project.emotionCore.Repository.MemberRepository;
+import com.example.project.emotionCore.domain.Member;
 import com.example.project.emotionCore.dto.MemberDTO;
+import com.example.project.emotionCore.module.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,16 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public MemberDTO singIn(MemberDTO memberDTO) {
-        return memberRepository.getMember();
+        Member member = memberRepository.findByMemberIdAndPassword(memberDTO.getMemberId(), memberDTO.getPassword());
+        if(member != null){
+            return MemberMapper.toDto(member);
+        }
+        return null;
     }
 
     @Override
     public String singUp(MemberDTO memberDTO) {
-        memberRepository.addMember();
+        memberRepository.save(MemberMapper.toEntity(memberDTO));
         return "";
     }
 
