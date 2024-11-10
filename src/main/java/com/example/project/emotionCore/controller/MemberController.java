@@ -30,7 +30,6 @@ public class MemberController {
         MemberDTO memberDTO1 = memberService.singIn(memberDTO);
         HttpSession session = request.getSession();
         SigninCheckDTO signinCheckDTO = new SigninCheckDTO();
-
         if(memberDTO1 != null){ // 로그인 성공시 진행
             session.setAttribute("memberId", memberDTO1.getId());
             signinCheckDTO.setFlag(0);
