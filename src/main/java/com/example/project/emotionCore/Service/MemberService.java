@@ -1,0 +1,10 @@
+package com.example.project.emotionCore.Service;
+
+
+import com.example.project.emotionCore.dto.MemberDTO;
+
+public interface MemberService {
+  MemberDTO singIn(MemberDTO memberDTO);
+  String singUp(MemberDTO memberDTO);
+  String findPassword(MemberDTO memberDTO);
+}
