@@ -9,7 +9,7 @@ public class MemberMapper {
                 .id(memberDTO.getId())
                 .memberId(memberDTO.getMemberId())
                 .email(memberDTO.getEmail())
-                .nickname(memberDTO.getNickname())
+                .username(memberDTO.getUsername())
                 .password(memberDTO.getPassword())
                 .build();
     }
@@ -19,7 +19,7 @@ public class MemberMapper {
         memberDTO.setId(member.getId());
         memberDTO.setMemberId(member.getMemberId());
         memberDTO.setEmail(member.getEmail());
-        memberDTO.setNickname(member.getNickname());
+        memberDTO.setUsername(member.getUsername());
         memberDTO.setPassword(member.getPassword());
         return memberDTO;
     }
