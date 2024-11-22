@@ -32,7 +32,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-	//implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 의존성
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'						//jwt start
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'					//jwt end
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	runtimeOnly 'com.mysql:mysql-connector-j'

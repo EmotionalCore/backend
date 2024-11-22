@@ -1,8 +1,8 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.MemberService;
+import com.example.project.emotionCore.dto.JwtTokenDTO;
 import com.example.project.emotionCore.dto.MemberDTO;
-import com.example.project.emotionCore.dto.SigninCheckDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +22,8 @@ public class MemberController {
     }
 
     @PostMapping("/signin")  // 로그인
-    public SigninCheckDTO signIn(@RequestBody MemberDTO memberDTO, HttpServletRequest request) {
-        MemberDTO memberDTO1 = memberService.singIn(memberDTO);
-        HttpSession session = request.getSession();
-        SigninCheckDTO signinCheckDTO = new SigninCheckDTO();
-        if (memberDTO1 != null) { // 로그인 성공 시
-            session.setAttribute("memberId", memberDTO1.getId());
-            signinCheckDTO.setFlag(0);
-            signinCheckDTO.setSessionId(session.getId());
-        } else {
-            signinCheckDTO.setFlag(1);
-        }
-        return signinCheckDTO;
+    public JwtTokenDTO signIn(@RequestBody MemberDTO memberDTO) {
+        return memberService.singIn(memberDTO.getMemberId(), memberDTO.getPassword());
     }
 
     @PostMapping("/findpassword")   // 비밀번호 찾기
