@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.security;
 
+import com.example.project.emotionCore.Service.CustomMemberDetail;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -22,19 +23,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @Component
 public class JwtTokenProvider {
+
     private final Key key;
 
-    // application.yml에서 secret 값 가져와서 key에 저장
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
+    // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
     public JwtTokenDTO generateToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -42,7 +42,6 @@ public class JwtTokenProvider {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + 86400000);
         String accessToken = Jwts.builder()
@@ -65,9 +64,9 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    // Jwt 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
+    // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     public Authentication getAuthentication(String accessToken) {
-        // Jwt 토큰 복호화
+        // 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
@@ -75,12 +74,12 @@ public class JwtTokenProvider {
         }
 
         // 클레임에서 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get("auth").toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-        // UserDetails 객체를 만들어서 Authentication return
-        // UserDetails: interface, User: UserDetails를 구현한 class
+        // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
@@ -88,12 +87,9 @@ public class JwtTokenProvider {
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT Token", e);
@@ -105,18 +101,11 @@ public class JwtTokenProvider {
         return false;
     }
 
-
-    // accessToken
     private Claims parseClaims(String accessToken) {
         try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(accessToken)
-                    .getBody();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
     }
-
 }
