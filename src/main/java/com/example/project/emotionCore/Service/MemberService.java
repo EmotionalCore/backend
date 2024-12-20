@@ -26,8 +26,8 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public JwtTokenDTO singIn(String memberId, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, password);
+    public JwtTokenDTO singIn(String email, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         return jwtTokenProvider.generateToken(authentication);
     }

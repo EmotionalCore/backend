@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> { //DB와 연결하는 역할
     public Member findById(long id);
     //public boolean existsByMemberIdAndPassword(String memberId, String password);
-    public Member findByMemberIdAndPassword(String memberId, String password);
-    Optional<Member> findByMemberId(String memberId);
+    public Member findByEmailAndPassword(String email, String password);
+    Optional<Member> findByEmail(String email);
 }
