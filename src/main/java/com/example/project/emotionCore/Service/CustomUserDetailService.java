@@ -23,11 +23,10 @@ public class CustomUserDetailService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        Member member = memberRepository.findByMemberId(name).orElseThrow(()->new UsernameNotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found"));
         return new CustomMemberDetail(
                 member.getId(),
-                member.getMemberId(),
                 member.getPassword(),
                 member.getEmail(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // 권한 설정

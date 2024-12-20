@@ -31,9 +31,6 @@ public class Member implements UserDetails{
     @Column(nullable = false, unique = true)
     private String email;            //
 
-    @Column(name = "member_id", nullable = false, unique = true)
-    private String memberId;           // id
-
     @Column(nullable = false)
     private String password;           // pw
 

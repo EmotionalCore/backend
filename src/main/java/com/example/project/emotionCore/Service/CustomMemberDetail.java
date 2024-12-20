@@ -7,17 +7,16 @@ import java.util.Collection;
 
 public class CustomMemberDetail implements UserDetails {
     private Long id; // 사용자 고유 ID
-    private String memberId;
+    private String username;
     private String password;
     private String email; // 추가 필드
 
     private Collection<? extends GrantedAuthority> authorities;
 
     // 생성자
-    public CustomMemberDetail(Long id, String memberId, String password, String email,
-                             Collection<? extends GrantedAuthority> authorities) {
+    public CustomMemberDetail(Long id, String password, String email,
+                              Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.memberId = memberId;
         this.password = password;
         this.email = email;
         this.authorities = authorities;
@@ -45,7 +44,7 @@ public class CustomMemberDetail implements UserDetails {
 
     @Override
     public String getUsername() {
-        return memberId;
+        return username;
     }
 
     @Override

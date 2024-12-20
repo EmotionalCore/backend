@@ -20,7 +20,7 @@ public class MemberController {
 
     @PostMapping("/signin")  // 로그인
     public JwtTokenDTO signIn(@RequestBody MemberDTO memberDTO) {
-        return memberService.singIn(memberDTO.getMemberId(), memberDTO.getPassword());
+        return memberService.singIn(memberDTO.getEmail(), memberDTO.getPassword());
     }
 
     @PostMapping("/findpassword")   // 비밀번호 찾기
