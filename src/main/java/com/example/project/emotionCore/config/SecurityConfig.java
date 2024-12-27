@@ -34,7 +34,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("testsetstet");
         return http
                 // REST API이므로 Basic Auth 및 CSRF 보안을 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -60,7 +59,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://emotional-core.vercel.app", "http://localhost:8080")); // 허용할 도메인
+        configuration.setAllowedOrigins(Arrays.asList("https://emotional-core.vercel.app", "http://localhost:3000")); // 허용할 도메인
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // 허용할 헤더
         configuration.setAllowCredentials(true); // 쿠키 사용 허용
