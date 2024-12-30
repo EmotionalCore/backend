@@ -18,5 +18,9 @@ ENV NAVER_CLIENT_URI=https://emotioncores.com/signin/naver
 ENV NAVER_CLIENT_ID=MN6cUHxKhmM0Ki3Bp6ry
 ENV NAVER_CLIENT_SECRET=k_UiUuhUEj
 
+ENV NAVER_CLIENT_URI=https://emotioncores.com/auth/oauth2/kakao
+ENV NAVER_CLIENT_ID=70b56d076d4b3cb76a70a83f80021abd
+ENV NAVER_CLIENT_SECRET=wBBUE6jA0A89mh4pddaqH7JQMoxcXKGQ
+
 # Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
