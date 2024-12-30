@@ -36,6 +36,37 @@ public class Member implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        // 기본 권한 ROLE_USER 반환
+        return List.of(() -> "ROLE_USER");
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // 계정이 만료되지 않음
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // 계정이 잠기지 않음
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // 비밀번호가 만료되지 않음
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true; // 계정이 활성화 상태임
     }
 }

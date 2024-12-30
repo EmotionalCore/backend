@@ -51,6 +51,15 @@ public class SecurityConfig {
                         // 그 외 모든 요청 인증 필요
                         //.anyRequest().authenticated()
                 )
+                // OAuth2 로그인 기능 추가
+                .oauth2Login(auth -> auth
+                        .loginPage("/oauth-login/login")
+                        .defaultSuccessUrl("/oauth-login")
+                        .failureUrl("/oauth-login/login")
+                        .permitAll())
+                // 로그아웃 기능 추가
+                .logout(auth -> auth
+                        .logoutUrl("/oauth-login/logout"))
                 // 커스텀 JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
