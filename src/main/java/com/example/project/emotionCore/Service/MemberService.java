@@ -20,6 +20,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+
     @Autowired
     MemberService(MemberRepository memberRepository, AuthenticationManagerBuilder authenticationManagerBuilder, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
@@ -40,6 +41,27 @@ public class MemberService {
         memberRepository.save(MemberMapper.toEntity(memberDTO));
         return "";
     }
+
+    public String signUpWithSocial(String email, String username) {
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setEmail(email);
+        memberDTO.setUsername(username);
+        memberDTO.setPassword("");  // 소셜 로그인이라 비밀번호는 필요 없음
+        memberRepository.save(MemberMapper.toEntity(memberDTO));
+        return "소셜 회원가입 완료";
+    }
+
+    // 이메일로 사용자 존재 여부 확인
+    public boolean isEmailRegistered(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    // 소셜 로그인 시 기존 사용자 처리
+    public JwtTokenDTO signInWithSocial(String email) {
+        // 소셜 로그인은 비밀번호 없이 이메일만으로 로그인
+        return jwtTokenProvider.generateToken(new UsernamePasswordAuthenticationToken(email, ""));
+    }
+
 
     public String findPassword(MemberDTO memberDTO) {
         return "";
