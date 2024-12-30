@@ -38,3 +38,6 @@ out/
 
 ### ignore test ###
 /src/test/*
+
+### private ###
+/src/main/resources/application.properties
