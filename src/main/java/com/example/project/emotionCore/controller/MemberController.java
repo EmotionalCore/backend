@@ -1,9 +1,14 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.MemberService;
+import com.example.project.emotionCore.dto.ErrorResponseDTO;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import com.example.project.emotionCore.dto.MemberDTO;
+import com.example.project.emotionCore.dto.SigninRequestDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,8 +24,14 @@ public class MemberController {
     }
 
     @PostMapping("/signin")  // 로그인
-    public JwtTokenDTO signIn(@RequestBody MemberDTO memberDTO) {
-        return memberService.singIn(memberDTO.getEmail(), memberDTO.getPassword());
+    public ResponseEntity<?> signIn(@RequestBody SigninRequestDTO signinRequestDTO) {
+        try{
+            JwtTokenDTO tokenDTO = memberService.singIn(signinRequestDTO.getEmail(), signinRequestDTO.getPassword());
+            return ResponseEntity.ok(tokenDTO);
+        }
+        catch(AuthenticationException e){
+            return ResponseEntity.status(401).body(new ErrorResponseDTO("Invalid Email or Password"));
+        }
     }
 
     @PostMapping("/findpassword")   // 비밀번호 찾기
