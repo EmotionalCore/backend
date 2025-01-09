@@ -1,0 +1,223 @@
+openapi: 3.0.1
+info:
+  title: EmotionCore
+  description: EmotionCores
+  version: v1.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /api/member/signup:
+    post:
+      tags:
+        - member-controller
+      operationId: signUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/member/signin:
+    post:
+      tags:
+        - member-controller
+      operationId: signIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JwtTokenDTO'
+  /api/member/findpassword:
+    post:
+      tags:
+        - member-controller
+      operationId: findPassword
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /signin/naver:
+    get:
+      tags:
+        - naver-controller
+      operationId: naverSignIn
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JwtTokenDTO'
+  /login/oauth2/code/{registrationId}:
+    get:
+      tags:
+        - google-controller
+      operationId: googleLogin
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: registrationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /auth/oauth2/kakao:
+    get:
+      tags:
+        - kakao-controller
+      operationId: kakaoLogin
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    MemberDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    JwtTokenDTO:
+      type: object
+      properties:
+        grantType:
+          type: string
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+    MemberIdAndNameDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+    SeriesPreviewDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+          maxLength: 999
+          minLength: 0
+        authorNames: #한명? 여려명?
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberIdAndNameDTO'
+        coverImgUrl:
+          type: string
+    SeriesDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+          maxLength: 999
+          minLength: 0
+        authorNames: #한명? 여려명?
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberIdAndNameDTO'
+        coverImgUrl:
+          type: string
+        type:
+          type: string
+        views:
+          type: integer
+        likes:
+          type: integer
+        bookmarks:
+          type: integer
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+    WebtoonEpisodeDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        imageUrls:
+          type: array
+          items:
+            type: string
+            description: "json"
+        createdDate:
+          type: string
+          description: "xxxx.xx.xx"
+    PoemEpisodeDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        createdDate:
+          type: string
+          description: "xxxx.xx.xx"
+    NovelEpisodeDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: array
+          description: "여러 페이지로 나눠서 볼거면 array, 아니면 그냥 string?"
+          items:
+            type: string
+        createdDate:
+          type: string
+          description: "xxxx.xx.xx"
