@@ -1,14 +1,13 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.MemberService;
-import com.example.project.emotionCore.dto.ErrorResponseDTO;
+import com.example.project.emotionCore.dto.ErrorResponse;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import com.example.project.emotionCore.dto.MemberDTO;
 import com.example.project.emotionCore.dto.SigninRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,7 +29,7 @@ public class MemberController {
             return ResponseEntity.ok(tokenDTO);
         }
         catch(AuthenticationException e){
-            return ResponseEntity.status(401).body(new ErrorResponseDTO("Invalid Email or Password"));
+            return ResponseEntity.status(401).body(new ErrorResponse(400,"Invalid Email or Password"));
         }
     }
 
