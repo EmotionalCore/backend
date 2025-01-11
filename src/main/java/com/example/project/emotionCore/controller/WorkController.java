@@ -1,98 +1,139 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.WorkService;
-import com.example.project.emotionCore.dto.AuthorPreviewDTO;
-import com.example.project.emotionCore.dto.SeriesPreviewDTO;
+import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.enums.WorkType;
+import com.example.project.emotionCore.exception.CustomBadRequestException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "작품 API", description = "작품(시, 소설, 웹툰 등) 에 대한 CRUD 기능 담당")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/work")
 public class WorkController {
     WorkService workService = new WorkService();
 
+    @Operation(summary = "오늘의 Best 작품들")
     @GetMapping("/best/today")
-    public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries() {
+    public ResponseEntity<SuccessResponse<List<SeriesPreviewDTO>>> getTodayBestSeries() {
         return null;
     }
 
-    @GetMapping("/recommend")
-    public ResponseEntity<?> getRecommendedSeries(@RequestParam String type) {
-        WorkType workType;
-        try {
-            workType = WorkType.fromString(type);  // 문자열을 enum으로 변환
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid work type: " + type);
-        }
-
-        List<?> previewDTOs = null;
-        switch (workType) {
-            case NOVEL:
-                // 소설 추천 처리
-                break;
-            case POEM:
-                // 시 추천 처리
-                break;
-            case WEBTOON:
-                // 웹툰 추천 처리
-                break;
-            default:
-                return ResponseEntity.badRequest().body("Unsupported work type.");
-        }
-
-        return ResponseEntity.ok(previewDTOs);
+    @Operation(summary = "추천 소설")
+    @GetMapping("/recommend/novel")
+    public ResponseEntity<List<NovelAndPoemPreviewDTO>> getRecommendedNovelSeries() {
+        return ResponseEntity.ok(null);
     }
 
+    @Operation(summary = "추천 시")
+    @GetMapping("/recommend/poem")
+    public ResponseEntity<List<NovelAndPoemPreviewDTO>> getRecommendedPoemSeries() {
+        return ResponseEntity.ok(null);
+    }
+
+    @Operation(summary = "추천 웹툰")
+    @GetMapping("/recommend/webtoon")
+    public ResponseEntity<List<SeriesPreviewDTO>> getRecommendedWebtoonSeries() {
+        return ResponseEntity.ok(null);
+    }
+
+    @Operation(summary = "이달의 인기 작품")
     @GetMapping("/popular/monthly")
     public ResponseEntity<List<SeriesPreviewDTO>> getMonthlyPopularSeries() {
         return null;
     }
 
+    @Operation(summary = "이달의 우수 작가")
     @GetMapping("/author/best/monthly")
     public ResponseEntity<List<AuthorPreviewDTO>> getMonthlyBestAuthors() {
         return null;
     }
 
+    @Operation(summary = "전체 작품 반환")
     @GetMapping("/all")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeries(@RequestParam int num) {
         return null;
     }
 
+    @Operation(summary = "특정 타입의 작품 반환")
     @GetMapping("/type")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam String type) {
         return null;
     }
 
+    @Operation(summary = "특정 태그들을 포함하는 작품 반환")
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
         return null;
     }
 
+    @Operation(summary = "인기 검색어들 반환")
     @GetMapping("/search/popular")
     public ResponseEntity<List<String>> getPopularSearchKeywords() {
         return null;
     }
 
+    @Operation(summary = "신규 작품들 반환")
     @GetMapping("/new")
     public ResponseEntity<List<SeriesPreviewDTO>> getNewSeries() {
         return null;
     }
 
+    @Operation(summary = "신규 작가들 반환")
     @GetMapping("/new/author")
     public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthor() {
         return null;
     }
 
+    @Operation(summary = "특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
     public ResponseEntity<List<SeriesPreviewDTO>> getSeriesByKeyword(@P("keyword") String keyword) {
         return null;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Operation(
+            summary = "테스트 용도 입니다.",
+            description = "테스트임."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 조회됨"),
+            @ApiResponse(responseCode = "404", description = "작품을 찾을 수 없음", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/aTest")
+    public ResponseEntity<SuccessResponse<List<SeriesPreviewDTO>>> getTest(@RequestParam int num) {
+        if(num == 1){
+            return ResponseEntity.ok(null);
+        }
+        else{
+            throw new CustomBadRequestException(400, "잘못된 요청입니다.");
+        }
+    }
 
 }
