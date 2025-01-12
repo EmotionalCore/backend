@@ -2,17 +2,15 @@ package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.dto.*;
-import com.example.project.emotionCore.enums.WorkType;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +22,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/work")
 public class WorkController {
-    WorkService workService = new WorkService();
+    WorkService workService;
 
-    @Operation(summary = "오늘의 Best 작품들")
+    @Autowired
+    WorkController(WorkService workService) {
+        this.workService = workService;
+    }
+
+    @Operation(summary = "오늘의 Best 작품들(조회수 기준)")
     @GetMapping("/best/today")
-    public ResponseEntity<SuccessResponse<List<SeriesPreviewDTO>>> getTodayBestSeries() {
+    public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries() {
         return null;
     }
 
@@ -100,7 +103,7 @@ public class WorkController {
 
     @Operation(summary = "특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
-    public ResponseEntity<List<SeriesPreviewDTO>> getSeriesByKeyword(@P("keyword") String keyword) {
+    public ResponseEntity<List<SeriesDetailDTO>> getSeriesByKeyword(@P("keyword") String keyword) {
         return null;
     }
 
