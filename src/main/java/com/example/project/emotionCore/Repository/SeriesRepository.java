@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface SeriesRepository extends JpaRepository<Series, Integer> {
-    public List<Series> findBy(String emotion);
+    public List<Series> findBy();
 }
