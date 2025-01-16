@@ -2,6 +2,7 @@ package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.dto.*;
+import com.example.project.emotionCore.enums.WorkType;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,22 +38,25 @@ public class WorkController {
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
-    @Operation(summary = "(작업중) 추천 소설")
+    @Operation(summary = "(작업 완료) 추천 소설")
     @GetMapping("/recommend/novel")
     public ResponseEntity<List<NovelAndPoemPreviewDTO>> getRecommendedNovelSeries() {
-        return ResponseEntity.ok(null);
+        List<NovelAndPoemPreviewDTO> novelSeries = workService.getBestLikeNovelOrPoemSeries(WorkType.NOVEL);
+        return ResponseEntity.ok(novelSeries);
     }
 
-    @Operation(summary = "(작업중) 추천 시")
+    @Operation(summary = "(작업 완료) 추천 시")
     @GetMapping("/recommend/poem")
     public ResponseEntity<List<NovelAndPoemPreviewDTO>> getRecommendedPoemSeries() {
-        return ResponseEntity.ok(null);
+        List<NovelAndPoemPreviewDTO> novelSeries = workService.getBestLikeNovelOrPoemSeries(WorkType.POEM);
+        return ResponseEntity.ok(novelSeries);
     }
 
-    @Operation(summary = "(작업중) 추천 웹툰")
+    @Operation(summary = "(작업 완료) 추천 웹툰")
     @GetMapping("/recommend/webtoon")
     public ResponseEntity<List<SeriesPreviewDTO>> getRecommendedWebtoonSeries() {
-        return ResponseEntity.ok(null);
+        List<SeriesPreviewDTO> webtoonSeries = workService.getBestLikeWebtoonSeries();
+        return ResponseEntity.ok(webtoonSeries);
     }
 
     @Operation(summary = "(작업중) 이달의 인기 작품")
