@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class NovelAndPoemPreviewDTO{
     private int id;
-    private List<AuthorInfoDTO> authorInfos;
+    private List<AuthorDTO> authorInfos;
     private String title;
     private String description;
     private String coverImageUrl;

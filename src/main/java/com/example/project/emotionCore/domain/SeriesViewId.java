@@ -2,31 +2,21 @@ package com.example.project.emotionCore.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-@Entity
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@IdClass(SeriesViewId.class)
-public class SeriesView {
-
-    @Id
+@NoArgsConstructor
+@EqualsAndHashCode()
+@Data
+public class SeriesViewId implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_id", nullable = false)
     private Series series;
-
-    @Id
     @Column(name = "view_date", nullable = false)
     private LocalDate viewDate;
-
-    @Column(nullable = false)
-    private Integer count;
 }
-

@@ -13,7 +13,7 @@ public class SeriesDetailDTO {
     private int id;
 
     @Schema(description = "작가들의 정보")
-    private List<AuthorInfoDTO> authorInfos;
+    private List<AuthorDTO> authorInfos;
 
     @Schema(description = "작품의 제목", example = "제목이다..!")
     private String title;

@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CustomSeriesRepository {
-    List<Series> findTodayBestSeries(LocalDate today, int limit);
+    List<Series> findTodayBestSeries(int days, int limit);
 }
