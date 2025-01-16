@@ -29,7 +29,7 @@ public class WorkController {
         this.workService = workService;
     }
 
-    @Operation(summary = "오늘의 Best 작품들(조회수 기준)")
+    @Operation(summary = "(작업 완료) 오늘의 Best 작품들(조회수 기준)")
     @GetMapping("/best/today")
     public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries() {
         int limit = 4;
@@ -37,73 +37,73 @@ public class WorkController {
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
-    @Operation(summary = "추천 소설")
+    @Operation(summary = "(작업중) 추천 소설")
     @GetMapping("/recommend/novel")
     public ResponseEntity<List<NovelAndPoemPreviewDTO>> getRecommendedNovelSeries() {
         return ResponseEntity.ok(null);
     }
 
-    @Operation(summary = "추천 시")
+    @Operation(summary = "(작업중) 추천 시")
     @GetMapping("/recommend/poem")
     public ResponseEntity<List<NovelAndPoemPreviewDTO>> getRecommendedPoemSeries() {
         return ResponseEntity.ok(null);
     }
 
-    @Operation(summary = "추천 웹툰")
+    @Operation(summary = "(작업중) 추천 웹툰")
     @GetMapping("/recommend/webtoon")
     public ResponseEntity<List<SeriesPreviewDTO>> getRecommendedWebtoonSeries() {
         return ResponseEntity.ok(null);
     }
 
-    @Operation(summary = "이달의 인기 작품")
+    @Operation(summary = "(작업중) 이달의 인기 작품")
     @GetMapping("/popular/monthly")
     public ResponseEntity<List<SeriesPreviewDTO>> getMonthlyPopularSeries() {
         return null;
     }
 
-    @Operation(summary = "이달의 우수 작가")
+    @Operation(summary = "(작업중) 이달의 우수 작가")
     @GetMapping("/author/best/monthly")
     public ResponseEntity<List<AuthorPreviewDTO>> getMonthlyBestAuthors() {
         return null;
     }
 
-    @Operation(summary = "전체 작품 반환")
+    @Operation(summary = "(작업중) 전체 작품 반환")
     @GetMapping("/all")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeries(@RequestParam int num) {
         return null;
     }
 
-    @Operation(summary = "특정 타입의 작품 반환")
+    @Operation(summary = "(작업중) 특정 타입의 작품 반환")
     @GetMapping("/type")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam String type) {
         return null;
     }
 
-    @Operation(summary = "특정 태그들을 포함하는 작품 반환")
+    @Operation(summary = "(작업중) 특정 태그들을 포함하는 작품 반환")
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
         return null;
     }
 
-    @Operation(summary = "인기 검색어들 반환")
+    @Operation(summary = "(작업중) 인기 검색어들 반환")
     @GetMapping("/search/popular")
     public ResponseEntity<List<String>> getPopularSearchKeywords() {
         return null;
     }
 
-    @Operation(summary = "신규 작품들 반환")
+    @Operation(summary = "(작업중) 신규 작품들 반환")
     @GetMapping("/new")
     public ResponseEntity<List<SeriesPreviewDTO>> getNewSeries() {
         return null;
     }
 
-    @Operation(summary = "신규 작가들 반환")
+    @Operation(summary = "(작업중) 신규 작가들 반환")
     @GetMapping("/new/author")
     public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthor() {
         return null;
     }
 
-    @Operation(summary = "특정 키워드의 검색 결과 반환")
+    @Operation(summary = "(작업중) 특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
     public ResponseEntity<List<SeriesDetailDTO>> getSeriesByKeyword(@P("keyword") String keyword) {
         return null;
