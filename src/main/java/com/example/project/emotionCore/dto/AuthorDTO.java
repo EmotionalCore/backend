@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Schema(description = "작가들의 정보")
 @Data
-public class AuthorInfoDTO {
+public class AuthorDTO {
     @Schema(description = "index", example = "1")
     private int id;
 

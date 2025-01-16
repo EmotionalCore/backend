@@ -1,6 +1,5 @@
 package com.example.project.emotionCore.domain;
 
-import com.example.project.emotionCore.dto.AuthorInfoDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,9 +21,9 @@ public class Series {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
-    @OneToMany(targetEntity = Member.class, cascade = CascadeType.ALL)
-    private List<AuthorInfoDTO> authorInfos;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author authorInfos;
 
     @Column(nullable = false)
     private String title;

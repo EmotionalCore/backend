@@ -32,7 +32,9 @@ public class WorkController {
     @Operation(summary = "오늘의 Best 작품들(조회수 기준)")
     @GetMapping("/best/today")
     public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries() {
-        return null;
+        int limit = 4;
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getTodayBestSeries(limit);
+        return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
     @Operation(summary = "추천 소설")
