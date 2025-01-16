@@ -3,12 +3,16 @@ package com.example.project.emotionCore.Service;
 import com.example.project.emotionCore.Repository.SeriesRepository;
 import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.domain.SeriesView;
+import com.example.project.emotionCore.dto.NovelAndPoemPreviewDTO;
 import com.example.project.emotionCore.dto.SeriesPreviewDTO;
+import com.example.project.emotionCore.enums.WorkType;
 import com.example.project.emotionCore.module.mapper.MemberMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +31,24 @@ public class WorkService {
         List<Series> seriesData = seriesRepository.findTodayBestSeries(1, limit);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
+            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+        }
+        return data;
+    }
+
+    public List<NovelAndPoemPreviewDTO> getBestLikeNovelOrPoemSeries(WorkType workType) {
+        List<Series> entity = seriesRepository.findTop3ByTypeOrderByLikeCount(workType.name());
+        List<NovelAndPoemPreviewDTO> data = new ArrayList<>();
+        for (Series series : entity) {
+            data.add(modelMapper.map(series, NovelAndPoemPreviewDTO.class));
+        }
+        return data;
+    }
+
+    public List<SeriesPreviewDTO> getBestLikeWebtoonSeries() {
+        List<Series> entity = seriesRepository.findTop3ByTypeOrderByLikeCount(WorkType.WEBTOON.name());
+        List<SeriesPreviewDTO> data = new ArrayList<>();
+        for (Series series : entity) {
             data.add(modelMapper.map(series, SeriesPreviewDTO.class));
         }
         return data;
