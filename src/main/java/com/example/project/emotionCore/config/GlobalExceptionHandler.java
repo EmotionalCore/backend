@@ -2,10 +2,7 @@ package com.example.project.emotionCore.config;
 
 import com.example.project.emotionCore.dto.ErrorResponse;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
-import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,4 +40,16 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//        // 유효성 검증 실패 정보를 ErrorResponse에 담기
+//        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+//                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+//                .reduce((message1, message2) -> message1 + ", " + message2)
+//                .orElse("Validation failed");
+//
+//        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+//    }
 }

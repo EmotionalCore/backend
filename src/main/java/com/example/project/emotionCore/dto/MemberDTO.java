@@ -20,14 +20,14 @@ public class MemberDTO {
     @Size(min=2, max=10)
     private String username;
 
-    @Size(max=50)
-    @Email
+    @Email(message = "유효한 이메일 형식이 아닙니다.")
+    @Size(max = 50, message = "이메일은 50자를 초과할 수 없습니다.")
     private String email;
 
     @Size(min = 8, max = 15)
     @Pattern(
-            regexp = "^(?=.*[0-9!@#$%^&*]).+$",
-            message = "비밀번호는 반드시 숫자 또는 특수문자를 포함해야 합니다."
+            regexp = "^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]+$",
+            message = "비밀번호는 반드시 숫자와 특수문자를 모두 포함해야 합니다."
     )
     private String password;
 }
