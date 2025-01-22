@@ -34,6 +34,8 @@ public class MemberService {
      * @return JwtTokenDTO (AccessToken, RefreshToken 포함)
      */
 
+
+    //3
     public JwtTokenDTO singIn(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -46,6 +48,8 @@ public class MemberService {
         return "";
     }
 
+
+    //2
     public String signUpWithSocial(String email, String username) {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setEmail(email);
@@ -55,6 +59,7 @@ public class MemberService {
         return "소셜 회원가입 완료";
     }
 
+    //11
     public JwtTokenDTO naverLogin(String code, String state) {
         // 네이버 API를 통해 AccessToken 가져오기
         String accessToken = naverService.getAccessToken(code, state);
@@ -75,6 +80,8 @@ public class MemberService {
                     return memberRepository.save(newMember);
                 });
 
+
+        ///////////////////////////////////////////////
         // JWT Token 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 member, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
