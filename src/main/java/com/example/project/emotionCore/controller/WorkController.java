@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.controller;
 
+import com.example.project.emotionCore.Service.SearchWorkService;
 import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.enums.WorkType;
@@ -17,6 +18,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "작품 API", description = "작품(시, 소설, 웹툰 등) 에 대한 CRUD 기능 담당")
 @RestController
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping("/api/work")
 public class WorkController {
     WorkService workService;
+    SearchWorkService searchWorkService;
 
     @Autowired
     WorkController(WorkService workService) {
@@ -83,16 +86,25 @@ public class WorkController {
         return null;
     }
 
-    @Operation(summary = "(작업중) 특정 태그들을 포함하는 작품 반환")
+
+    /**
+    *승헌 시작
+     */
+
+
+    @Operation(summary = "(작업완료) 특정 태그들을 모두 포함하는 작품 반환")
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
-        return null;
+        List<SeriesPreviewDTO> series = workService.getAllSeriesByTag(tags);
+        return ResponseEntity.ok(series);
     }
 
-    @Operation(summary = "(작업중) 인기 검색어들 반환")
+    @Operation(summary = "(작업 완료) 인기 검색어들 반환")
     @GetMapping("/search/popular")
-    public ResponseEntity<List<String>> getPopularSearchKeywords() {
-        return null;
+    public ResponseEntity<List<SearchWorkDTO>> getPopularSearchKeywords() {
+        // 서비스 호출
+        List<SearchWorkDTO> popularSearches = workService.getBestSearchWork();
+        return ResponseEntity.ok(popularSearches);
     }
 
     @Operation(summary = "(작업중) 신규 작품들 반환")
@@ -106,6 +118,10 @@ public class WorkController {
     public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthor() {
         return null;
     }
+
+    /*
+    건아 시작
+     */
 
     @Operation(summary = "(작업중) 특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
