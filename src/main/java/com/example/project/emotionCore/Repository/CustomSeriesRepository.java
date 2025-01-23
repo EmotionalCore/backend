@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CustomSeriesRepository {
     List<Series> findTodayBestSeries(int days, int limit);
+
+    List<Series> findMonthlyBestSeries(int limit);
 }
