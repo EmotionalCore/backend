@@ -14,10 +14,11 @@ public class CustomMemberDetail implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     // 생성자
-    public CustomMemberDetail(Long id, String password, String email,
+    public CustomMemberDetail(Long id, String password, String email, String username,
                               Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.password = password;
+        this.username = username;
         this.email = email;
         this.authorities = authorities;
     }

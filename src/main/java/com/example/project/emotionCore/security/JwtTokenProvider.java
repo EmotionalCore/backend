@@ -1,7 +1,10 @@
 package com.example.project.emotionCore.security;
 
 import com.example.project.emotionCore.Service.CustomMemberDetail;
+import com.example.project.emotionCore.Service.CustomUserDetailService;
+import com.example.project.emotionCore.domain.Member;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
+import com.example.project.emotionCore.dto.MemberDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -28,25 +31,28 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final Key key;
+    private final CustomUserDetailService customUserDetailService;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey
+    , CustomUserDetailService customUserDetailService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.customUserDetailService = customUserDetailService;
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
     public JwtTokenDTO generateToken(Authentication authentication) {
         // 권한 가져오기
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+        CustomMemberDetail member = (CustomMemberDetail) authentication.getPrincipal();
         long now = (new Date()).getTime();
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + 86400000);
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("auth", authorities)
+                .setSubject(String.valueOf(member.getId()))
+                .claim("username", member.getUsername())
+                .claim("email", member.getEmail())
+                .claim("auth", member.getAuthorities())
+                .setIssuedAt(new Date())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -67,21 +73,21 @@ public class JwtTokenProvider {
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     public Authentication getAuthentication(String accessToken) {
         // 토큰 복호화
-        Claims claims = parseClaims(accessToken);
 
-        if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-        }
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)  // Key 객체 사용
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody();
 
-        // 클레임에서 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
 
+        // JWT에서 사용자 이메일(또는 ID)을 subject로 추출
+
+        String email = claims.get("email", String.class);
         // UserDetails 객체를 만들어서 Authentication 리턴
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(email);
+        // 인증 객체 생성: Authentication 객체는 보통 UsernamePasswordAuthenticationToken을 사용
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // 토큰 정보를 검증하는 메서드
