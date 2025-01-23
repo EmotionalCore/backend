@@ -46,4 +46,24 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .limit(4)  // 상위 4개만
                 .fetch();
     }
+
+    @Override
+    public List<Series> findAllByTagsContaining(List<String> tags) {
+        QSeries series = QSeries.series;
+
+        // 모든 태그를 포함하는 조건 생성
+        BooleanExpression condition = null;
+        for (String tag : tags) {
+            BooleanExpression containsTag = series.tags.like("%" + tag + "%");
+            condition = (condition == null) ? containsTag : condition.and(containsTag);
+        }
+
+        // Query 실행
+        return queryFactory
+                .selectFrom(series)
+                .where(condition)
+                .fetch();
+    }
+
+
 }

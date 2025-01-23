@@ -28,5 +28,5 @@ public class Author{
     @Column(nullable = false, unique = true)
     private String username;               // nick
     
-    //나중에 더 추가
+    //나중에 더 추가][][
 }
