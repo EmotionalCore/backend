@@ -1,9 +1,13 @@
 package com.example.project.emotionCore.controller;
 
+import com.example.project.emotionCore.Service.CustomMemberDetail;
+import com.example.project.emotionCore.Service.CustomUserDetailService;
 import com.example.project.emotionCore.Service.WorkService;
+import com.example.project.emotionCore.config.SecurityConfig;
 import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.enums.WorkType;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
+import com.nimbusds.jose.proc.SecurityContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,8 +15,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
@@ -136,13 +144,11 @@ public class WorkController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/aTest")
-    public ResponseEntity<SuccessResponse<List<SeriesPreviewDTO>>> getTest(@RequestParam int num) {
-        if(num == 1){
-            return ResponseEntity.ok(null);
+    public ResponseEntity<SuccessResponse<String>> getTest(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) throws AuthenticationException {
+        if(customMemberDetail == null) {
+            throw new AuthenticationException("인증 실패");
         }
-        else{
-            throw new CustomBadRequestException(400, "잘못된 요청입니다.");
-        }
+        return ResponseEntity.ok(new SuccessResponse<>(customMemberDetail.getUsername()));
     }
 
 }

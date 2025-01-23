@@ -35,7 +35,7 @@ public class Member implements UserDetails{
     private String password;           // pw
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() { //미사용. 아직 사용자 권한 미구현
         // 기본 권한 ROLE_USER 반환
         return List.of(() -> "ROLE_USER");
     }

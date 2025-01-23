@@ -29,6 +29,7 @@ public class CustomUserDetailService implements UserDetailsService {
                 member.getId(),
                 member.getPassword(),
                 member.getEmail(),
+                member.getUsername(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // 권한 설정
         );
     }

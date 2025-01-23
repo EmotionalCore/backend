@@ -26,14 +26,6 @@ public class MemberService {
     private final NaverService naverService;
     private final AuthenticationManager authenticationManager;
 
-    /**
-     * 이메일과 비밀번호로 로그인
-     *
-     * @param email    사용자 이메일
-     * @param password 사용자 비밀번호
-     * @return JwtTokenDTO (AccessToken, RefreshToken 포함)
-     */
-
 
     //3
     public JwtTokenDTO singIn(String email, String password) {
