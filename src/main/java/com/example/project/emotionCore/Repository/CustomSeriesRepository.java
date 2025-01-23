@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CustomSeriesRepository {
     List<Series> findTodayBestSeries(int days, int limit);
+    List<Series> findAllByTagsContaining(List<String> tags);
 }
