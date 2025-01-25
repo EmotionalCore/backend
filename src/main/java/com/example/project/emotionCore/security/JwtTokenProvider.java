@@ -33,6 +33,13 @@ public class JwtTokenProvider {
     private final Key key;
     private final CustomUserDetailService customUserDetailService;
 
+    // access 토큰 만료 30분
+    final static int accessTokenExpiration = (30 * 60 * 1000);
+
+    // refresh 토큰 만료 1주일
+    final static int refreshTokenExpiration = (7 * 24 * 60 * 60 * 1000);
+
+
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey
     , CustomUserDetailService customUserDetailService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -44,9 +51,13 @@ public class JwtTokenProvider {
     public JwtTokenDTO generateToken(Authentication authentication) {
         // 권한 가져오기
         CustomMemberDetail member = (CustomMemberDetail) authentication.getPrincipal();
+        return generateToken(member);
+    }
+
+    public JwtTokenDTO generateToken(CustomMemberDetail member) {
         long now = (new Date()).getTime();
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + 86400000);
+        Date accessTokenExpiresIn = new Date(now + accessTokenExpiration);
         String accessToken = Jwts.builder()
                 .setSubject(String.valueOf(member.getId()))
                 .claim("username", member.getUsername())
@@ -59,7 +70,8 @@ public class JwtTokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + 86400000))
+                .setSubject(String.valueOf(member.getId()))
+                .setExpiration(new Date(now + refreshTokenExpiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -70,22 +82,20 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    public JwtTokenDTO refreshToken(String refreshToken) {
+        if (isValidRefreshToken(refreshToken)) {
+            return generateToken(getAuthentication(refreshToken));
+        }
+        return null;
+    }
+
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
-    public Authentication getAuthentication(String accessToken) {
-        // 토큰 복호화
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
 
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)  // Key 객체 사용
-                .build()
-                .parseClaimsJws(accessToken)
-                .getBody();
-
-
-        // JWT에서 사용자 이메일(또는 ID)을 subject로 추출
-
-        String email = claims.get("email", String.class);
-        // UserDetails 객체를 만들어서 Authentication 리턴
-        UserDetails userDetails = customUserDetailService.loadUserByUsername(email);
+        // JWT에서 사용자 Id를 subject로 추출
+        long id = Long.parseLong(claims.getSubject());
+        UserDetails userDetails = customUserDetailService.loadUserById(id);
         // 인증 객체 생성: Authentication 객체는 보통 UsernamePasswordAuthenticationToken을 사용
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -96,20 +106,32 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            //log.info("Invalid JWT Token", e);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            //log.info("Expired JWT Token", e);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            //log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            //log.info("JWT claims string is empty.", e);
         }
         return false;
     }
 
-    private Claims parseClaims(String accessToken) {
+    public boolean isValidRefreshToken(String token) {
+        if (token == null || token.isEmpty() || !validateToken(token)) {
+            return false;
+        }
+        Claims claims = parseClaims(token);
+        System.out.println(claims.get("email"));
+        //email 검사하는건 access token 줄까봐인데 이게 맞는 방식인지는 모름
+        if(claims.get("email") != null || claims.getExpiration().before(new Date())){
+            return false;
+        }
+        return true;
+    }
+    private Claims parseClaims(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }

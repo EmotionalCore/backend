@@ -31,7 +31,7 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/signup")    // 등록
-    public ResponseEntity<SuccessResponse<String>> signUp(@Valid @RequestBody MemberDTO memberDTO, BindingResult result){
+    public ResponseEntity<SuccessResponse<String>> signUp(@Valid @RequestBody SignUpDTO signUpDTO, BindingResult result){
         if (result.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             for (FieldError fieldError : result.getFieldErrors()) {
@@ -41,20 +41,54 @@ public class MemberController {
             }
             throw new CustomBadRequestException(400, errorMessage.toString());
         }
-        memberService.singUp(memberDTO);
-        SuccessResponse<String> successResponse = new SuccessResponse<>("회원가입에 성공하였습니다.");
-        return ResponseEntity.ok(successResponse);
+        try{
+            memberService.singUp(signUpDTO);
+        }
+        catch (CustomBadRequestException e){
+            throw new CustomBadRequestException(400, e.getMessage());
+        }
+        return ResponseEntity.ok(new SuccessResponse<>("회원가입에 성공했습니다."));
     }
 
+    @Operation(
+            summary = "이미 사용된 username 인지 확인"
+    )
+    @PostMapping("/check/username")
+    public ResponseEntity<Boolean> checkUsername(@RequestParam String username){
+        if(memberService.isAlreadyUsedName(username)){
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 로그인"),
+            @ApiResponse(responseCode = "401", description = "로그인에 실패하였음(Invalid Email or Password)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/signin")  // 로그인
-    public ResponseEntity<?> signIn(@RequestBody SigninRequestDTO signinRequestDTO) {
+    public ResponseEntity<JwtTokenDTO> signIn(@RequestBody SigninRequestDTO signinRequestDTO) {
         try{
             JwtTokenDTO tokenDTO = memberService.singIn(signinRequestDTO.getEmail(), signinRequestDTO.getPassword());
             return ResponseEntity.ok(tokenDTO);
         }
         catch(AuthenticationException e){
-            return ResponseEntity.status(401).body(new ErrorResponse(400,"Invalid Email or Password"));
+            throw new CustomBadRequestException(401, e.getMessage());
         }
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정상적으로 토큰 발급"),
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰일경우", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/token/refresh")
+    public ResponseEntity<JwtTokenDTO> refreshToken(@RequestParam String refreshToken){
+        JwtTokenDTO tokenDTO = memberService.getNewToken(refreshToken);
+        if(tokenDTO == null){
+            throw new CustomBadRequestException(401, "Invalid Refresh Token");
+        }
+        return ResponseEntity.ok(tokenDTO);
     }
 
     @PostMapping("/findpassword")   // 비밀번호 찾기

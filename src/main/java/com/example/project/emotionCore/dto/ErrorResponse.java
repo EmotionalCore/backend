@@ -12,10 +12,10 @@ public class ErrorResponse {
     @Schema(description = "항상 false", example = "false")
     private boolean status = false;
 
-    @Schema(description = "에러 코드", example = "400, 401 등...")
+    @Schema(description = "에러 코드", example = "400, 401...")
     private int code;
 
-    @Schema(description = "설명", example = "잘못된 id 입니다. 등...")
+    @Schema(description = "설명", example = "Error msg")
     private String message;
 
     public ErrorResponse(int code, String message) {

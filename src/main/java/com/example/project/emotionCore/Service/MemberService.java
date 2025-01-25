@@ -4,9 +4,12 @@ import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.domain.Member;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import com.example.project.emotionCore.dto.MemberDTO;
+import com.example.project.emotionCore.dto.SignUpDTO;
+import com.example.project.emotionCore.exception.CustomBadRequestException;
 import com.example.project.emotionCore.module.mapper.MemberMapper;
 import com.example.project.emotionCore.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.print.attribute.standard.Destination;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -25,6 +29,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final NaverService naverService;
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
 
 
     //3
@@ -34,10 +39,30 @@ public class MemberService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-    public String singUp(MemberDTO memberDTO) {
-        memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
-        memberRepository.save(MemberMapper.toEntity(memberDTO));
+    public String singUp(SignUpDTO signUpDTO) {
+        signUpDTO.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
+        if (memberRepository.existsByEmail(signUpDTO.getEmail())) {
+            throw new CustomBadRequestException(400, "Email already exists");
+        }
+        if (memberRepository.existsByUsername(signUpDTO.getUsername())) {
+            throw new CustomBadRequestException(400, "Username already exists");
+        }
+        try{
+            memberRepository.save(MemberMapper.toEntity(signUpDTO));
+        }
+        catch (Exception e){
+            throw new CustomBadRequestException(400, "Error code D92130. 관리자에게 연락해주세요."); //에러코드 암거나씀
+        }
+
         return "";
+    }
+
+    public JwtTokenDTO getNewToken(String refreshToken){
+        return jwtTokenProvider.refreshToken(refreshToken);
+    }
+
+    public boolean isAlreadyUsedName(String username){
+        return memberRepository.existsByUsername(username);
     }
 
 
