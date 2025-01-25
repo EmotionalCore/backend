@@ -27,6 +27,9 @@ public class Author{
 
     @Column(nullable = false, unique = true)
     private String username;               // nick
-    
+
+    private String description;
+
+    private String tags;
     //나중에 더 추가
 }

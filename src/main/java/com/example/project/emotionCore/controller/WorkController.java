@@ -1,9 +1,11 @@
 package com.example.project.emotionCore.controller;
 
+import com.example.project.emotionCore.Service.AuthorService;
 import com.example.project.emotionCore.Service.CustomMemberDetail;
 import com.example.project.emotionCore.Service.CustomUserDetailService;
 import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.config.SecurityConfig;
+import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.enums.WorkType;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
+import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Default;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Tag(name = "작품 API", description = "작품(시, 소설, 웹툰 등) 에 대한 CRUD 기능 담당")
@@ -31,17 +35,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/work")
 public class WorkController {
-    WorkService workService;
+    private final AuthorService authorService;
+    private final WorkService workService;
 
     @Autowired
-    WorkController(WorkService workService) {
+    WorkController(WorkService workService, AuthorService authorService) {
         this.workService = workService;
+        this.authorService = authorService;
     }
 
     @Operation(summary = "(작업 완료) 오늘의 Best 작품들(조회수 기준)")
     @GetMapping("/best/today")
-    public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries() {
-        int limit = 4;
+    public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries(@RequestParam(defaultValue = "4") int limit) {
         List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getTodayBestSeries(limit);
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
@@ -115,10 +120,13 @@ public class WorkController {
         return null;
     }
 
-    @Operation(summary = "(작업중) 특정 키워드의 검색 결과 반환")
+    @Operation(summary = "(작업 완료) 특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
-    public ResponseEntity<List<SeriesDetailDTO>> getSeriesByKeyword(@P("keyword") String keyword) {
-        return null;
+    public ResponseEntity<SearchResponseDTO> getSeriesByKeywords(@P("keyword") String keyword) {
+        List<String> keywords = Arrays.stream(keyword.split(" ")).toList();
+        List<SeriesDetailDTO> seriesDetailDTOS = workService.getSeriesByKeywords(keywords);
+        List<AuthorDTO> authorDTOS = authorService.getAllByKeywords(keywords);
+        return ResponseEntity.ok(new SearchResponseDTO(seriesDetailDTOS, authorDTOS));
     }
 
 
