@@ -41,7 +41,6 @@ public class WorkController {
     WorkService workService;
     SearchWorkService searchWorkService;
     private final AuthorService authorService;
-    private final WorkService workService;
 
     @Autowired
     WorkController(WorkService workService, AuthorService authorService) {

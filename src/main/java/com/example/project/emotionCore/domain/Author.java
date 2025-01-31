@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="members")
+@Table(name="authors")
 public class Author{
 
     @Id
