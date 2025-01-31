@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.example.project.emotionCore.domain.QSeries.series;
+import static com.example.project.emotionCore.domain.QSeriesView.seriesView;
 
 @Repository
 public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
@@ -42,6 +43,11 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .orderBy(seriesView.count.sum().coalesce(0).desc()) // null 값을 0으로 처리
                 .limit(limit)
                 .fetch();
+    }
+
+    @Override
+    public List<Series> findByKeywords(List<String> keywords) {
+        return List.of();
     }
 
     @Override
@@ -117,7 +123,7 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
         LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth()); // 이번 달의 마지막 날
 
         QSeries series = QSeries.series; // Series 엔티티
-        QSeriesView sv = QSeriesView.seriesView; // SeriesView 엔티티
+        QSeriesView sv = seriesView; // SeriesView 엔티티
 
         return queryFactory
                 .select(series) // Series 엔티티를 기준으로 선택
