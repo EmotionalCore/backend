@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AuthorRepository extends JpaRepository<Author, Integer> {
-    List<Author> findAllByOrderByIdDesc(Pageable pageable);
+public interface AuthorRepository extends JpaRepository<Author, Integer>, CustomAuthorRepository {
+    List<Author> findBySeriesListIsNotEmptyOrderByIdDesc(Pageable pageable);
 }
