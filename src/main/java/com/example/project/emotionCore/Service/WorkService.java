@@ -4,11 +4,13 @@ import com.example.project.emotionCore.Repository.SearchWorkRepository;
 import com.example.project.emotionCore.Repository.SeriesRepository;
 import com.example.project.emotionCore.domain.SearchWork;
 import com.example.project.emotionCore.domain.Author;
+import com.example.project.emotionCore.domain.SearchWork;
 import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.domain.SeriesView;
 import com.example.project.emotionCore.dto.AuthorDTO;
 import com.example.project.emotionCore.dto.NovelAndPoemPreviewDTO;
 import com.example.project.emotionCore.dto.SeriesDetailDTO;
+import com.example.project.emotionCore.dto.SearchWorkDTO;
 import com.example.project.emotionCore.dto.SearchWorkDTO;
 import com.example.project.emotionCore.dto.SeriesPreviewDTO;
 import com.example.project.emotionCore.enums.WorkType;
@@ -19,28 +21,29 @@ import org.springframework.stereotype.Service;
 import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class WorkService {
+    SearchWorkRepository searchWorkRepository;
     private final AuthorRepository authorRepository;
     private final MemberRepository memberRepository;
     SearchWorkRepository searchWorkRepository;
     SeriesRepository seriesRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, AuthorRepository authorRepository, MemberRepository memberRepository) {
     public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository) {
         this.seriesRepository = seriesRepository;
+        this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
         this.searchWorkRepository = searchWorkRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
-        LocalDate today = LocalDate.now();
-
-        List<Series> seriesData = seriesRepository.findNDaysTopViewSeries(today, today, limit);
+        List<Series> seriesData = seriesRepository.findTodayBestSeries(1, limit);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
             data.add(modelMapper.map(series, SeriesPreviewDTO.class));
@@ -82,7 +85,7 @@ public class WorkService {
     public List<SeriesPreviewDTO> getAllSeriesByTag(List<String> tags) {
         List<Series> entity = seriesRepository.findAllByTagsContaining(tags);
         List<SeriesPreviewDTO> data = new ArrayList<>();
-        for(Series series : entity){
+        for (Series series : entity) {
             data.add(modelMapper.map(series, SeriesPreviewDTO.class));
         }
         return data;

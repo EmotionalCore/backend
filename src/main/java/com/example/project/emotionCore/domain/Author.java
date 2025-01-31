@@ -1,7 +1,6 @@
 package com.example.project.emotionCore.domain;
 
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="authors")
+@Table(name="members")
 public class Author{
 
     @Id

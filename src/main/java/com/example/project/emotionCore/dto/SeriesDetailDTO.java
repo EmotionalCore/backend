@@ -12,6 +12,9 @@ public class SeriesDetailDTO {
     @Schema(description = "index", example = "1")
     private int id;
 
+    /*
+    * *이건 뭘까요?
+    * */
     @Schema(description = "작가들의 정보")
     private List<AuthorDTO> authorInfos;
 
