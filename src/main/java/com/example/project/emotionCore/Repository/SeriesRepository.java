@@ -12,5 +12,9 @@ import java.util.List;
 @Repository
 public interface SeriesRepository extends JpaRepository<Series, Integer>, CustomSeriesRepository {
     public List<Series> findTop3ByTypeOrderByLikeCount(String type);
+
+    public List<Series> findAllByOrderByIdDesc(Pageable pageable);
+
+    public List<Series> findAllByTypeOrderByIdDesc(String type, Pageable pageable);
 }
 

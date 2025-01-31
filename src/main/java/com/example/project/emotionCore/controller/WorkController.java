@@ -77,10 +77,12 @@ public class WorkController {
         return ResponseEntity.ok(webtoonSeries);
     }
 
-    @Operation(summary = "(작업중) 이달의 인기 작품")
+    @Operation(summary = "(작업완료) 이달의 인기 작품(조회수 기준)")
     @GetMapping("/popular/monthly")
     public ResponseEntity<List<SeriesPreviewDTO>> getMonthlyPopularSeries() {
-        return null;
+        int limit = 3;
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getMonthlyBestSeries(limit);
+        return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
     @Operation(summary = "(작업중) 이달의 우수 작가")
@@ -89,16 +91,18 @@ public class WorkController {
         return null;
     }
 
-    @Operation(summary = "(작업중) 전체 작품 반환")
+    @Operation(summary = "(작업완료) 전체 작품 반환(최신순)")
     @GetMapping("/all")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeries(@RequestParam int num) {
-        return null;
+    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeries(@RequestParam int index,@RequestParam int num) {
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByCreatedDate(index, num);
+        return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
-    @Operation(summary = "(작업중) 특정 타입의 작품 반환")
+    @Operation(summary = "(작업완료) 특정 타입의 작품 반환")
     @GetMapping("/type")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam String type) {
-        return null;
+    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam int index,@RequestParam int num, @RequestParam String type) {
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByType(index, num, type);
+        return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
 
@@ -122,16 +126,21 @@ public class WorkController {
         return ResponseEntity.ok(popularSearches);
     }
 
-    @Operation(summary = "(작업중) 신규 작품들 반환")
+    @Operation(summary = "(작업완료) 신규 작품들 반환")
     @GetMapping("/new")
     public ResponseEntity<List<SeriesPreviewDTO>> getNewSeries() {
-        return null;
+        int limit=6;
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getNewSeries(limit);
+        return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
+    //작품을 1개 이상 올린 작가들에 한해서로 수정해야함
     @Operation(summary = "(작업중) 신규 작가들 반환")
     @GetMapping("/new/author")
-    public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthor() {
-        return null;
+    public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthors() {
+        int limit=6;
+        List<AuthorPreviewDTO> AuthorPreviewDTOS = workService.getNewAuthors(limit);
+        return ResponseEntity.ok(AuthorPreviewDTOS);
     }
 
     /*
