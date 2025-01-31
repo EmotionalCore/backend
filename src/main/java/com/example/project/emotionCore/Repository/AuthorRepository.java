@@ -4,7 +4,9 @@ import com.example.project.emotionCore.domain.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface AuthorRepository extends JpaRepository<Author, Integer>, CustomAuthorRepository {
+import java.util.List;
+
+public interface AuthorRepository extends JpaRepository<Author, Integer> {
+    List<Author> findAllByOrderByIdDesc(Pageable pageable);
     Author findById(long id);
 }
