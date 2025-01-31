@@ -67,6 +67,15 @@ public class WorkService {
         return data;
     }
 
+    public List<AuthorPreviewDTO> getMonthlyBestAuthor(int limit) {
+        List<Author> authorsData = authorRepository.findMonthlyBestAuthor(limit);
+        List<AuthorPreviewDTO> data = new ArrayList<>();
+        for (Author authors : authorsData) {
+            data.add(modelMapper.map(authors, AuthorPreviewDTO.class));
+        }
+        return data;
+    }
+
     public List<SeriesPreviewDTO> getAllSeriesByCreatedDate(int index, int size) {
         Pageable pageable = PageRequest.of(index, size);
 
@@ -103,7 +112,7 @@ public class WorkService {
     public List<AuthorPreviewDTO> getNewAuthors(int limit) {
         Pageable pageable = PageRequest.of(0, limit);
 
-        List<Author> authorData = authorRepository.findAllByOrderByIdDesc(pageable);
+        List<Author> authorData = authorRepository.findBySeriesListIsNotEmptyOrderByIdDesc(pageable);
         List<AuthorPreviewDTO> data = new ArrayList<>();
 
         for (Author author :authorData) {

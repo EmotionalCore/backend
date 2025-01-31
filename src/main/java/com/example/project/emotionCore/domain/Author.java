@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,4 +30,6 @@ public class Author{
     private String username;               // nick
     
     //나중에 더 추가
+    @OneToMany(mappedBy = "authorInfos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Series> seriesList = new ArrayList<>();
 }
