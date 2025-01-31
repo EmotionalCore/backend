@@ -51,3 +51,11 @@ jobs:
         docker tag ghcr.io/emotionalcore/my-app:${{ github.sha }} ghcr.io/emotionalcore/my-app:latest
         docker push ghcr.io/emotionalcore/my-app:${{ github.sha }}
         docker push ghcr.io/emotionalcore/my-app:latest
+
+    - name: Deploy on Server
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: ~/deploy.sh
