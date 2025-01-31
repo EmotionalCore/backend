@@ -4,6 +4,7 @@ import com.example.project.emotionCore.Service.AuthorService;
 import com.example.project.emotionCore.Service.CustomMemberDetail;
 import com.example.project.emotionCore.Service.CustomUserDetailService;
 import com.example.project.emotionCore.Service.SearchWorkService;
+import com.example.project.emotionCore.Service.SearchWorkService;
 import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.config.SecurityConfig;
 import com.example.project.emotionCore.domain.Series;
@@ -100,14 +101,20 @@ public class WorkController {
         return null;
     }
 
-    @Operation(summary = "(작업중) 특정 태그들을 포함하는 작품 반환")
+
+    /**
+    *승헌 시작
+     */
+
+
+    @Operation(summary = "(작업완료) 특정 태그들을 모두 포함하는 작품 반환")
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
         List<SeriesPreviewDTO> series = workService.getAllSeriesByTag(tags);
         return ResponseEntity.ok(series);
     }
 
-    @Operation(summary = "(작업중) 인기 검색어들 반환")
+    @Operation(summary = "(작업 완료) 인기 검색어들 반환")
     @GetMapping("/search/popular")
     public ResponseEntity<List<SearchWorkDTO>> getPopularSearchKeywords() {
         // 서비스 호출
@@ -126,6 +133,10 @@ public class WorkController {
     public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthor() {
         return null;
     }
+
+    /*
+    건아 시작
+     */
 
     @Operation(summary = "(작업중) 특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
