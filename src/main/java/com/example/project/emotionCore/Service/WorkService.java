@@ -1,8 +1,12 @@
 package com.example.project.emotionCore.Service;
 
+import com.example.project.emotionCore.Repository.AuthorRepository;
+import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.Repository.SeriesRepository;
+import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.domain.SeriesView;
+import com.example.project.emotionCore.dto.AuthorDTO;
 import com.example.project.emotionCore.dto.NovelAndPoemPreviewDTO;
 import com.example.project.emotionCore.dto.SeriesDetailDTO;
 import com.example.project.emotionCore.dto.SeriesPreviewDTO;
@@ -22,11 +26,15 @@ import java.util.List;
 
 @Service
 public class WorkService {
+    private final AuthorRepository authorRepository;
+    private final MemberRepository memberRepository;
     SeriesRepository seriesRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository) {
+    public WorkService(SeriesRepository seriesRepository, AuthorRepository authorRepository, MemberRepository memberRepository) {
         this.seriesRepository = seriesRepository;
+        this.authorRepository = authorRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -44,7 +52,9 @@ public class WorkService {
         List<Series> entity = seriesRepository.findTop3ByTypeOrderByLikeCount(workType.name());
         List<NovelAndPoemPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
-            data.add(modelMapper.map(series, NovelAndPoemPreviewDTO.class));
+            NovelAndPoemPreviewDTO dto = modelMapper.map(series, NovelAndPoemPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -53,7 +63,9 @@ public class WorkService {
         List<Series> entity = seriesRepository.findTop3ByTypeOrderByLikeCount(WorkType.WEBTOON.name());
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }

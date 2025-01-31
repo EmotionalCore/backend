@@ -13,7 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class NovelAndPoemPreviewDTO{
     private int id;
-    private AuthorDTO authorInfos;
+    private int authorId;
+    private String authorName;
     private String title;
     private String description;
     private String coverImageUrl;
