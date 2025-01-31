@@ -35,10 +35,12 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
     public List<Series> findNDaysTopViewSeries(LocalDate startDate, LocalDate endDate, int limit) {
         return queryFactory
                 .selectFrom(series)
-                .leftJoin(seriesView).on(series.id.eq(seriesView.series.id))
-                .where(seriesView.viewDate.between(startDate, endDate))
+                .leftJoin(seriesView).on(
+                        series.id.eq(seriesView.series.id)
+                                .and(seriesView.viewDate.between(startDate, endDate))
+                )
                 .groupBy(series.id)
-                .orderBy(seriesView.count.sum().desc())
+                .orderBy(seriesView.count.sum().coalesce(0).desc()) // null 값을 0으로 처리
                 .limit(limit)
                 .fetch();
     }

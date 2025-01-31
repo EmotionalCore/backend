@@ -1,6 +1,7 @@
 package com.example.project.emotionCore.domain;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,18 +19,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="members")
+@Table(name="authors")
 public class Author{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                    // 데이터베이스 상 관리하는 고객 번호
 
-    @Column(nullable = false, unique = true)
-    private String username;               // nick
-
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "links")
+    private String links;
+
+    @Column(name = "tags")
     private String tags;
     //나중에 더 추가
 }
