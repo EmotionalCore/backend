@@ -3,6 +3,8 @@ package com.example.project.emotionCore.Repository;
 import com.example.project.emotionCore.domain.Series;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,3 +13,4 @@ import java.util.List;
 public interface SeriesRepository extends JpaRepository<Series, Integer>, CustomSeriesRepository {
     public List<Series> findTop3ByTypeOrderByLikeCount(String type);
 }
+

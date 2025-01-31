@@ -3,6 +3,7 @@ package com.example.project.emotionCore.controller;
 import com.example.project.emotionCore.Service.AuthorService;
 import com.example.project.emotionCore.Service.CustomMemberDetail;
 import com.example.project.emotionCore.Service.CustomUserDetailService;
+import com.example.project.emotionCore.Service.SearchWorkService;
 import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.config.SecurityConfig;
 import com.example.project.emotionCore.domain.Series;
@@ -29,12 +30,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "작품 API", description = "작품(시, 소설, 웹툰 등) 에 대한 CRUD 기능 담당")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/work")
 public class WorkController {
+    WorkService workService;
+    SearchWorkService searchWorkService;
     private final AuthorService authorService;
     private final WorkService workService;
 
@@ -99,13 +103,16 @@ public class WorkController {
     @Operation(summary = "(작업중) 특정 태그들을 포함하는 작품 반환")
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
-        return null;
+        List<SeriesPreviewDTO> series = workService.getAllSeriesByTag(tags);
+        return ResponseEntity.ok(series);
     }
 
     @Operation(summary = "(작업중) 인기 검색어들 반환")
     @GetMapping("/search/popular")
-    public ResponseEntity<List<String>> getPopularSearchKeywords() {
-        return null;
+    public ResponseEntity<List<SearchWorkDTO>> getPopularSearchKeywords() {
+        // 서비스 호출
+        List<SearchWorkDTO> popularSearches = workService.getBestSearchWork();
+        return ResponseEntity.ok(popularSearches);
     }
 
     @Operation(summary = "(작업중) 신규 작품들 반환")
@@ -120,7 +127,7 @@ public class WorkController {
         return null;
     }
 
-    @Operation(summary = "(작업 완료) 특정 키워드의 검색 결과 반환")
+    @Operation(summary = "(작업중) 특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
     public ResponseEntity<SearchResponseDTO> getSeriesByKeywords(@P("keyword") String keyword) {
         List<String> keywords = Arrays.stream(keyword.split(" ")).toList();
@@ -152,11 +159,13 @@ public class WorkController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/aTest")
-    public ResponseEntity<SuccessResponse<String>> getTest(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) throws AuthenticationException {
-        if(customMemberDetail == null) {
-            throw new AuthenticationException("인증 실패");
+    public ResponseEntity<SuccessResponse<List<SeriesPreviewDTO>>> getTest(@RequestParam int num) {
+        if(num == 1){
+            return ResponseEntity.ok(null);
         }
-        return ResponseEntity.ok(new SuccessResponse<>(customMemberDetail.getUsername()));
+        else{
+            throw new CustomBadRequestException(400, "잘못된 요청입니다.");
+        }
     }
 
 }
