@@ -9,4 +9,6 @@ import java.util.List;
 public interface CustomSeriesRepository {
     List<Series> findNDaysTopViewSeries(LocalDate startDate, LocalDate endDate, int limit);
     List<Series> findByKeywords(List<String> keyword);
+    List<Series> findTodayBestSeries(int days, int limit);
+    List<Series> findAllByTagsContaining(List<String> tags);
 }
