@@ -21,7 +21,7 @@ public class SeriesDetailDTO {
     @Schema(description = "작품의 제목", example = "제목이다..!")
     private String title;
 
-    @Schema(description = "작품 커버 이미지", example = "/static/image/cover/p123abcddeded1w3")
+    @Schema(description = "작품 커버 이미지", example = "/static/img/cover/p123abcddeded1w3")
     private String coverImageUrl;
 
     @Schema(description = "작품 설명", example = "작품 설명입니다... 주절주절")
