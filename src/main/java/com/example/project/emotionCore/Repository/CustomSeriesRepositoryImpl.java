@@ -45,9 +45,16 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .fetch();
     }
 
-    @Override
     public List<Series> findByKeywords(List<String> keywords) {
-        return List.of();
+        BooleanBuilder condition = new BooleanBuilder();
+        for (String keyword : keywords) {
+            condition.and(containsKeyword(keyword));
+        }
+
+        return queryFactory
+                .selectFrom(series)
+                .where(condition)
+                .fetch();
     }
 
     @Override

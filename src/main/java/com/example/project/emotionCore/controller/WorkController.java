@@ -76,7 +76,7 @@ public class WorkController {
         return ResponseEntity.ok(webtoonSeries);
     }
 
-    @Operation(summary = "(작업완료) 이달의 인기 작품(조회수 기준)")
+    @Operation(summary = "(작업 완료) 이달의 인기 작품(조회수 기준)")
     @GetMapping("/popular/monthly")
     public ResponseEntity<List<SeriesPreviewDTO>> getMonthlyPopularSeries() {
         int limit = 3;
@@ -90,14 +90,14 @@ public class WorkController {
         return null;
     }
 
-    @Operation(summary = "(작업완료) 전체 작품 반환(최신순)")
+    @Operation(summary = "(작업 완료) 전체 작품 반환(최신순)")
     @GetMapping("/all")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeries(@RequestParam int index,@RequestParam int num) {
         List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByCreatedDate(index, num);
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
-    @Operation(summary = "(작업완료) 특정 타입의 작품 반환")
+    @Operation(summary = "(작업 완료) 특정 타입의 작품 반환")
     @GetMapping("/type")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam int index,@RequestParam int num, @RequestParam String type) {
         List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByType(index, num, type);
@@ -110,7 +110,7 @@ public class WorkController {
      */
 
 
-    @Operation(summary = "(작업완료) 특정 태그들을 모두 포함하는 작품 반환")
+    @Operation(summary = "(작업 완료) 특정 태그들을 모두 포함하는 작품 반환")
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
         List<SeriesPreviewDTO> series = workService.getAllSeriesByTag(tags);
@@ -125,7 +125,7 @@ public class WorkController {
         return ResponseEntity.ok(popularSearches);
     }
 
-    @Operation(summary = "(작업완료) 신규 작품들 반환")
+    @Operation(summary = "(작업 완료) 신규 작품들 반환")
     @GetMapping("/new")
     public ResponseEntity<List<SeriesPreviewDTO>> getNewSeries() {
         int limit=6;
@@ -146,9 +146,9 @@ public class WorkController {
     건아 시작
      */
 
-    @Operation(summary = "(작업중) 특정 키워드의 검색 결과 반환")
+    @Operation(summary = "(작업 완료) 특정 키워드의 검색 결과 반환")
     @GetMapping("/search")
-    public ResponseEntity<SearchResponseDTO> getSeriesByKeywords(@P("keyword") String keyword) {
+    public ResponseEntity<SearchResponseDTO> getSeriesByKeywords(@P("Horror Comedy") String keyword) {
         List<String> keywords = Arrays.stream(keyword.split(" ")).toList();
         List<SeriesDetailDTO> seriesDetailDTOS = workService.getSeriesByKeywords(keywords);
         List<AuthorDTO> authorDTOS = authorService.getAllByKeywords(keywords);
