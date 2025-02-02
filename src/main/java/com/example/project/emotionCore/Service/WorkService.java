@@ -48,7 +48,9 @@ public class WorkService {
         List<Series> seriesData = seriesRepository.findNDaysTopViewSeries(today, today, limit);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -79,6 +81,7 @@ public class WorkService {
         List<Series> entity = seriesRepository.findByKeywords(keywords);
         List<SeriesDetailDTO> data = new ArrayList<>();
         for (Series series : entity) {
+            SeriesDetailDTO dto = modelMapper.map(series, SeriesDetailDTO.class);
             data.add(modelMapper.map(series, SeriesDetailDTO.class));
         }
         return data;
@@ -88,7 +91,9 @@ public class WorkService {
         List<Series> entity = seriesRepository.findAllByTagsContaining(tags);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -108,10 +113,14 @@ public class WorkService {
 
 
     public List<SeriesPreviewDTO> getMonthlyBestSeries(int limit) {
-        List<Series> seriesData = seriesRepository.findMonthlyBestSeries(limit);
+        LocalDate today = LocalDate.now();
+        LocalDate nextMonth = today.plusMonths(30);
+        List<Series> seriesData = seriesRepository.findNDaysTopViewSeries(today, nextMonth, limit);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -122,7 +131,9 @@ public class WorkService {
         List<Series> seriesData = seriesRepository.findAllByOrderByIdDesc(pageable);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -133,7 +144,9 @@ public class WorkService {
         List<Series> seriesData = seriesRepository.findAllByTypeOrderByIdDesc(type,pageable);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -144,7 +157,9 @@ public class WorkService {
         List<Series> seriesData = seriesRepository.findAllByOrderByIdDesc(pageable);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : seriesData) {
-            data.add(modelMapper.map(series, SeriesPreviewDTO.class));
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }

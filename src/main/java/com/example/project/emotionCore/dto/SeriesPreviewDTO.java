@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Builder
 @Data
 @AllArgsConstructor
@@ -26,6 +24,6 @@ public class SeriesPreviewDTO {
     @Schema(description = "작품의 제목", example = "제목이다..!")
     private String title;
 
-    @Schema(description = "작품 커버 이미지", example = "/static/image/cover/p123abcddeded1w3")
+    @Schema(description = "작품 커버 이미지", example = "/static/img/cover/p123abcddeded1w3")
     private String coverImageUrl;
 }
