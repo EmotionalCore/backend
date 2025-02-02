@@ -50,7 +50,7 @@ public class WorkController {
 
     @Operation(summary = "(작업 완료) 오늘의 Best 작품들(조회수 기준)")
     @GetMapping("/best/today")
-    public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries(@RequestParam(defaultValue = "4") int limit) {
+    public ResponseEntity<List<SeriesPreviewDTO>> getTodayBestSeries(@RequestParam(defaultValue = "5") int limit) {
         List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getTodayBestSeries(limit);
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
