@@ -56,7 +56,7 @@ public class WorkService {
     }
 
     public List<NovelAndPoemPreviewDTO> getBestLikeNovelOrPoemSeries(WorkType workType) {
-        List<Series> entity = seriesRepository.findTop3ByTypeOrderByLikeCount(workType.name());
+        List<Series> entity = seriesRepository.findTop6ByTypeOrderByLikeCount(workType.name());
         List<NovelAndPoemPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
             NovelAndPoemPreviewDTO dto = modelMapper.map(series, NovelAndPoemPreviewDTO.class);
@@ -67,7 +67,7 @@ public class WorkService {
     }
 
     public List<SeriesPreviewDTO> getBestLikeWebtoonSeries() {
-        List<Series> entity = seriesRepository.findTop3ByTypeOrderByLikeCount(WorkType.WEBTOON.name());
+        List<Series> entity = seriesRepository.findTop6ByTypeOrderByLikeCount(WorkType.WEBTOON.name());
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
             SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
