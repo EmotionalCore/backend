@@ -2,6 +2,7 @@ package com.example.project.emotionCore.Repository;
 
 import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.dto.AuthorDTO;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -44,7 +45,22 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository {
 
     @Override
     public List<Author> findByKeywords(List<String> keywords) {
-        return List.of();
+        BooleanBuilder condition = new BooleanBuilder();
+        for (String keyword : keywords) {
+            condition.and(containsKeyword(keyword));
+        }
+
+        return queryFactory
+                .selectFrom(author)
+                .join(member).on(member.id.eq(author.id))
+                .where(condition)
+                .fetch();
+    }
+
+    private BooleanExpression containsKeyword(String keyword) {
+        return containsKeywordInDescription(keyword)
+                .or(containsKeywordInTags(keyword))
+                .or(containsKeywordInUsername(keyword));
     }
 
     private BooleanExpression containsKeywordInDescription(String keyword){
@@ -55,5 +71,10 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository {
     private BooleanExpression containsKeywordInTags(String keyword){
         if(keyword == null || keyword.isEmpty()) return null;
         return author.tags.contains(keyword);
+    }
+
+    private BooleanExpression containsKeywordInUsername(String keyword){
+        if(keyword == null || keyword.isEmpty()) return null;
+        return member.username.contains(keyword);
     }
 }

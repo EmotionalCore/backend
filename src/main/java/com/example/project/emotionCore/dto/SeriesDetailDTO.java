@@ -12,11 +12,11 @@ public class SeriesDetailDTO {
     @Schema(description = "index", example = "1")
     private int id;
 
-    /*
-    * *이건 뭘까요?
-    * */
-    @Schema(description = "작가들의 정보")
-    private List<AuthorDTO> authorInfos;
+    @Schema(description = "작가 index", example = "55")
+    private int authorId;
+
+    @Schema(description = "작가 닉네임", example = "고양이작가")
+    private String authorName;
 
     @Schema(description = "작품의 제목", example = "제목이다..!")
     private String title;

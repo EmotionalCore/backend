@@ -82,7 +82,8 @@ public class WorkService {
         List<SeriesDetailDTO> data = new ArrayList<>();
         for (Series series : entity) {
             SeriesDetailDTO dto = modelMapper.map(series, SeriesDetailDTO.class);
-            data.add(modelMapper.map(series, SeriesDetailDTO.class));
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
