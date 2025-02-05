@@ -16,6 +16,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
@@ -94,5 +97,11 @@ public class MemberController {
     @PostMapping("/findpassword")   // 비밀번호 찾기
     public String findPassword() {
         return "findpassword";
+    }
+
+    @GetMapping("/check/email")
+    public ResponseEntity<Map<String,Boolean>> checkEmail(@RequestParam String email){
+        boolean exists= memberService.isEmailRegistered(email);
+        return ResponseEntity.ok(Collections.singletonMap("exists",exists));
     }
 }

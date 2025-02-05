@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class SignUpDTO {
+
     @Size(min=2, max=10)
     private String username;
 
