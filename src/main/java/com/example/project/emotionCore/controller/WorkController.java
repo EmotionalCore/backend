@@ -156,6 +156,13 @@ public class WorkController {
     }
 
 
+    @Operation(summary = "(작업 중) episode 작성 기능")
+    @PostMapping("/episode")
+    public ResponseEntity<List<SeriesPreviewDTO>> getSeriesByEpisode(@RequestBody EpisodeRequestDTO episodeRequestDTO) {
+        workService.saveNewEpisode(episodeRequestDTO);
+        return null;
+    }
+
 
 
 
