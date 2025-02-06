@@ -14,15 +14,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@IdClass(EpisodeId.class)
 public class Episode {
 //일단 figma에 있는것들 넣었는데 나중에 사라지면 지우기
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_id", nullable = false)
-    private Series series;
+    @Id
+    @Column(name = "series_id", nullable = false)
+    private int seriesId;
+
+    @Id
+    @GeneratedValue
+    private Integer number;
 
     @Column(nullable = false, length = 255)
     private String title;

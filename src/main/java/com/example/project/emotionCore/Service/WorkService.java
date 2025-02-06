@@ -1,20 +1,9 @@
 package com.example.project.emotionCore.Service;
 
-import com.example.project.emotionCore.Repository.AuthorRepository;
-import com.example.project.emotionCore.Repository.MemberRepository;
-import com.example.project.emotionCore.Repository.SearchWorkRepository;
-import com.example.project.emotionCore.Repository.SeriesRepository;
-import com.example.project.emotionCore.domain.Author;
-import com.example.project.emotionCore.domain.SearchWork;
-import com.example.project.emotionCore.domain.Series;
-import com.example.project.emotionCore.domain.SeriesView;
-import com.example.project.emotionCore.dto.AuthorDTO;
-import com.example.project.emotionCore.dto.AuthorPreviewDTO;
-import com.example.project.emotionCore.dto.NovelAndPoemPreviewDTO;
-import com.example.project.emotionCore.dto.SeriesDetailDTO;
+import com.example.project.emotionCore.Repository.*;
+import com.example.project.emotionCore.domain.*;
+import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.dto.SearchWorkDTO;
-import com.example.project.emotionCore.dto.SearchWorkDTO;
-import com.example.project.emotionCore.dto.SeriesPreviewDTO;
 import com.example.project.emotionCore.enums.WorkType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +23,15 @@ public class WorkService {
     private final AuthorRepository authorRepository;
     private final MemberRepository memberRepository;
     private final SeriesRepository seriesRepository;
+    private final EpisodeRepository episodeRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
+        this.episodeRepository = episodeRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -176,4 +167,24 @@ public class WorkService {
         }
         return data;
     }
+
+
+
+
+
+    //Episode Start
+
+    public void saveNewEpisode(EpisodeRequestDTO episodeRequestDTO) {
+        Episode episode = new Episode();
+        modelMapper.map(episodeRequestDTO, episode);
+        episodeRepository.save(episode);
+    }
+
+
+
+
+
+
+
+
 }
