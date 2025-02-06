@@ -8,10 +8,13 @@ import lombok.ToString;
 @Data
 public class AuthorDTO {
     @Schema(description = "index", example = "1")
-    private Long id;
+    private int id;
 
     @Schema(description = "작가 닉네임", example = "닉네임이다...!")
     private String name;
+
+    @Schema(description = "작품 개수", example = "5")
+    private int seriesCount;
 
     @Schema(description = "작가 설명", example = "나는 ~하는 작가입니다.")
     private String description;

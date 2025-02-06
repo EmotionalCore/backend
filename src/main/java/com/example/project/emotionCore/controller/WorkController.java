@@ -84,10 +84,12 @@ public class WorkController {
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
-    @Operation(summary = "(작업중) 이달의 우수 작가")
+    @Operation(summary = "(작업완료) 이달의 우수 작가(작가가 등록한 작품들의 좋아요 기준)")
     @GetMapping("/author/best/monthly")
     public ResponseEntity<List<AuthorPreviewDTO>> getMonthlyBestAuthors() {
-        return null;
+        int limit = 3;
+        List<AuthorPreviewDTO> authorPreviewDTOS = workService.getMonthlyBestAuthor(limit);
+        return ResponseEntity.ok(authorPreviewDTOS);
     }
 
     @Operation(summary = "(작업 완료) 전체 작품 반환(최신순)")
@@ -134,7 +136,7 @@ public class WorkController {
     }
 
     //작품을 1개 이상 올린 작가들에 한해서로 수정해야함
-    @Operation(summary = "(작업중) 신규 작가들 반환")
+    @Operation(summary = "(작업완료) 신규 작가들 반환")
     @GetMapping("/new/author")
     public ResponseEntity<List<AuthorPreviewDTO>> getNewAuthors() {
         int limit=6;
