@@ -37,6 +37,8 @@ public class Member implements UserDetails{
         return List.of(() -> "ROLE_USER");
     }
 
+    private String profileImageUrl;
+
     @Override
     public String getPassword() {
         return password;
@@ -66,4 +68,9 @@ public class Member implements UserDetails{
     public boolean isEnabled() {
         return true; // 계정이 활성화 상태임
     }
+
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
 }

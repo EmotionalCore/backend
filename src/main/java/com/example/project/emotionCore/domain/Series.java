@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Series {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

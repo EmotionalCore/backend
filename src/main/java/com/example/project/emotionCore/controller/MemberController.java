@@ -104,4 +104,14 @@ public class MemberController {
         boolean exists= memberService.isEmailRegistered(email);
         return ResponseEntity.ok(Collections.singletonMap("exists",exists));
     }
+
+    @PutMapping("/{memberId}/profile-image")
+    public ResponseEntity<String> updateProfileImage(
+            @PathVariable Long memberId,
+            @RequestBody Map<String, String> request) {
+
+        String newProfileImageUrl = request.get("profileImageUrl");
+        memberService.updateProfileImage(memberId, newProfileImageUrl);
+        return ResponseEntity.ok("프로필 이미지가 업데이트되었습니다.");
+    }
 }
