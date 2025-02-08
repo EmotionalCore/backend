@@ -11,5 +11,4 @@ public interface CustomSeriesRepository {
     List<Series> findByKeywords(List<String> keyword);
     List<Series> findTodayBestSeries(int days, int limit);
     List<Series> findAllByTagsContaining(List<String> tags);
-    List<Series> findMonthlyBestSeries(int limit);
 }
