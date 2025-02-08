@@ -17,6 +17,7 @@ public class SeriesViewId implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_id", nullable = false)
     private Series series;
+
     @Column(name = "view_date", nullable = false)
     private LocalDate viewDate;
 }

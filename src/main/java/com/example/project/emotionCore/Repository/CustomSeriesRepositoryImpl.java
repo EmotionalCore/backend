@@ -122,24 +122,4 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
         if(keyword == null || keyword.isEmpty()) return null;
         return series.tags.contains(keyword);
     }
-
-    @Override
-    public List<Series> findMonthlyBestSeries(int limit) {
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1); // 이번 달의 첫 날
-        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth()); // 이번 달의 마지막 날
-
-        QSeries series = QSeries.series; // Series 엔티티
-        QSeriesView sv = seriesView; // SeriesView 엔티티
-
-        return queryFactory
-                .select(series) // Series 엔티티를 기준으로 선택
-                .from(sv) // SeriesView 엔티티를 기준으로 시작
-                .join(series).on(series.id.eq(sv.series.id)) // Series와 SeriesView를 조인
-                .where(sv.viewDate.between(firstDayOfMonth, lastDayOfMonth)) // 이번 달 범위 필터
-                .groupBy(series.id) // 시리즈별로 그룹화
-                .orderBy(sv.count.sum().desc()) // count 합계 기준 내림차순 정렬
-                .limit(limit) // 상위 limit개의 결과만 반환
-                .fetch(); // 결과 fetch
-    }
 }
