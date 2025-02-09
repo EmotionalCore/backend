@@ -1,21 +1,12 @@
 package com.example.project.emotionCore.Service;
 
-import com.example.project.emotionCore.Repository.AuthorRepository;
-import com.example.project.emotionCore.Repository.MemberRepository;
-import com.example.project.emotionCore.Repository.SearchWorkRepository;
-import com.example.project.emotionCore.Repository.SeriesRepository;
-import com.example.project.emotionCore.domain.Author;
-import com.example.project.emotionCore.domain.SearchWork;
-import com.example.project.emotionCore.domain.Series;
-import com.example.project.emotionCore.domain.SeriesView;
-import com.example.project.emotionCore.dto.AuthorDTO;
-import com.example.project.emotionCore.dto.AuthorPreviewDTO;
-import com.example.project.emotionCore.dto.NovelAndPoemPreviewDTO;
-import com.example.project.emotionCore.dto.SeriesDetailDTO;
+import com.example.project.emotionCore.Repository.*;
+import com.example.project.emotionCore.domain.*;
+import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.dto.SearchWorkDTO;
-import com.example.project.emotionCore.dto.SearchWorkDTO;
-import com.example.project.emotionCore.dto.SeriesPreviewDTO;
 import com.example.project.emotionCore.enums.WorkType;
+import com.example.project.emotionCore.exception.CustomBadRequestException;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -34,13 +25,15 @@ public class WorkService {
     private final AuthorRepository authorRepository;
     private final MemberRepository memberRepository;
     private final SeriesRepository seriesRepository;
+    private final EpisodeRepository episodeRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
+        this.episodeRepository = episodeRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -185,4 +178,59 @@ public class WorkService {
         }
         return data;
     }
+
+
+
+
+
+    //Episode Start
+
+    public void saveNewEpisode(EpisodeRequestDTO dto) {
+        //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
+        Episode episode = Episode.builder()
+                        .seriesId(dto.getSeriesId())
+                        .title(dto.getTitle())
+                        .coverImageUrl(dto.getCoverImageUrl())
+                        .contents(dto.getContents())
+                        .description(dto.getDescription())
+                        .tags(dto.getTags())
+                        .build();
+        System.out.println(episode);
+        //? 왜 save 전에 select 쿼리가 실행 될까?
+        episodeRepository.save(episode);
+    }
+
+    public EpisodeResponseDTO getEpisode(long seriesId, long number){
+        Episode episode = episodeRepository.findBySeriesIdAndNumber(seriesId, number);
+        return modelMapper.map(episode, EpisodeResponseDTO.class);
+    }
+
+    @Transactional
+    public void deleteEpisode(long seriesId, long number){
+        episodeRepository.deleteBySeriesIdAndNumber(seriesId, number);
+    }
+
+    @Transactional
+    public void updateEpisode(EpisodeModifyDTO dto){
+        Episode episode = episodeRepository.findBySeriesIdAndNumber(dto.getSeriesId(), dto.getNumber());
+        episode.setTitle(dto.getTitle());
+        episode.setCoverImageUrl(dto.getCoverImageUrl());
+        episode.setContents(dto.getContents());
+        episode.setDescription(dto.getDescription());
+        episode.setTags(dto.getTags());
+        episodeRepository.save(episode);
+    }
+
+    public boolean isOwner(long seriesId, long memberId){
+        Series series = seriesRepository.findById(seriesId)
+                .orElseThrow(() -> new CustomBadRequestException(404, "Series not found"));
+        return series.getAuthorInfos().getId().equals(memberId);
+    }
+
+
+
+
+
+
+
 }
