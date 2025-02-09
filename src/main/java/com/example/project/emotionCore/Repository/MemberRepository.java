@@ -4,6 +4,7 @@ import com.example.project.emotionCore.domain.Member;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -17,4 +18,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> { //DB와 
     Optional<Member> findById(Long id);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
+
 }

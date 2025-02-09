@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.attribute.standard.Destination;
 import java.util.Arrays;
@@ -121,4 +122,13 @@ public class MemberService {
     public String findPassword(MemberDTO memberDTO) {
         return "비밀번호 찾기 기능은 아직 구현되지 않았습니다.";
     }
+
+    @Transactional
+    public void updateProfileImage(Long MemberId, String profileImageUrl){
+        Member member = memberRepository.findById(MemberId).orElseThrow(()->new RuntimeException("멤버 검색 불가"));
+
+        member.updateProfileImageUrl(profileImageUrl);
+        memberRepository.save(member);
+    }
+
 }
