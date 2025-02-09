@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SeriesRepository extends JpaRepository<Series, Integer>, CustomSeriesRepository {
+public interface SeriesRepository extends JpaRepository<Series, Long>, CustomSeriesRepository {
     public List<Series> findTop6ByTypeOrderByLikeCount(String type);
 
     public List<Series> findAllByOrderByIdDesc(Pageable pageable);

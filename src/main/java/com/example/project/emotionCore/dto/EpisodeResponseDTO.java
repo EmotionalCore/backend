@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
-public class EpisodeRequestDTO {
+public class EpisodeResponseDTO {
     private long seriesId;
+
+    private long number;
 
     private String title;
 
@@ -22,4 +24,6 @@ public class EpisodeRequestDTO {
     private String tags;
 
     private String contents;
+
+    private LocalDateTime createdAt;
 }

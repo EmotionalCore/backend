@@ -5,6 +5,8 @@ import com.example.project.emotionCore.domain.*;
 import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.dto.SearchWorkDTO;
 import com.example.project.emotionCore.enums.WorkType;
+import com.example.project.emotionCore.exception.CustomBadRequestException;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -174,12 +176,47 @@ public class WorkService {
 
     //Episode Start
 
-    public void saveNewEpisode(EpisodeRequestDTO episodeRequestDTO) {
-        Episode episode = new Episode();
-        modelMapper.map(episodeRequestDTO, episode);
+    public void saveNewEpisode(EpisodeRequestDTO dto) {
+        //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
+        Episode episode = Episode.builder()
+                        .seriesId(dto.getSeriesId())
+                        .title(dto.getTitle())
+                        .coverImageUrl(dto.getCoverImageUrl())
+                        .contents(dto.getContents())
+                        .description(dto.getDescription())
+                        .tags(dto.getTags())
+                        .build();
+        System.out.println(episode);
+        //? 왜 save 전에 select 쿼리가 실행 될까?
         episodeRepository.save(episode);
     }
 
+    public EpisodeResponseDTO getEpisode(long seriesId, long number){
+        Episode episode = episodeRepository.findBySeriesIdAndNumber(seriesId, number);
+        return modelMapper.map(episode, EpisodeResponseDTO.class);
+    }
+
+    @Transactional
+    public void deleteEpisode(long seriesId, long number){
+        episodeRepository.deleteBySeriesIdAndNumber(seriesId, number);
+    }
+
+    @Transactional
+    public void updateEpisode(EpisodeModifyDTO dto){
+        Episode episode = episodeRepository.findBySeriesIdAndNumber(dto.getSeriesId(), dto.getNumber());
+        episode.setTitle(dto.getTitle());
+        episode.setCoverImageUrl(dto.getCoverImageUrl());
+        episode.setContents(dto.getContents());
+        episode.setDescription(dto.getDescription());
+        episode.setTags(dto.getTags());
+        episodeRepository.save(episode);
+    }
+
+    public boolean isOwner(long seriesId, long memberId){
+        Series series = seriesRepository.findById(seriesId)
+                .orElseThrow(() -> new CustomBadRequestException(404, "Series not found"));
+        return series.getAuthorInfos().getId().equals(memberId);
+    }
 
 
 
