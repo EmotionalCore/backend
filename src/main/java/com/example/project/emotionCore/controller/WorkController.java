@@ -23,6 +23,7 @@ import org.apache.tomcat.websocket.AuthenticationException;
 import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Default;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -157,10 +158,32 @@ public class WorkController {
 
 
     @Operation(summary = "(작업 중) episode 작성 기능")
+    @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#episodeRequestDTO.seriesId, authentication.principal.id)")
+    //ADMIN 혹은 자기글 이여야 작성 가능
+    //? 권한 관리는 Service 영역이 깔끔한가?
     @PostMapping("/episode")
-    public ResponseEntity<List<SeriesPreviewDTO>> getSeriesByEpisode(@RequestBody EpisodeRequestDTO episodeRequestDTO) {
+    public void getSeriesByEpisode(@RequestBody EpisodeRequestDTO episodeRequestDTO) {
         workService.saveNewEpisode(episodeRequestDTO);
-        return null;
+    }
+
+    @GetMapping("/episode")
+    public ResponseEntity<EpisodeResponseDTO> getSeriesByEpisode(@RequestParam long seriesId, @RequestParam long number) {
+        EpisodeResponseDTO episodeResponseDTO = workService.getEpisode(seriesId, number);
+        return ResponseEntity.ok(episodeResponseDTO);
+    }
+
+    @DeleteMapping("/episode")
+    @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#seriesId, authentication.principal.id)")
+    public void deleteEpisode(@RequestParam long seriesId, @RequestParam long number) {
+        //반환값 추가하든가 뭐 해야됨. 없는 에피소드 삭제해도 200 이던데
+        workService.deleteEpisode(seriesId, number);
+    }
+
+    @PutMapping("/episode")
+    @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#episodeModifyDTO.seriesId, authentication.principal.id)")
+    public void updateEpisode(@RequestBody EpisodeModifyDTO episodeModifyDTO) {
+        //반환값 추가하든가 뭐 해야됨. 없는 에피소드 삭제해도 200 이던데
+        workService.updateEpisode(episodeModifyDTO);
     }
 
 

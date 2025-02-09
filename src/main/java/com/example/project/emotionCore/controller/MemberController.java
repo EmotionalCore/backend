@@ -91,6 +91,13 @@ public class MemberController {
         return ResponseEntity.ok(tokenDTO);
     }
 
+    @Operation(description = "매번 로그인하는거 귀찮아서 만듦")
+    @GetMapping("/W0W_Y0U_AR3_ADM1N")
+    public ResponseEntity<JwtTokenDTO> W0W_Y0U_AR3_ADM1N(){
+        JwtTokenDTO tokenDTO = memberService.singIn("test@localhost.com", "test123!");
+        return ResponseEntity.ok(tokenDTO);
+    }
+
     @PostMapping("/findpassword")   // 비밀번호 찾기
     public String findPassword() {
         return "findpassword";
