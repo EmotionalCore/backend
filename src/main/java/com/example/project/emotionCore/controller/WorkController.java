@@ -156,6 +156,15 @@ public class WorkController {
         return ResponseEntity.ok(new SearchResponseDTO(seriesDetailDTOS, authorDTOS));
     }
 
+    @Operation(summary = "자기가 올린 series 리스트 가져오기")
+    @PreAuthorize("authentication.principal.id != Null")
+    @GetMapping("/mywork")
+    public ResponseEntity<List<SeriesIdAndNameDTO>> getMyWorkSeries(Authentication authentication) {
+        List<SeriesIdAndNameDTO> dto = workService.getMySeries(authentication);
+        return ResponseEntity.ok(dto);
+    }
+
+
 
     @Operation(summary = "(작업 중) episode 작성 기능")
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#episodeRequestDTO.seriesId, authentication.principal.id)")
@@ -166,12 +175,14 @@ public class WorkController {
         workService.saveNewEpisode(episodeRequestDTO);
     }
 
+    @Operation(summary = "episode 내용 가져오기")
     @GetMapping("/episode")
     public ResponseEntity<EpisodeResponseDTO> getSeriesByEpisode(@RequestParam long seriesId, @RequestParam long number) {
         EpisodeResponseDTO episodeResponseDTO = workService.getEpisode(seriesId, number);
         return ResponseEntity.ok(episodeResponseDTO);
     }
 
+    @Operation(summary = "episode 삭제 기능")
     @DeleteMapping("/episode")
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#seriesId, authentication.principal.id)")
     public void deleteEpisode(@RequestParam long seriesId, @RequestParam long number) {
@@ -179,6 +190,7 @@ public class WorkController {
         workService.deleteEpisode(seriesId, number);
     }
 
+    @Operation(summary = "episode 수정 기능")
     @PutMapping("/episode")
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#episodeModifyDTO.seriesId, authentication.principal.id)")
     public void updateEpisode(@RequestBody EpisodeModifyDTO episodeModifyDTO) {
