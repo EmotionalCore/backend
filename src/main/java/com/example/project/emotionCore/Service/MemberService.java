@@ -1,10 +1,9 @@
 package com.example.project.emotionCore.Service;
 
 import com.example.project.emotionCore.Repository.MemberRepository;
+import com.example.project.emotionCore.Repository.SeriesRepository;
 import com.example.project.emotionCore.domain.Member;
-import com.example.project.emotionCore.dto.JwtTokenDTO;
-import com.example.project.emotionCore.dto.MemberDTO;
-import com.example.project.emotionCore.dto.SignUpDTO;
+import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
 import com.example.project.emotionCore.module.mapper.MemberMapper;
 import com.example.project.emotionCore.security.JwtTokenProvider;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.print.attribute.standard.Destination;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -30,6 +30,7 @@ public class MemberService {
     private final NaverService naverService;
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
+    private final SeriesRepository seriesRepository;
 
 
     //3
@@ -117,6 +118,14 @@ public class MemberService {
         // 소셜 로그인은 비밀번호 없이 이메일만으로 로그인
         return jwtTokenProvider.generateToken(new UsernamePasswordAuthenticationToken(email, ""));
     }
+
+
+    public List<SeriesViewedPreviewDTO> getViewedEpisode(Authentication authentication){
+        CustomMemberDetail memberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        return seriesRepository.findViewListByMemberId(memberDetail.getId());
+    }
+
+
 
     public String findPassword(MemberDTO memberDTO) {
         return "비밀번호 찾기 기능은 아직 구현되지 않았습니다.";
