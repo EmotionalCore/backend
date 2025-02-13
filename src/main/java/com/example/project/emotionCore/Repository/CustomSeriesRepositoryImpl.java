@@ -3,23 +3,22 @@ package com.example.project.emotionCore.Repository;
 import com.example.project.emotionCore.domain.QSeries;
 import com.example.project.emotionCore.domain.QSeriesView;
 import com.example.project.emotionCore.domain.Series;
+import com.example.project.emotionCore.dto.SeriesViewedPreviewDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
+import static com.example.project.emotionCore.domain.QMember.member;
 import static com.example.project.emotionCore.domain.QSeries.series;
 import static com.example.project.emotionCore.domain.QSeriesView.seriesView;
+import static com.example.project.emotionCore.domain.QWorkViewLog.workViewLog;
 
 @Repository
 public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
@@ -141,5 +140,24 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .orderBy(sv.count.sum().desc()) // count 합계 기준 내림차순 정렬
                 .limit(limit) // 상위 limit개의 결과만 반환
                 .fetch(); // 결과 fetch
+    }
+
+    @Override
+    public List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId) {
+        return queryFactory
+                .select(Projections.constructor(
+                        SeriesViewedPreviewDTO.class,
+                        series.id,
+                        member.id,
+                        member.username,
+                        series.title,
+                        series.coverImageUrl,
+                        workViewLog.episodeNumber
+                ))
+                .from(series)
+                .join(workViewLog).on(workViewLog.memberId.eq(memberId)
+                        .and(series.id.eq(workViewLog.seriesId.intValue())))
+                .join(member).on(series.authorInfos.id.eq(member.id))
+                .fetch();
     }
 }

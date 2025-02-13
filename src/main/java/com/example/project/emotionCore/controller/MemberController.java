@@ -11,10 +11,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -91,6 +94,12 @@ public class MemberController {
         return ResponseEntity.ok(tokenDTO);
     }
 
+
+
+
+
+
+
     @Operation(description = "매번 로그인하는거 귀찮아서 만듦")
     @GetMapping("/W0W_Y0U_AR3_ADM1N")
     public ResponseEntity<JwtTokenDTO> W0W_Y0U_AR3_ADM1N(){
@@ -102,4 +111,21 @@ public class MemberController {
     public String findPassword() {
         return "findpassword";
     }
+
+
+
+
+
+
+    @Operation(summary = "특정 유저가 최근에 본 작품 기록 반환")
+    @GetMapping("/list/view")
+    public ResponseEntity<List<SeriesViewedPreviewDTO>> getViewedEpisode(Authentication authentication){
+        List<SeriesViewedPreviewDTO> data = memberService.getViewedEpisode(authentication);
+        return ResponseEntity.ok(data);
+    }
+
+
+
+
+
 }
