@@ -2,6 +2,7 @@ package com.example.project.emotionCore.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -9,6 +10,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "work_view_log")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @IdClass(WorkViewLog.viewId.class)
 public class WorkViewLog {
     @Id
@@ -24,7 +28,12 @@ public class WorkViewLog {
     private long episodeNumber;
 
     @Column(name = "view_time")
-    private LocalDateTime viewTime;
+    @Builder.Default
+    private LocalDateTime viewTime = LocalDateTime.now();
+
+    public void updateEpisodeNumber(long episodeNumber) {
+        this.episodeNumber = episodeNumber;
+    }
 
 
     @AllArgsConstructor

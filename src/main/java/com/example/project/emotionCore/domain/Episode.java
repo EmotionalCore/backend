@@ -50,6 +50,13 @@ public class Episode {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "view_count")
+    private Long viewCount;
+
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
     public static class EpisodeKey implements Serializable {
