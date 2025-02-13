@@ -177,8 +177,11 @@ public class WorkController {
 
     @Operation(summary = "episode 내용 가져오기")
     @GetMapping("/episode")
-    public ResponseEntity<EpisodeResponseDTO> getSeriesByEpisode(@RequestParam long seriesId, @RequestParam long number) {
-        EpisodeResponseDTO episodeResponseDTO = workService.getEpisode(seriesId, number);
+    public ResponseEntity<EpisodeResponseDTO> getSeriesByEpisode(
+                                                    @RequestParam long seriesId,
+                                                    @RequestParam long number,
+                                                    Authentication authentication) {
+        EpisodeResponseDTO episodeResponseDTO = workService.getEpisode(seriesId, number, authentication);
         return ResponseEntity.ok(episodeResponseDTO);
     }
 

@@ -14,9 +14,8 @@ import java.time.LocalDate;
 @EqualsAndHashCode()
 @Data
 public class SeriesViewId implements Serializable {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_id", nullable = false)
-    private Series series;
+    @Column(name = "series_id", nullable = false)
+    private long seriesId;
     @Column(name = "view_date", nullable = false)
     private LocalDate viewDate;
 }
