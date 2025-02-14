@@ -27,14 +27,18 @@ public class WorkService {
     private final MemberRepository memberRepository;
     private final SeriesRepository seriesRepository;
     private final EpisodeRepository episodeRepository;
+    private final SeriesViewRepository seriesViewRepository;
+    private final WorkViewLogRepository workViewLogRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
         this.episodeRepository = episodeRepository;
+        this.seriesViewRepository = seriesViewRepository;
+        this.workViewLogRepository = workViewLogRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -212,9 +216,44 @@ public class WorkService {
         episodeRepository.save(episode);
     }
 
-    public EpisodeResponseDTO getEpisode(long seriesId, long number){
+    public EpisodeResponseDTO getEpisode(long seriesId, long number, Authentication authentication){
         Episode episode = episodeRepository.findBySeriesIdAndNumber(seriesId, number);
+        
+        //코드 개떡같음 나중에 수정하기
+        increaseViewCount(seriesId, number, authentication);
+        episode.incrementViewCount();
+        episodeRepository.save(episode);
+
         return modelMapper.map(episode, EpisodeResponseDTO.class);
+    }
+
+    private void increaseViewCount(long seriesId, long episodeNumber, Authentication authentication){
+        SeriesView seriesView = seriesViewRepository.findBySeriesIdAndViewDate(seriesId, LocalDate.now())
+                .orElseGet(() -> { //없으면 생성해서 save
+                    SeriesView sv = SeriesView.builder()
+                            .seriesId(seriesId)
+                            .viewDate(LocalDate.now())
+                            .build();
+                    return seriesViewRepository.save(sv);
+                });
+        seriesView.incrementCount();
+        seriesViewRepository.save(seriesView);
+
+        if (authentication != null) {
+            CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+            WorkViewLog log =  workViewLogRepository.findBySeriesIdAndEpisodeNumberAndMemberId(seriesId, episodeNumber, customMemberDetail.getId())
+                    .orElseGet(() -> {
+                        WorkViewLog newLog = WorkViewLog.builder()
+                                .seriesId(seriesId)
+                                .episodeNumber(episodeNumber)
+                                .memberId(customMemberDetail.getId())
+                                .build();
+                        return workViewLogRepository.save(newLog);
+                    });
+            log.updateEpisodeNumber(episodeNumber);
+            workViewLogRepository.save(log);
+        }
+
     }
 
     @Transactional
