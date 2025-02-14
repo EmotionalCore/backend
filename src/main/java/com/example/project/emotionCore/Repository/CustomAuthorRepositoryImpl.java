@@ -60,7 +60,7 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository{
         return queryFactory
                 .select(author) // Author 엔티티 기준으로 선택
                 .from(seriesView) // SeriesView 기준으로 시작
-                .join(series).on(series.id.eq(seriesView.series.id)) // Series와 SeriesView 조인
+                .join(series).on(series.id.eq(seriesView.seriesId.intValue())) // Series와 SeriesView 조인
                 .join(author).on(author.id.eq(series.authorInfos.id)) // Author와 Series 조인
                 .where(seriesView.viewDate.between(firstDayOfMonth, lastDayOfMonth)) // 이번 달 범위 필터
                 .groupBy(author.id) // 작가별로 그룹화
