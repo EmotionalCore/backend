@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -179,6 +180,17 @@ public class WorkService {
         return data;
     }
 
+    public List<SeriesIdAndNameDTO> getMySeries(Authentication authentication){
+        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        List<Series> entity = seriesRepository.findAllByAuthorInfos_Id(customMemberDetail.getId());
+
+        List<SeriesIdAndNameDTO> data = new ArrayList<>();
+        for (Series series : entity) {
+            SeriesIdAndNameDTO dto = modelMapper.map(series, SeriesIdAndNameDTO.class);
+            data.add(dto);
+        }
+        return data;
+    }
 
 
 
