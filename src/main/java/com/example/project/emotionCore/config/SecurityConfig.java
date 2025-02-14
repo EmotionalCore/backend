@@ -30,7 +30,7 @@ import java.util.Arrays;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity //@PreAuthorize 사용 가능하게 해주는거
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
