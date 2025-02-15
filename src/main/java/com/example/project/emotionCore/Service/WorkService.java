@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -125,10 +126,14 @@ public class WorkService {
     }
 
     public List<AuthorPreviewDTO> getMonthlyBestAuthor(int limit) {
-        List<Author> authorsData = authorRepository.findMonthlyBestAuthor(limit);
+        LocalDate today = LocalDate.now();
+        LocalDate nextMonth = today.plusMonths(30);
+        List<Author> authorsData = authorRepository.findMonthlyBestAuthor(today,nextMonth,limit);
         List<AuthorPreviewDTO> data = new ArrayList<>();
         for (Author authors : authorsData) {
-            data.add(modelMapper.map(authors, AuthorPreviewDTO.class));
+            AuthorPreviewDTO dto = modelMapper.map(authors, AuthorPreviewDTO.class);
+            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -175,11 +180,13 @@ public class WorkService {
     public List<AuthorPreviewDTO> getNewAuthors(int limit) {
         Pageable pageable = PageRequest.of(0, limit);
 
-        List<Author> authorData = authorRepository.findBySeriesListIsNotEmptyOrderByIdDesc(pageable);
+        List<Author> authorsData = authorRepository.findBySeriesListIsNotEmptyOrderByIdDesc(pageable);
         List<AuthorPreviewDTO> data = new ArrayList<>();
 
-        for (Author author :authorData) {
-            data.add(modelMapper.map(author, AuthorPreviewDTO.class));
+        for (Author author :authorsData) {
+            AuthorPreviewDTO dto = modelMapper.map(author, AuthorPreviewDTO.class);
+            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
