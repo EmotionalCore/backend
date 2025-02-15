@@ -2,6 +2,8 @@ package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.CommentService;
 import com.example.project.emotionCore.domain.Comment;
+import com.example.project.emotionCore.domain.Episode;
+import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.dto.CommentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,35 +36,45 @@ public class CommentController {
     @Operation(summary="댓글 모두 조회")
     @GetMapping("/{seriesId}/{number}")
     public ResponseEntity<List<Comment>> getCommentsByEpisode(
-            @PathVariable Long seriesId,
-            @PathVariable Long number
+            @PathVariable Long number,
+            @PathVariable Long seriesId
+
     )
         {
-            List<Comment> comments = commentService.getCommentsByEpisode(seriesId,number);
+            List<Comment> comments = commentService.getCommentsByEpisode(number, seriesId);
             return ResponseEntity.ok(comments);
 
     }
+
     @Operation(summary="댓글 수정")
     @PostMapping("/{seriesId}/{number}/{commentId}")
     public ResponseEntity<Comment> updateComment(
-            @PathVariable Long seriesId,
             @PathVariable Long number,
+            @PathVariable Long seriesId,
             @PathVariable Long commentId,
             @RequestBody CommentRequest request
     ){
-        Comment updateComment = commentService.updateComment(seriesId,number,commentId,request.getContent());
+        Comment updateComment = commentService.updateComment(number, seriesId,commentId,request.getContent());
         return ResponseEntity.ok(updateComment);
     }
 
     @Operation(summary="댓글 삭제")
     @DeleteMapping("/{seriesId}/{number}/{commentId}")
     public ResponseEntity<Comment> deleteComment(
-            @PathVariable Long seriesId,
             @PathVariable Long number,
+            @PathVariable Long seriesId,
             @PathVariable Long commentId
     ){
         commentService.deleteComment(seriesId,number,commentId);
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<String> toggleLike(
+            @PathVariable Long commentId,
+            @RequestParam Long memberId) {
+
+        commentService.toggleLike(commentId, memberId);
+        return ResponseEntity.ok("좋아요 상태가 변경되었습니다.");
+    }
 }

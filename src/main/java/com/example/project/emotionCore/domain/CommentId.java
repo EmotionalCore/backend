@@ -1,6 +1,8 @@
 package com.example.project.emotionCore.domain;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,8 +15,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode
 public class CommentId implements Serializable {
-
-    private Long seriesId;
-    private Long number;
-    private Long commentId;
+    private Long seriesId;  // ✅ `Episode`와 연결된 필드
+    private Long number;    // ✅ `Episode`와 연결된 필드
+    private Long commentId; // ✅ 고유한 댓글 ID
 }

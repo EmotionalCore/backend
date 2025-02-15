@@ -1,8 +1,12 @@
 package com.example.project.emotionCore.Service;
 
 import com.example.project.emotionCore.Repository.CommentRepository;
+import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.domain.Comment;
+import com.example.project.emotionCore.domain.Episode;
 import com.example.project.emotionCore.domain.Member;
+import com.example.project.emotionCore.domain.Series;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Date;
@@ -14,6 +18,7 @@ import java.util.List;
 public class CommentService {
 
     private CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
 
 
     //댓글 생성 C
@@ -34,13 +39,13 @@ public class CommentService {
     }
 
     //모든 댓글 조회 R
-    public List<Comment> getCommentsByEpisode(Long number,Long seriesId) {
-        return commentRepository.findByEpisodeNumberAndSeriesId(number, seriesId);
+    public List<Comment> getCommentsByEpisode(Long number, Long seriesId) {
+        return commentRepository.findByNumberAndSeriesId( number, seriesId);
     }
 
     //업데이트 U
-    public Comment updateComment(Long seriesId, Long number, Long commentId, String newContent) {
-        Comment comment = commentRepository.findByEpisodeNumberAndSeriesIdAndCommentId(seriesId, number, commentId)
+    public Comment updateComment(Long number, Long seriesId, Long commentId, String newContent) {
+        Comment comment = commentRepository.findByNumberAndSeriesIdAndCommentId (number, seriesId,commentId)
                 .orElseThrow(() -> new RuntimeException("수정할 댓글이 존재하지 않습니다."));
         comment.updateContent(newContent);
         return commentRepository.save(comment);
@@ -48,9 +53,21 @@ public class CommentService {
 
 
     //댓글삭제 D
-    public void deleteComment(Long seriesId, Long number, Long commentId) {
-        Comment comment = commentRepository.findByEpisodeNumberAndSeriesIdAndCommentId(seriesId, number, commentId)
+    public void deleteComment(Long number, Long seriesId, Long commentId) {
+        Comment comment = commentRepository.findByNumberAndSeriesIdAndCommentId (number, seriesId,commentId)
                 .orElseThrow(()->new RuntimeException("삭제할 댓글이 존재하지 않습니다."));
         commentRepository.delete(comment);
+    }
+
+
+    public void toggleLike(Long commentId, Long memberId) {
+        Comment comment = commentRepository.findByCommentId(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        comment.toggleLike(memberId);  // ✅ 좋아요 상태 변경
+        commentRepository.save(comment); // ✅ 변경된 데이터 저장
     }
 }
