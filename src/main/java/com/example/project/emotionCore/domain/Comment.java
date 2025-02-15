@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="comment")
@@ -14,17 +16,24 @@ import java.util.Date;
 @IdClass(CommentId.class)
 public class Comment {
 
-    @Id // 댓글 ID (PK)
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    @Id // 시리즈 ID (단순 Long 타입으로 저장)
-    @JoinColumn(name = "series_id", nullable = false)
-    private Long seriesId;  // ✅ 시리즈 ID는 Long으로 저장
+    @Id
+    @Column(name = "series_id", nullable = false)
+    private Long seriesId;  // ✅ 시리즈 ID
 
-    @Id // 에피소드 번호
-    @JoinColumn(name = "number", nullable = false)
-    private Long number;
+    @Id
+    @Column(name = "number", nullable = false)
+    private Long number;  // ✅ 에피소드 번호
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "series_id", referencedColumnName = "series_id", insertable = false, updatable = false),
+            @JoinColumn(name = "number", referencedColumnName = "number", insertable = false, updatable = false)
+    })
+    private Episode episode;  // ✅ `Episode`와 다대일 관계 설정
 
     @Column(name="comment_contents",nullable=false)
     private String commentContents; //댓글내용
@@ -43,12 +52,17 @@ public class Comment {
         this.member = member;
     }
 
-    public void increaseLike(){
-        this.commentLike++;
-    }
+    @ElementCollection
+    private Set<Long> likedMembers = new HashSet<>();
 
-    public void decreaseLike(){
-        this.commentLike--;
+    public void toggleLike(Long memberId) {
+        if (likedMembers.contains(memberId)) {
+            likedMembers.remove(memberId);
+            this.commentLike--;
+        } else {
+            likedMembers.add(memberId);
+            this.commentLike++;
+        }
     }
 
     public void updateContent(String newContent){
