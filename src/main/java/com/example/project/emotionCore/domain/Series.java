@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,7 @@ public class Series {
     @Column(nullable = false, name = "view_count")
     private int viewCount;
 
+    @ColumnDefault("0")
     @Column(nullable = false, name = "like_count")
     private int likeCount;
 

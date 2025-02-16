@@ -24,4 +24,7 @@ public class AuthorDTO {
 
     @Schema(description = "태그들", example = "판타지, 마법")
     private String tags;
+
+    @Schema(description = "작가 이미지", example = "/static/img/31.jpg")
+    private String profileImageUrl;
 }
