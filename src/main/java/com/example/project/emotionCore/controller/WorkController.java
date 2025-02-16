@@ -80,7 +80,7 @@ public class WorkController {
     @Operation(summary = "(작업 완료) 이달의 인기 작품(조회수 기준)")
     @GetMapping("/popular/monthly")
     public ResponseEntity<List<SeriesPreviewDTO>> getMonthlyPopularSeries() {
-        int limit = 3;
+        int limit = 5;
         List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getMonthlyBestSeries(limit);
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
@@ -88,7 +88,7 @@ public class WorkController {
     @Operation(summary = "(작업완료) 이달의 우수 작가(작가가 등록한 작품들의 좋아요 기준)")
     @GetMapping("/author/best/monthly")
     public ResponseEntity<List<AuthorPreviewDTO>> getMonthlyBestAuthors() {
-        int limit = 3;
+        int limit = 5;
         List<AuthorPreviewDTO> authorPreviewDTOS = workService.getMonthlyBestAuthor(limit);
         return ResponseEntity.ok(authorPreviewDTOS);
     }
