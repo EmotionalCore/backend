@@ -58,4 +58,6 @@ public class Series {
         }
         return Arrays.asList(tags.split(", "));
     }
+
+
 }
