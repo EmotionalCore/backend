@@ -15,7 +15,7 @@ import java.util.List;
 @Schema(description = "작가들의 간략한 정보(id, 이름, 묘사, 커버이미지)")
 public class AuthorPreviewDTO {
     private int id;
-    private String name;
+    private String authorName;
     private String description;
     private String coverImageUrl;
 }
