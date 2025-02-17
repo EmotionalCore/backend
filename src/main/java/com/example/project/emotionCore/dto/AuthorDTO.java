@@ -11,7 +11,7 @@ public class AuthorDTO {
     private int id;
 
     @Schema(description = "작가 닉네임", example = "닉네임이다...!")
-    private String name;
+    private String authorName;
 
     @Schema(description = "작품 개수", example = "5")
     private int seriesCount;
