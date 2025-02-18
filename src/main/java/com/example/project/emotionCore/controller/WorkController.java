@@ -212,13 +212,9 @@ public class WorkController {
             @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/aTest")
-    public ResponseEntity<SuccessResponse<List<SeriesPreviewDTO>>> getTest(@RequestParam int num) {
-        if(num == 1){
-            return ResponseEntity.ok(null);
-        }
-        else{
-            throw new CustomBadRequestException(400, "잘못된 요청입니다.");
-        }
+    public ResponseEntity<String> getTest(Authentication authentication) {
+        CustomMemberDetail c = (CustomMemberDetail) authentication.getPrincipal();
+        return ResponseEntity.ok("Hi" + c.getUsername());
     }
 
 }
