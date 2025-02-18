@@ -130,7 +130,8 @@ public class WorkService {
         List<AuthorPreviewDTO> data = new ArrayList<>();
         for (Author authors : authorsData) {
             AuthorPreviewDTO dto = modelMapper.map(authors, AuthorPreviewDTO.class);
-            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            dto.setAuthorName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            dto.setCoverImageUrl(memberRepository.findById((long) dto.getId()).get().getProfileImageUrl());
             data.add(dto);
         }
         return data;
@@ -183,7 +184,8 @@ public class WorkService {
 
         for (Author author :authorsData) {
             AuthorPreviewDTO dto = modelMapper.map(author, AuthorPreviewDTO.class);
-            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            dto.setAuthorName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            dto.setCoverImageUrl(memberRepository.findById((long) dto.getId()).get().getProfileImageUrl());
             data.add(dto);
         }
         return data;

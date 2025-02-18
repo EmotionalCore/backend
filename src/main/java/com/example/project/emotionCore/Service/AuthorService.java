@@ -24,7 +24,8 @@ public class AuthorService {
         List<AuthorDTO> data = new ArrayList<>();
         for (Author author : entity) {
             AuthorDTO dto = modelMapper.map(author, AuthorDTO.class);
-            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            dto.setAuthorName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            dto.setProfileImageUrl(memberRepository.findById((long) dto.getId()).get().getProfileImageUrl());
             data.add(dto);
         }
         return data;
