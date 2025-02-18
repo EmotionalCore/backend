@@ -229,7 +229,7 @@ public class WorkController {
     @GetMapping("/aTest")
     public ResponseEntity<String> getTest(Authentication authentication) {
         CustomMemberDetail c = (CustomMemberDetail) authentication.getPrincipal();
-        return ResponseEntity.ok("Hi" + c.getUsername());
+        return ResponseEntity.ok("Hi " + c.getUsername());
     }
 
 }
