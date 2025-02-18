@@ -11,7 +11,7 @@ public class AuthorDTO {
     private int id;
 
     @Schema(description = "작가 닉네임", example = "닉네임이다...!")
-    private String name;
+    private String authorName;
 
     @Schema(description = "작품 개수", example = "5")
     private int seriesCount;
@@ -24,4 +24,7 @@ public class AuthorDTO {
 
     @Schema(description = "태그들", example = "판타지, 마법")
     private String tags;
+
+    @Schema(description = "작가 이미지", example = "/static/img/31.jpg")
+    private String profileImageUrl;
 }
