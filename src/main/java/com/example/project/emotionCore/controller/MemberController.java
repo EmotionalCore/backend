@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -121,4 +124,21 @@ public class MemberController {
         memberService.updateProfileImage(memberId, newProfileImageUrl);
         return ResponseEntity.ok("프로필 이미지가 업데이트되었습니다.");
     }
+
+
+
+
+
+
+    @Operation(summary = "특정 유저가 최근에 본 작품 기록 반환")
+    @GetMapping("/list/view")
+    public ResponseEntity<List<SeriesViewedPreviewDTO>> getViewedEpisode(Authentication authentication){
+        List<SeriesViewedPreviewDTO> data = memberService.getViewedEpisode(authentication);
+        return ResponseEntity.ok(data);
+    }
+
+
+
+
+
 }

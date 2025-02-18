@@ -1,27 +1,39 @@
 package com.example.project.emotionCore.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Table(name="comment")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@IdClass(CommentId.class)
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; //댓글번호 -> 나중에 3중합.
+    private Long commentId;
 
-    //어떤 에피소드인지
-    // 1시리즈 2에피소드 // 2시리즈 2에피소드 -> 2에피소드
-    //예제는 SeriesViewId
+    @Id
+    @Column(name = "series_id", nullable = false)
+    private Long seriesId;  // ✅ 시리즈 ID
+
+    @Id
+    @Column(name = "number", nullable = false)
+    private Long number;  // ✅ 에피소드 번호
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "series_id", referencedColumnName = "series_id", insertable = false, updatable = false),
+            @JoinColumn(name = "number", referencedColumnName = "number", insertable = false, updatable = false)
+    })
+    private Episode episode;  // ✅ `Episode`와 다대일 관계 설정
 
     @Column(name="comment_contents",nullable=false)
     private String commentContents; //댓글내용
@@ -40,7 +52,28 @@ public class Comment {
         this.member = member;
     }
 
-    public void increaseLike(){
-        this.commentLike++;
+    @ElementCollection
+    private Set<Long> likedMembers = new HashSet<>();
+
+    public void toggleLike(Long memberId) {
+        if (likedMembers.contains(memberId)) {
+            likedMembers.remove(memberId);
+            this.commentLike--;
+        } else {
+            likedMembers.add(memberId);
+            this.commentLike++;
+        }
     }
+
+    public void updateContent(String newContent){
+        this.commentContents=newContent;
+    }
+
+
 }
+
+/*
+        1시리즈 1에피소드 1번댓글
+        1시리즈 2에피소드 1번댓글
+
+ */

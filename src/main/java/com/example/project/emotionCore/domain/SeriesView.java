@@ -15,18 +15,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @IdClass(SeriesViewId.class)
+@Table(name = "series_view")
 public class SeriesView {
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_id", nullable = false)
-    private Series series;
+    @Column(name = "series_id", nullable = false)
+    private long seriesId;
 
     @Id
     @Column(name = "view_date", nullable = false)
     private LocalDate viewDate;
 
     @Column(nullable = false)
-    private Integer count;
+    @Builder.Default
+    private Integer count = 0;
+
+    public void incrementCount() {
+        this.count++;
+    }
 }
 

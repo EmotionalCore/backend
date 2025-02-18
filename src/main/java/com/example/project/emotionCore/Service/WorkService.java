@@ -11,8 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,14 +26,18 @@ public class WorkService {
     private final MemberRepository memberRepository;
     private final SeriesRepository seriesRepository;
     private final EpisodeRepository episodeRepository;
+    private final SeriesViewRepository seriesViewRepository;
+    private final WorkViewLogRepository workViewLogRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
         this.episodeRepository = episodeRepository;
+        this.seriesViewRepository = seriesViewRepository;
+        this.workViewLogRepository = workViewLogRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -120,10 +124,14 @@ public class WorkService {
     }
 
     public List<AuthorPreviewDTO> getMonthlyBestAuthor(int limit) {
-        List<Author> authorsData = authorRepository.findMonthlyBestAuthor(limit);
+        LocalDate today = LocalDate.now();
+        LocalDate nextMonth = today.plusMonths(30);
+        List<Author> authorsData = authorRepository.findMonthlyBestAuthor(today,nextMonth,limit);
         List<AuthorPreviewDTO> data = new ArrayList<>();
         for (Author authors : authorsData) {
-            data.add(modelMapper.map(authors, AuthorPreviewDTO.class));
+            AuthorPreviewDTO dto = modelMapper.map(authors, AuthorPreviewDTO.class);
+            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
@@ -170,15 +178,28 @@ public class WorkService {
     public List<AuthorPreviewDTO> getNewAuthors(int limit) {
         Pageable pageable = PageRequest.of(0, limit);
 
-        List<Author> authorData = authorRepository.findBySeriesListIsNotEmptyOrderByIdDesc(pageable);
+        List<Author> authorsData = authorRepository.findBySeriesListIsNotEmptyOrderByIdDesc(pageable);
         List<AuthorPreviewDTO> data = new ArrayList<>();
 
-        for (Author author :authorData) {
-            data.add(modelMapper.map(author, AuthorPreviewDTO.class));
+        for (Author author :authorsData) {
+            AuthorPreviewDTO dto = modelMapper.map(author, AuthorPreviewDTO.class);
+            dto.setName(memberRepository.findById((long) dto.getId()).get().getUsername());
+            data.add(dto);
         }
         return data;
     }
 
+    public List<SeriesIdAndNameDTO> getMySeries(Authentication authentication){
+        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        List<Series> entity = seriesRepository.findAllByAuthorInfos_Id(customMemberDetail.getId());
+
+        List<SeriesIdAndNameDTO> data = new ArrayList<>();
+        for (Series series : entity) {
+            SeriesIdAndNameDTO dto = modelMapper.map(series, SeriesIdAndNameDTO.class);
+            data.add(dto);
+        }
+        return data;
+    }
 
 
 
@@ -200,9 +221,44 @@ public class WorkService {
         episodeRepository.save(episode);
     }
 
-    public EpisodeResponseDTO getEpisode(long seriesId, long number){
+    public EpisodeResponseDTO getEpisode(long seriesId, long number, Authentication authentication){
         Episode episode = episodeRepository.findBySeriesIdAndNumber(seriesId, number);
+        
+        //코드 개떡같음 나중에 수정하기
+        increaseViewCount(seriesId, number, authentication);
+        episode.incrementViewCount();
+        episodeRepository.save(episode);
+
         return modelMapper.map(episode, EpisodeResponseDTO.class);
+    }
+
+    private void increaseViewCount(long seriesId, long episodeNumber, Authentication authentication){
+        SeriesView seriesView = seriesViewRepository.findBySeriesIdAndViewDate(seriesId, LocalDate.now())
+                .orElseGet(() -> { //없으면 생성해서 save
+                    SeriesView sv = SeriesView.builder()
+                            .seriesId(seriesId)
+                            .viewDate(LocalDate.now())
+                            .build();
+                    return seriesViewRepository.save(sv);
+                });
+        seriesView.incrementCount();
+        seriesViewRepository.save(seriesView);
+
+        if (authentication != null) {
+            CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+            WorkViewLog log =  workViewLogRepository.findBySeriesIdAndEpisodeNumberAndMemberId(seriesId, episodeNumber, customMemberDetail.getId())
+                    .orElseGet(() -> {
+                        WorkViewLog newLog = WorkViewLog.builder()
+                                .seriesId(seriesId)
+                                .episodeNumber(episodeNumber)
+                                .memberId(customMemberDetail.getId())
+                                .build();
+                        return workViewLogRepository.save(newLog);
+                    });
+            log.updateEpisodeNumber(episodeNumber);
+            workViewLogRepository.save(log);
+        }
+
     }
 
     @Transactional
