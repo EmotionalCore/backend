@@ -1,9 +1,9 @@
 package com.example.project.emotionCore.Repository;
 
 import com.example.project.emotionCore.domain.Series;
+import com.example.project.emotionCore.dto.SeriesViewedPreviewDTO;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface CustomSeriesRepository {
@@ -12,4 +12,5 @@ public interface CustomSeriesRepository {
     List<Series> findTodayBestSeries(int days, int limit);
     List<Series> findAllByTagsContaining(List<String> tags);
     List<Series> findMonthlyBestSeries(int limit);
+    List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId);
 }
