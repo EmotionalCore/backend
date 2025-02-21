@@ -6,6 +6,7 @@ import com.example.project.emotionCore.domain.Member;
 import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
 import com.example.project.emotionCore.module.mapper.MemberMapper;
+import com.example.project.emotionCore.security.JwtBlacklist;
 import com.example.project.emotionCore.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -32,6 +33,7 @@ public class MemberService {
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
     private final SeriesRepository seriesRepository;
+    private final JwtBlacklist jwtBlacklist;
 
 
     //3
@@ -127,6 +129,9 @@ public class MemberService {
     }
 
 
+    public void signout(JwtTokenDTO jwtTokenDTO){
+        jwtBlacklist.addBlacklist(jwtTokenDTO);
+    }
 
     public String findPassword(MemberDTO memberDTO) {
         return "비밀번호 찾기 기능은 아직 구현되지 않았습니다.";

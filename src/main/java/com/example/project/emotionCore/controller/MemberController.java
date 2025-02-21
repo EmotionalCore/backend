@@ -125,6 +125,11 @@ public class MemberController {
         return ResponseEntity.ok("프로필 이미지가 업데이트되었습니다.");
     }
 
+    @GetMapping("/signout")
+    public void signout(JwtTokenDTO jwtTokenDTO){
+        memberService.signout(jwtTokenDTO);
+    }
+
 
 
 

@@ -32,6 +32,7 @@ public class JwtTokenProvider {
 
     private final Key key;
     private final CustomUserDetailService customUserDetailService;
+    private final JwtBlacklist jwtBlacklist;
 
     // access 토큰 만료 30분
     final static int accessTokenExpiration = (30 * 60 * 1000);
@@ -41,7 +42,8 @@ public class JwtTokenProvider {
 
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey
-    , CustomUserDetailService customUserDetailService) {
+    , CustomUserDetailService customUserDetailService, JwtBlacklist jwtBlacklist) {
+        this.jwtBlacklist = jwtBlacklist;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.customUserDetailService = customUserDetailService;
@@ -102,6 +104,9 @@ public class JwtTokenProvider {
 
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
+        if(jwtBlacklist.isBlacklisted(token)){
+            return false;
+        }
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
