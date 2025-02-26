@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.Service;
 
+import com.example.project.emotionCore.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,6 +14,7 @@ public class CustomMemberDetail implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
+    private Member member;
     // 생성자
     public CustomMemberDetail(Long id, String password, String email, String username,
                               Collection<? extends GrantedAuthority> authorities) {
@@ -66,5 +68,9 @@ public class CustomMemberDetail implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true; // 계정 활성화 여부
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 }

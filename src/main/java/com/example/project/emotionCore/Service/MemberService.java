@@ -140,4 +140,12 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    public void deleteMember(Long MemberId){
+        if(!memberRepository.existsById(MemberId)){
+            throw new IllegalArgumentException("해당 회원은 존재하지 않는 회원입니다.");
+        }
+        memberRepository.deleteById(MemberId);
+    }
+
 }
