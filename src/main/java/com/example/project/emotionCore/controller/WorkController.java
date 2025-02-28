@@ -30,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -173,7 +174,7 @@ public class WorkController {
     //ADMIN 혹은 자기글 이여야 작성 가능
     //? 권한 관리는 Service 영역이 깔끔한가?
     @PostMapping("/episode")
-    public void getSeriesByEpisode(@RequestBody EpisodeRequestDTO episodeRequestDTO) {
+    public void getSeriesByEpisode(@RequestBody EpisodeRequestDTO episodeRequestDTO) throws IOException {
         workService.saveNewEpisode(episodeRequestDTO);
     }
 

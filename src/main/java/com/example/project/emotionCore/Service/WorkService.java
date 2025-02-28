@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,9 +30,13 @@ public class WorkService {
     private final EpisodeRepository episodeRepository;
     private final SeriesViewRepository seriesViewRepository;
     private final WorkViewLogRepository workViewLogRepository;
+    private final FileUploadService fileUploadService;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository,
+                       AuthorRepository authorRepository, MemberRepository memberRepository,
+                       EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository,
+                       WorkViewLogRepository workViewLogRepository, FileUploadService fileUploadService) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
@@ -38,6 +44,7 @@ public class WorkService {
         this.episodeRepository = episodeRepository;
         this.seriesViewRepository = seriesViewRepository;
         this.workViewLogRepository = workViewLogRepository;
+        this.fileUploadService = fileUploadService;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -206,8 +213,12 @@ public class WorkService {
 
     //Episode Start
 
-    public void saveNewEpisode(EpisodeRequestDTO dto) {
+    public void saveNewEpisode(EpisodeRequestDTO dto) throws IOException {
         //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
+        //? 나중에 throws 지워보기
+        List<String> filenames = fileUploadService.storeFiles(dto.getImages());
+        dto.setContents(dto.getContents()+"/!/@/"+String.join("/!/@/", filenames)); //파일간 구분자 적당한거 없나
+
         Episode episode = Episode.builder()
                         .seriesId(dto.getSeriesId())
                         .title(dto.getTitle())
@@ -216,7 +227,6 @@ public class WorkService {
                         .description(dto.getDescription())
                         .tags(dto.getTags())
                         .build();
-        System.out.println(episode);
         //? 왜 save 전에 select 쿼리가 실행 될까?
         episodeRepository.save(episode);
     }
