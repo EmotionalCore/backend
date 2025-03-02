@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CommentRepository extends JpaRepository<Comment, CommentId> {
+public interface CommentRepository extends JpaRepository<Comment, CommentId>, CustomCommentRepository {
 
 
     @Query("SELECT COALESCE(MAX(c.commentId), 0) + 1 FROM Comment c WHERE c.seriesId = :seriesId AND c.number = :number")
@@ -21,5 +21,5 @@ public interface CommentRepository extends JpaRepository<Comment, CommentId> {
 
     Optional<Comment> findByNumberAndSeriesIdAndCommentId(Long number, Long seriesId, Long commentId);
 
-    Optional<Comment> findByCommentId(Long commentId);
+
 }

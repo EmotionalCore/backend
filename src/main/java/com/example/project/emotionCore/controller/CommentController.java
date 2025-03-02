@@ -68,13 +68,4 @@ public class CommentController {
         commentService.deleteComment(seriesId,number,commentId);
         return ResponseEntity.noContent().build();
     }
-
-    @PostMapping("/{commentId}/like")
-    public ResponseEntity<String> toggleLike(
-            @PathVariable Long commentId,
-            @RequestParam Long memberId) {
-
-        commentService.toggleLike(commentId, memberId);
-        return ResponseEntity.ok("좋아요 상태가 변경되었습니다.");
-    }
 }

@@ -12,5 +12,9 @@ public interface CustomSeriesRepository {
     List<Series> findTodayBestSeries(int days, int limit);
     List<Series> findAllByTagsContaining(List<String> tags);
     List<Series> findMonthlyBestSeries(int limit);
+    void addLikeCount(Series Series);
+    void subLikeCount(Series Series);
+    void addBookMarkCount(Series Series);
+    void subBookMarkCount(Series Series);
     List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId);
 }

@@ -28,9 +28,11 @@ public class WorkService {
     private final EpisodeRepository episodeRepository;
     private final SeriesViewRepository seriesViewRepository;
     private final WorkViewLogRepository workViewLogRepository;
+    private final LikeRepository likeRepository;
+    private final BookMarkRepository bookMarkRepository;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
@@ -38,6 +40,8 @@ public class WorkService {
         this.episodeRepository = episodeRepository;
         this.seriesViewRepository = seriesViewRepository;
         this.workViewLogRepository = workViewLogRepository;
+        this.likeRepository = likeRepository;
+        this.bookMarkRepository = bookMarkRepository;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -126,7 +130,7 @@ public class WorkService {
     public List<AuthorPreviewDTO> getMonthlyBestAuthor(int limit) {
         LocalDate today = LocalDate.now();
         LocalDate nextMonth = today.plusMonths(30);
-        List<Author> authorsData = authorRepository.findMonthlyBestAuthor(today,nextMonth,limit);
+        List<Author> authorsData = authorRepository.findByMonthlyBestAuthor(today,nextMonth,limit);
         List<AuthorPreviewDTO> data = new ArrayList<>();
         for (Author authors : authorsData) {
             AuthorPreviewDTO dto = modelMapper.map(authors, AuthorPreviewDTO.class);
@@ -286,9 +290,29 @@ public class WorkService {
     }
 
 
+    public List<SeriesPreviewDTO> getAllSeriesByBookMark(int index, int size, long memberId) {
+        Pageable pageable = PageRequest.of(index, size);
 
+        List<Series> seriesData = bookMarkRepository.findSeriesByMemberId(memberId,pageable);
+        List<SeriesPreviewDTO> data = new ArrayList<>();
+        for (Series series : seriesData) {
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
+        }
+        return data;
+    }
 
+    public List<SeriesPreviewDTO> getAllSeriesByLike(int index, int size, long memberId) {
+        Pageable pageable = PageRequest.of(index, size);
 
-
-
+        List<Series> seriesData = likeRepository.findSeriesByMemberId(memberId,pageable);
+        List<SeriesPreviewDTO> data = new ArrayList<>();
+        for (Series series : seriesData) {
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
+        }
+        return data;
+    }
 }

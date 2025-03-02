@@ -18,6 +18,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long commentId;
 
     @Id
@@ -50,19 +51,6 @@ public class Comment {
 
     public void setMember(Member member) {
         this.member = member;
-    }
-
-    @ElementCollection
-    private Set<Long> likedMembers = new HashSet<>();
-
-    public void toggleLike(Long memberId) {
-        if (likedMembers.contains(memberId)) {
-            likedMembers.remove(memberId);
-            this.commentLike--;
-        } else {
-            likedMembers.add(memberId);
-            this.commentLike++;
-        }
     }
 
     public void updateContent(String newContent){
