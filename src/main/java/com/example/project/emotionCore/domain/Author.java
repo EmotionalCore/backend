@@ -34,7 +34,9 @@ public class Author{
 
     @Column(name = "tags")
     private String tags;
+
     //나중에 더 추가
     @OneToMany(mappedBy = "authorInfos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Series> seriesList = new ArrayList<>();
+
 }

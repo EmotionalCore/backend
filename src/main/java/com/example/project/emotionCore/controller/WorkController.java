@@ -107,6 +107,19 @@ public class WorkController {
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
+    @Operation(summary = "(서재) 북마크 작품 반환")
+    @GetMapping("/bookmark")
+    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByBookMark(@RequestParam int index, @RequestParam int num, @RequestParam long memberId) {
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByBookMark(index, num, memberId);
+        return ResponseEntity.ok(seriesPreviewDTOS);
+    }
+
+    @Operation(summary = "(서재) 좋아요 작품 반환")
+    @GetMapping("/like")
+    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByLike(@RequestParam int index, @RequestParam int num, @RequestParam long memberId) {
+        List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByLike(index, num, memberId);
+        return ResponseEntity.ok(seriesPreviewDTOS);
+    }
 
     /**
     *승헌 시작

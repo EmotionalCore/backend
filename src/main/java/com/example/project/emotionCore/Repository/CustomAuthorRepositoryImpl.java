@@ -48,7 +48,7 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository{
     }
 
     @Override
-    public List<Author> findMonthlyBestAuthor(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Author> findByMonthlyBestAuthor(LocalDate startDate, LocalDate endDate, int limit) {
         return queryFactory
                 .selectFrom(author)
                 .join(author.seriesList, series)

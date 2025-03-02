@@ -58,16 +58,4 @@ public class CommentService {
                 .orElseThrow(()->new RuntimeException("삭제할 댓글이 존재하지 않습니다."));
         commentRepository.delete(comment);
     }
-
-
-    public void toggleLike(Long commentId, Long memberId) {
-        Comment comment = commentRepository.findByCommentId(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        comment.toggleLike(memberId);  // ✅ 좋아요 상태 변경
-        commentRepository.save(comment); // ✅ 변경된 데이터 저장
-    }
 }

@@ -13,5 +13,5 @@ public interface CustomAuthorRepository {
 
     AuthorDTO findByAuthorId(long id);
 
-    List<Author> findMonthlyBestAuthor(LocalDate startDate, LocalDate endDate, int limit);
+    List<Author> findByMonthlyBestAuthor(LocalDate startDate, LocalDate endDate, int limit);
 }

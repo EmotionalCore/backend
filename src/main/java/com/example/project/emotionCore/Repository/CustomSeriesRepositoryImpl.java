@@ -143,6 +143,38 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
     }
 
     @Override
+    public void addLikeCount(Series selectedSeries) {
+        queryFactory.update(series)
+                .set(series.likeCount, series.likeCount.add(1))
+                .where(series.eq(selectedSeries))
+                .execute();
+    }
+
+    @Override
+    public void subLikeCount(Series selectedSeries) {
+        queryFactory.update(series)
+                .set(series.likeCount, series.likeCount.subtract(1))
+                .where(series.eq(selectedSeries))
+                .execute();
+    }
+
+    @Override
+    public void addBookMarkCount(Series selectedSeries) {
+        queryFactory.update(series)
+                .set(series.bookmarkCount, series.bookmarkCount.add(1))
+                .where(series.eq(selectedSeries))
+                .execute();
+    }
+
+    @Override
+    public void subBookMarkCount(Series selectedSeries) {
+        queryFactory.update(series)
+                .set(series.bookmarkCount, series.bookmarkCount.subtract(1))
+                .where(series.eq(selectedSeries))
+                .execute();
+    }
+
+    @Override
     public List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId) {
         return queryFactory
                 .select(Projections.constructor(
