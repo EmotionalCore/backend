@@ -73,4 +73,9 @@ public class Member implements UserDetails{
         this.profileImageUrl = profileImageUrl;
     }
 
+    public void updateProfile(String profileImageUrl, String username, String email) {
+        this.profileImageUrl = profileImageUrl;
+        this.username = username;
+        this.email = email;
+    }
 }

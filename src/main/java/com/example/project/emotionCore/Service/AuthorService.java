@@ -4,11 +4,13 @@ import com.example.project.emotionCore.Repository.AuthorRepository;
 import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.dto.AuthorDTO;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthorService {
@@ -29,5 +31,18 @@ public class AuthorService {
             data.add(dto);
         }
         return data;
+    }
+
+    public Author getAuthorByMemberId(long memberId) {
+        Author author = authorRepository.findById(memberId);
+        if(author == null) {
+            throw new EntityNotFoundException("없는 작가입니다."+memberId);
+        }
+        return author;
+    }
+
+
+    public void updateAuthor(Author author) {
+        authorRepository.save(author);  // JPA의 save 메서드는 업데이트도 처리합니다.
     }
 }

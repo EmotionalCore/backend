@@ -7,6 +7,7 @@ import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
 import com.example.project.emotionCore.module.mapper.MemberMapper;
 import com.example.project.emotionCore.security.JwtTokenProvider;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import javax.print.attribute.standard.Destination;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -148,4 +150,14 @@ public class MemberService {
         memberRepository.deleteById(MemberId);
     }
 
+    @Transactional
+    public void updateMember(Member member, String profileImageURL, String username, String email) {
+        // 필요한 필드만 업데이트
+        member.updateProfile(profileImageURL, username, email);
+        memberRepository.save(member);  // JPA의 save 메서드는 업데이트도 처리합니다.
+    }
+
+    public Optional<Member> getMemberById(Long memberId) {
+        return memberRepository.findById(memberId);
+    }
 }
