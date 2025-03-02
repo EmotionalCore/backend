@@ -37,4 +37,13 @@ public class Author{
     //나중에 더 추가
     @OneToMany(mappedBy = "authorInfos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Series> seriesList = new ArrayList<>();
+
+    public Author(String description, String links, String tags) {
+        this.description = description;
+        this.links = links;
+        this.tags = tags;
+    }
+    public Author updateAuthor(String description, String links, String tags) {
+        return new Author(description, links, tags);  // 새로운 객체 반환
+    }
 }
