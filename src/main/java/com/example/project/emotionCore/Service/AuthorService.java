@@ -4,6 +4,7 @@ import com.example.project.emotionCore.Repository.AuthorRepository;
 import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.dto.AuthorDTO;
+import com.example.project.emotionCore.dto.MyPageUpdateDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,12 @@ public class AuthorService {
     private final MemberRepository memberRepository;
     AuthorRepository authorRepository;
     ModelMapper modelMapper = new ModelMapper();
+
     public AuthorService(AuthorRepository authorRepository, MemberRepository memberRepository) {
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
     }
+
     public List<AuthorDTO> getAllByKeywords(List<String> keywords) {
         List<Author> entity = authorRepository.findByKeywords(keywords);
         List<AuthorDTO> data = new ArrayList<>();
@@ -42,7 +45,9 @@ public class AuthorService {
     }
 
 
-    public void updateAuthor(Author author) {
+    public void updateAuthor(long id, MyPageUpdateDTO myPageUpdateDTO) {
+        Author author = authorRepository.findById(id);
+        author.updateAuthor(myPageUpdateDTO);
         authorRepository.save(author);  // JPA의 save 메서드는 업데이트도 처리합니다.
     }
 }

@@ -14,7 +14,6 @@ public class CustomMemberDetail implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    private Member member;
     // 생성자
     public CustomMemberDetail(Long id, String password, String email, String username,
                               Collection<? extends GrantedAuthority> authorities) {
@@ -68,9 +67,6 @@ public class CustomMemberDetail implements UserDetails {
         return true; // 계정 활성화 여부
     }
 
-    public Long getMemberId() {
-        return member.getId();
-    }
 }
 
 

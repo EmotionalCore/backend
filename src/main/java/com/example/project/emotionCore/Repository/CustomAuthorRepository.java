@@ -9,8 +9,6 @@ import java.util.List;
 public interface CustomAuthorRepository {
     List<Author> findByKeywords(List<String> keywords);
 
-    Author findById(long id);
-
     AuthorDTO findByAuthorId(long id);
 
     List<Author> findByMonthlyBestAuthor(LocalDate startDate, LocalDate endDate, int limit);
