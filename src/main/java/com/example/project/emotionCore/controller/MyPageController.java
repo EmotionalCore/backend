@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MyPageController {
 
-    private MemberService memberService;
-    private AuthorService authorService;
+    private final MemberService memberService;
+    private final AuthorService authorService;
 
     @Operation(summary="회원 탈퇴")
     @DeleteMapping("/delete")
@@ -29,7 +30,7 @@ public class MyPageController {
         if (customMemberDetail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 인증이 필요합니다.");
         }
-        final Long id = customMemberDetail.getMemberId();
+        final Long id = customMemberDetail.getId();
         memberService.deleteMember(id);
         return ResponseEntity.ok("회원탈퇴가 완료 되었습니다.");
     }
@@ -40,27 +41,10 @@ public class MyPageController {
             @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
             @RequestBody MyPageUpdateDTO mypageupdateDTO
     ) {
-        Long memberId = customMemberDetail.getMemberId();
+            long id = customMemberDetail.getId();
+            memberService.updateMember(id, mypageupdateDTO);
+            authorService.updateAuthor(id, mypageupdateDTO);
 
-        Optional<Member> memberOptional = memberService.getMemberById(memberId);
-        if (memberOptional.isPresent()) {
-            Member member = memberOptional.get();
-            memberService.updateMember(member, mypageupdateDTO.getProfileImageUrl(), mypageupdateDTO.getUsername(), mypageupdateDTO.getEmail());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("수정할 수 있는 멤버가 아닙니다.");
-        }
-
-//member.id = author.id
-
-        Author author = authorService.getAuthorByMemberId(memberId);
-        Author updatedAuthor = author.updateAuthor(
-                mypageupdateDTO.getDescription(),
-                mypageupdateDTO.getLinks(),
-                mypageupdateDTO.getTags()
-        );
-
-
-        authorService.updateAuthor(updatedAuthor);
         return ResponseEntity.ok("회원정보가 업데이트 되었습니다.");
     }
 }

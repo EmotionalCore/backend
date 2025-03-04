@@ -27,15 +27,6 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository{
         this.queryFactory = queryFactory;
     }
 
-    @Override
-    public Author findById(long id) {
-        return (Author) queryFactory
-                .select(author.id, member.username, author.description, author.tags, author.links)  // member.username을 선택
-                .from(author)
-                .join(member).on(author.id.eq(member.id))
-                .where(author.id.eq(id))
-                .fetchFirst();
-    }
 
     @Override
     public AuthorDTO findByAuthorId(long id) {

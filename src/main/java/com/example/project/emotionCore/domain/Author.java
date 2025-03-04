@@ -1,6 +1,7 @@
 package com.example.project.emotionCore.domain;
 
 
+import com.example.project.emotionCore.dto.MyPageUpdateDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +44,9 @@ public class Author{
         this.links = links;
         this.tags = tags;
     }
-    public Author updateAuthor(String description, String links, String tags) {
-        return new Author(description, links, tags);  // 새로운 객체 반환
+    public void updateAuthor(MyPageUpdateDTO dto) {
+        this.description = dto.getDescription();
+        this.links = dto.getLinks();
+        this.tags = dto.getTags();
     }
 }

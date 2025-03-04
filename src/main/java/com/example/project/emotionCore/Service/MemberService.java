@@ -151,13 +151,16 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMember(Member member, String profileImageURL, String username, String email) {
+    public void updateMember(Long memberId, MyPageUpdateDTO myPageUpdateDTO) {
         // 필요한 필드만 업데이트
-        member.updateProfile(profileImageURL, username, email);
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        Member member = memberOptional.get();
+        member.updateProfile(myPageUpdateDTO);
         memberRepository.save(member);  // JPA의 save 메서드는 업데이트도 처리합니다.
     }
 
     public Optional<Member> getMemberById(Long memberId) {
         return memberRepository.findById(memberId);
     }
+
 }
