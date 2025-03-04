@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.Service;
 
+import com.example.project.emotionCore.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,6 +14,7 @@ public class CustomMemberDetail implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
+    private Member member;
     // 생성자
     public CustomMemberDetail(Long id, String password, String email, String username,
                               Collection<? extends GrantedAuthority> authorities) {
@@ -24,9 +26,7 @@ public class CustomMemberDetail implements UserDetails {
     }
 
     // 추가 메서드
-    public Long getId() {
-        return id;
-    }
+    public Long getId() {return id;}
 
     public String getEmail() {
         return email;
@@ -67,4 +67,18 @@ public class CustomMemberDetail implements UserDetails {
     public boolean isEnabled() {
         return true; // 계정 활성화 여부
     }
+
+    public Long getMemberId() {
+        return member.getId();
+    }
 }
+
+
+/*
+Member -> userDetails
+CustomMemberDetail -> userDetails
+JWTProvider- > CustomMemberDetail -> userDetails
+-> member? 어디서 얻어옴 ? 우리는 JWT에서 받아와야함.
+member에 저장된 db속에서 구해올 아이디가 필요한대.
+그 db를 들여다보는 의존관계가 단 1개도 없음.
+ */
