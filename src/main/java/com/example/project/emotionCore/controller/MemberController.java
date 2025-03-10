@@ -59,12 +59,11 @@ public class MemberController {
     @Operation(
             summary = "이미 사용된 username 인지 확인"
     )
-    @PostMapping("/check/username")
-    public ResponseEntity<Boolean> checkUsername(@RequestParam String username){
-        if(memberService.isAlreadyUsedName(username)){
-            return ResponseEntity.ok(true);
-        }
-        return ResponseEntity.ok(false);
+
+    @GetMapping("/check/username")
+    public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestParam String username) {
+        boolean exists = memberService.isAlreadyUsedName(username);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 
     @ApiResponses(value = {
