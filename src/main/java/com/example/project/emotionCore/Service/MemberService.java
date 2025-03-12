@@ -163,4 +163,8 @@ public class MemberService {
         return memberRepository.findById(memberId);
     }
 
+    public MemberDetailDTO getMemberDetail(Long memberId){
+        return memberRepository.findMemberDetailById(memberId);
+    }
+
 }
