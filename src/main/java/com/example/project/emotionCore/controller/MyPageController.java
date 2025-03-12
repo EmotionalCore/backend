@@ -44,7 +44,6 @@ public class MyPageController {
             long id = customMemberDetail.getId();
             memberService.updateMember(id, mypageupdateDTO);
             authorService.updateAuthor(id, mypageupdateDTO);
-
         return ResponseEntity.ok("회원정보가 업데이트 되었습니다.");
     }
 }

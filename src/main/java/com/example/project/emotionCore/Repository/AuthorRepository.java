@@ -1,6 +1,7 @@
 package com.example.project.emotionCore.Repository;
 
 import com.example.project.emotionCore.domain.Author;
+import com.example.project.emotionCore.dto.MemberDetailDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

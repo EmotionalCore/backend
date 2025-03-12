@@ -123,6 +123,11 @@ public class MemberController {
         return ResponseEntity.ok("프로필 이미지가 업데이트되었습니다.");
     }
 
+    @GetMapping("/detail")
+    public ResponseEntity<MemberDetailDTO> getMemberDetail(@RequestParam Long memberId) {
+
+        return ResponseEntity.ok(memberService.getMemberDetail(memberId));
+    }
 
 
 
