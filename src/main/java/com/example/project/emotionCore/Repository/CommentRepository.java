@@ -1,9 +1,6 @@
 package com.example.project.emotionCore.Repository;
 
-import com.example.project.emotionCore.domain.Comment;
-import com.example.project.emotionCore.domain.CommentId;
-import com.example.project.emotionCore.domain.Episode;
-import com.example.project.emotionCore.domain.Series;
+import com.example.project.emotionCore.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, CommentId>, Cu
 
     Optional<Comment> findByNumberAndSeriesIdAndCommentId(Long number, Long seriesId, Long commentId);
 
+    List<Comment> findByMember(Member member);
 
 }
