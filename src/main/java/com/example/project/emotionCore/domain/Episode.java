@@ -7,8 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "episode")
@@ -57,10 +58,53 @@ public class Episode {
         this.viewCount++;
     }
 
+    public void renameFiles(Map<String, String> nameList){
+        nameList.forEach((from, to) -> {
+            contents = contents.replace(from, to);
+        });
+    }
+
+    public Map<String, String> removeUuidFromContents(){ //코드 개떡
+        String regex = "\\[\\*IMG&\\]\\(([^.]+)\\.([^)]+)\\)"; //[*IMG&](...)
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(contents);
+
+        Map<String, String> nameList = new HashMap<>();
+        int index = 0;
+        while (matcher.find()) {
+            String from = matcher.group(1)+"."+matcher.group(2);
+            String to = index+"."+matcher.group(2);
+            index++;
+            contents = contents.replace("[*IMG&]("+from+")", "[*IMG&]("+to+")");
+            nameList.put(from, to);
+        }
+        return nameList;
+    }
+
+    public String replaceName(String name, int index){
+        String from = contents.substring(0, name.lastIndexOf('.'));
+        return name.replace(from, String.valueOf(index));
+    }
+
+    public List<String> getFileNameFromContents(){
+        String pattern = "\\[\\*IMG&]\\((.*?)\\)"; //[*IMG&](...)
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(contents);
+
+        List<String> extracted = new ArrayList<>();
+        while (matcher.find()) {
+            extracted.add(matcher.group());
+        }
+        return extracted;
+    }
+
+
     @AllArgsConstructor
     @NoArgsConstructor
     public static class EpisodeKey implements Serializable {
+        @Column(name = "series_id")
         private Long seriesId;
+        @Column(name = "number")
         private Long number;
 
         @Override
