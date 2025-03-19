@@ -2,7 +2,6 @@ package com.example.project.emotionCore.Service;
 
 import com.azure.storage.blob.*;
 import com.azure.storage.blob.sas.BlobContainerSasPermission;
-import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.common.sas.SasProtocol;
@@ -10,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-
-import static com.azure.storage.common.implementation.SasImplUtils.extractSharedKeyCredential;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class AzureBlobService {
@@ -26,7 +25,7 @@ public class AzureBlobService {
             .endpoint(STORAGE_NAME)
             .credential(CREDENTIAL)
             .buildClient();
-    private static final String CONTAINER_NAME = "webtoon";
+    private static final String CONTAINER_NAME = "main";
     private static final BlobContainerClient CONTAINER = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
     private static final BlobContainerSasPermission WRITE_UPDATE_PERMISSION
             = new BlobContainerSasPermission().setWritePermission(true);
@@ -40,6 +39,17 @@ public class AzureBlobService {
                 .setStartTime(OffsetDateTime.now().minusMinutes(3));
         
         return CONTAINER.generateSas(signatureValues);
+    }
+
+    public void updateFileNames(Map<String, String> nameList){
+        nameList.forEach(this::updateFileName);
+    }
+
+    private void updateFileName(String from, String to){
+        BlobClient oldFile = CONTAINER.getBlobClient(from);
+        BlobClient newFile = CONTAINER.getBlobClient(to);
+        newFile.beginCopy(oldFile.getBlobUrl(), Duration.ofSeconds(2));
+        oldFile.delete();
     }
 
     /* test code
@@ -56,5 +66,13 @@ public class AzureBlobService {
         BlobClient client = newCon.getBlobClient("TestFile9.txt"); //이거 바꾸고ㅇ
         client.upload(file.getInputStream(), true);
     }
-     */
+
+    public void TestForChangeFileName(){
+        BlobClient oldFile = CONTAINER.getBlobClient("TestFile3.txt");
+        BlobClient newFile = CONTAINER.getBlobClient("TESTFILE123.txt");
+        System.out.println("oldFile: " + oldFile.getBlobUrl());
+        newFile.copyFromUrl(oldFile.getBlobUrl());
+        oldFile.delete();
+    }
+    */
 }

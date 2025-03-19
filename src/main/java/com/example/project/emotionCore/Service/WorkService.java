@@ -14,10 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class WorkService {
@@ -30,9 +27,10 @@ public class WorkService {
     private final WorkViewLogRepository workViewLogRepository;
     private final LikeRepository likeRepository;
     private final BookMarkRepository bookMarkRepository;
+    private final AzureBlobService azureBlobService;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository, AzureBlobService azureBlobService) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
@@ -42,6 +40,7 @@ public class WorkService {
         this.workViewLogRepository = workViewLogRepository;
         this.likeRepository = likeRepository;
         this.bookMarkRepository = bookMarkRepository;
+        this.azureBlobService = azureBlobService;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -212,17 +211,22 @@ public class WorkService {
 
     //Episode Start
 
-    public void saveNewEpisode(EpisodeRequestDTO dto) {
+    @Transactional
+    public void saveNewEpisode(EpisodeRequestDTO dto) { //코드 개떡
         //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
         Episode episode = Episode.builder()
-                        .seriesId(dto.getSeriesId())
-                        .title(dto.getTitle())
-                        .coverImageUrl(dto.getCoverImageUrl())
-                        .contents(dto.getContents())
-                        .description(dto.getDescription())
-                        .tags(dto.getTags())
-                        .build();
-        System.out.println(episode);
+                .seriesId(dto.getSeriesId())
+                .title(dto.getTitle())
+                .coverImageUrl(dto.getCoverImageUrl())
+                .description(dto.getDescription())
+                .contents(dto.getContents())
+                .tags(dto.getTags())
+                .build();
+        episodeRepository.save(episode);
+        episode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(dto.getSeriesId());
+
+        Map<String, String> updateFileNames = episode.removeUuidFromContents();
+        azureBlobService.updateFileNames(updateFileNames);
         //? 왜 save 전에 select 쿼리가 실행 될까?
         episodeRepository.save(episode);
     }
