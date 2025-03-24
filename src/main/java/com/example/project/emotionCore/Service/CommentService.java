@@ -17,9 +17,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
+    public boolean isCommentOwner(Long commentId, Long memberId) {
+        return commentRepository.findById(commentId)
+                .map(comment -> comment.getMember().getId().equals(memberId))
+                .orElse(false);
+    }
 
     //댓글 생성 C
     public Comment saveComment(Long seriesId, Long number, String content, Member member) {
@@ -44,7 +49,9 @@ public class CommentService {
     }
 
     //업데이트 U
-    public Comment updateComment(Long number, Long seriesId, Long commentId, String newContent) {
+    public Comment updateComment(Long number, Long seriesId, Long commentId, String newContent,Member member) {
+
+
         Comment comment = commentRepository.findByNumberAndSeriesIdAndCommentId (number, seriesId,commentId)
                 .orElseThrow(() -> new RuntimeException("수정할 댓글이 존재하지 않습니다."));
         comment.updateContent(newContent);

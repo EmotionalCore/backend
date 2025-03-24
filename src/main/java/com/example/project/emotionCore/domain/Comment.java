@@ -13,19 +13,19 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@IdClass(CommentId.class)
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private Long id;
+
     @Column(name = "comment_id")
     private Long commentId;
 
-    @Id
     @Column(name = "series_id", nullable = false)
     private Long seriesId;  // ✅ 시리즈 ID
 
-    @Id
     @Column(name = "number", nullable = false)
     private Long number;  // ✅ 에피소드 번호
 
