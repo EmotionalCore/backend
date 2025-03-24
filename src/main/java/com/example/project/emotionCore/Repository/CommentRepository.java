@@ -20,4 +20,6 @@ public interface CommentRepository extends JpaRepository<Comment, CommentId>, Cu
 
     List<Comment> findByMember(Member member);
 
+    Optional<Comment> findById(Long id  );
+
 }
