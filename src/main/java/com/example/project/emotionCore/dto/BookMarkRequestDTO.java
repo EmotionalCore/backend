@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BookMarkRequestDTO {
 
-    @Schema(description = "멤버Id", example = "1")
-    private Long memberId;
-
     @Schema(description = "시리즈Id", example = "1")
     private Long seriesId;
 }
