@@ -57,7 +57,7 @@ public class CommentController {
     }
 
     @Operation(summary="댓글 수정")
-    @PreAuthorize("@commentService.isCommentOwner(#commentId, authentication.principal.id)")
+    @PreAuthorize("@commentService.isCommentOwner(#number, #seriesId, #commentId, authentication.principal.id)")
     @PostMapping("/{seriesId}/{number}/{commentId}")
     public ResponseEntity<Comment> updateComment(
             @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
@@ -66,10 +66,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @RequestBody CommentRequest request
     ){
-        Member member = memberRepository.findById(customMemberDetail.getId())
-                .orElseThrow(()->new RuntimeException("해당회원을 찾을 수 없음"));
-
-        Comment updateComment = commentService.updateComment(number, seriesId,commentId,request.getContent(),member);
+        Comment updateComment = commentService.updateComment(number, seriesId,commentId,request.getContent());
         return ResponseEntity.ok(updateComment);
     }
 
