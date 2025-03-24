@@ -5,6 +5,10 @@ import com.azure.storage.blob.sas.BlobContainerSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.common.sas.SasProtocol;
+import com.example.project.emotionCore.domain.Episode;
+import com.example.project.emotionCore.exception.CustomBadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,20 +21,35 @@ import java.util.Set;
 
 @Service
 public class AzureBlobService {
-    private static final String ACCOUNT_NAME = "emotioncore";
-    private static final String ACCOUNT_KEY = "tQywPGfcRzmg0zyS95RJULJct2c1CPXAFPd28y2at1xrAe4SwlittwdiKNLKGHo4KhwtgiB+bdp3+AStdlpoAg==";
-    private static final StorageSharedKeyCredential CREDENTIAL = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY);
-    private static final String STORAGE_NAME = "https://drive.emotioncores.com";
-    private static final BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-            .endpoint(STORAGE_NAME)
-            .credential(CREDENTIAL)
-            .buildClient();
-    private static final String CONTAINER_NAME = "main";
-    private static final BlobContainerClient CONTAINER = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
-    private static final BlobContainerSasPermission WRITE_UPDATE_PERMISSION
-            = new BlobContainerSasPermission().setWritePermission(true);
+    private final String ACCOUNT_NAME;
+    private final String ACCOUNT_KEY;
+    private final StorageSharedKeyCredential CREDENTIAL;
+    private final String STORAGE_NAME;
+    private final BlobServiceClient blobServiceClient;
+    private final String CONTAINER_NAME;
+    private final BlobContainerClient CONTAINER;
+    private final ImageValidatorService imageValidatorService;
 
-
+    @Autowired
+    public AzureBlobService(
+            @Value("${azure.account.name}") String accountName,
+            @Value("${azure.account.key}") String accountKey,
+            @Value("${azure.account.storage.url}") String storageUrl,
+            @Value("${azure.account.container.name}") String containerName,
+            ImageValidatorService imageValidatorService) {
+        this.ACCOUNT_NAME = accountName;
+        this.ACCOUNT_KEY = accountKey;
+        this.STORAGE_NAME = storageUrl;
+        this.CREDENTIAL = new StorageSharedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY);
+        this.blobServiceClient = new BlobServiceClientBuilder()
+                                    .endpoint(STORAGE_NAME)
+                                    .credential(CREDENTIAL)
+                                    .buildClient();
+        this.CONTAINER_NAME = containerName;
+        this.CONTAINER = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
+        this.imageValidatorService = imageValidatorService;
+    }
+/*
     public String generateContainerSasToken(){
         OffsetDateTime expireTime = OffsetDateTime.now().plusMinutes(5);
         BlobServiceSasSignatureValues signatureValues
@@ -51,6 +70,28 @@ public class AzureBlobService {
         newFile.beginCopy(oldFile.getBlobUrl(), Duration.ofSeconds(2));
         oldFile.delete();
     }
+*/
+    public void uploadImages(Episode.EpisodeKey episodeKey, List<MultipartFile> multipartFiles){
+        int count = 0;
+        for(MultipartFile multipartFile : multipartFiles){
+            String extension = imageValidatorService.getExtension(multipartFile);
+            String fileName = episodeKey.getSeriesId() + "/" + episodeKey.getNumber() + "/" + count + extension;
+            uploadImage(fileName, multipartFile);
+            count++;
+        }
+    }
+
+    private void uploadImage(String fileName, MultipartFile multipartFile){
+        BlobClient file = CONTAINER.getBlobClient(fileName);
+        try {
+            file.upload(multipartFile.getInputStream());
+        }
+        catch (IOException e){
+            throw new CustomBadRequestException(500, "파일 업로드 에러 : "+multipartFile.getOriginalFilename());
+        }
+    }
+
+
 
     /* test code
     public BlobContainerClient getContainerClient(){

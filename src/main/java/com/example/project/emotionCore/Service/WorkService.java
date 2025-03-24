@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -28,9 +30,10 @@ public class WorkService {
     private final LikeRepository likeRepository;
     private final BookMarkRepository bookMarkRepository;
     private final AzureBlobService azureBlobService;
+    private final ImageValidatorService imageValidatorService;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository, AzureBlobService azureBlobService) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository, AzureBlobService azureBlobService, ImageValidatorService imageValidatorService) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
@@ -41,6 +44,7 @@ public class WorkService {
         this.likeRepository = likeRepository;
         this.bookMarkRepository = bookMarkRepository;
         this.azureBlobService = azureBlobService;
+        this.imageValidatorService = imageValidatorService;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -207,7 +211,11 @@ public class WorkService {
     }
 
 
-
+/*
+    public String getSasToken(){
+        return azureBlobService.generateContainerSasToken();
+    }
+*/
 
     //Episode Start
 
@@ -222,20 +230,42 @@ public class WorkService {
                 .contents(dto.getContents())
                 .tags(dto.getTags())
                 .build();
-        episodeRepository.save(episode);
-        episode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(dto.getSeriesId());
 
-        Map<String, String> updateFileNames = episode.removeUuidFromContents();
-        azureBlobService.updateFileNames(updateFileNames);
-        //? 왜 save 전에 select 쿼리가 실행 될까?
-        episodeRepository.save(episode);
+        Episode.EpisodeKey episodeKey = saveNewEpisode(episode);
+        System.out.println("key is : "+episodeKey.getNumber());
+        uploadImagesToCloud(episodeKey, dto.getImages());
     }
 
-    public EpisodeResponseDTO getEpisode(long seriesId, long number, Authentication authentication){
-        Episode episode = episodeRepository.findBySeriesIdAndNumber(seriesId, number);
+    @Transactional
+    protected Episode.EpisodeKey saveNewEpisode(Episode episode){
+        episode.changeFilename();
+        episodeRepository.save(episode);
+        episode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(episode.getSeriesId());
+
+        return Episode.EpisodeKey.builder()
+                .seriesId(episode.getSeriesId())
+                .number(episode.getNumber())
+                .build();
+    }
+
+    private void uploadImagesToCloud(Episode.EpisodeKey episodeKey, List<MultipartFile> images){
+        checkImagesSecurity(images);
+        azureBlobService.uploadImages(episodeKey, images);
+    }
+
+    private void checkImagesSecurity(List<MultipartFile> images){
+        for(MultipartFile image : images){
+            if(!imageValidatorService.isValidImage(image)){
+                throw new CustomBadRequestException(400, "Invalid image");
+            }
+        }
+    }
+
+    public EpisodeResponseDTO getEpisode(long seriesId, long episodeNumber, Authentication authentication){
+        Episode episode = episodeRepository.findBySeriesIdAndNumber(seriesId, episodeNumber);
         
         //코드 개떡같음 나중에 수정하기
-        increaseViewCount(seriesId, number, authentication);
+        increaseViewCount(seriesId, episodeNumber, authentication);
         episode.incrementViewCount();
         episodeRepository.save(episode);
 
