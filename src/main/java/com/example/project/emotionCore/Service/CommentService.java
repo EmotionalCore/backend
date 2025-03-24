@@ -3,9 +3,7 @@ package com.example.project.emotionCore.Service;
 import com.example.project.emotionCore.Repository.CommentRepository;
 import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.domain.Comment;
-import com.example.project.emotionCore.domain.Episode;
 import com.example.project.emotionCore.domain.Member;
-import com.example.project.emotionCore.domain.Series;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,10 +18,10 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
-    public boolean isCommentOwner(Long commentId, Long memberId) {
-        return commentRepository.findById(commentId)
-                .map(comment -> comment.getMember().getId().equals(memberId))
-                .orElse(false);
+    public boolean isCommentOwner(Long number,Long seriesId, Long commentId, Long memberId) {
+        Comment comment = commentRepository.findByNumberAndSeriesIdAndCommentId(number,seriesId,commentId)
+                .orElseThrow(()->new EntityNotFoundException("Comment not found"));
+        return comment.getMember().getId().equals(memberId);
     }
 
     //댓글 생성 C
@@ -49,9 +47,7 @@ public class CommentService {
     }
 
     //업데이트 U
-    public Comment updateComment(Long number, Long seriesId, Long commentId, String newContent,Member member) {
-
-
+    public Comment updateComment(Long number, Long seriesId, Long commentId, String newContent) {
         Comment comment = commentRepository.findByNumberAndSeriesIdAndCommentId (number, seriesId,commentId)
                 .orElseThrow(() -> new RuntimeException("수정할 댓글이 존재하지 않습니다."));
         comment.updateContent(newContent);
