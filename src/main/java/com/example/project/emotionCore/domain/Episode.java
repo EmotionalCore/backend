@@ -3,9 +3,9 @@ package com.example.project.emotionCore.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -54,53 +54,33 @@ public class Episode {
     @Column(name = "view_count")
     private Long viewCount;
 
+    //@Transient
+    //private List<MultipartFile> images;
+
     public void incrementViewCount() {
         this.viewCount++;
     }
 
-    public void renameFiles(Map<String, String> nameList){
-        nameList.forEach((from, to) -> {
-            contents = contents.replace(from, to);
-        });
-    }
-
-    public Map<String, String> removeUuidFromContents(){ //코드 개떡
-        String regex = "\\[\\*IMG&\\]\\(([^.]+)\\.([^)]+)\\)"; //[*IMG&](...)
+    public void changeFilename(){ //코드 이게 최선인가
+        String regex = "\\[\\*IMG&]\\(([^.]+)\\.([^)]+)\\)"; //[*IMG&](?.?)
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(contents);
 
-        Map<String, String> nameList = new HashMap<>();
-        int index = 0;
+        int count = 0;
+        StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            String from = matcher.group(1)+"."+matcher.group(2);
-            String to = index+"."+matcher.group(2);
-            index++;
-            contents = contents.replace("[*IMG&]("+from+")", "[*IMG&]("+to+")");
-            nameList.put(from, to);
+            String to = "[*IMG&](" + count + "." + matcher.group(2) + ")";
+            matcher.appendReplacement(sb, to);
+            count++;
         }
-        return nameList;
+        matcher.appendTail(sb);
+        contents = sb.toString();
     }
-
-    public String replaceName(String name, int index){
-        String from = contents.substring(0, name.lastIndexOf('.'));
-        return name.replace(from, String.valueOf(index));
-    }
-
-    public List<String> getFileNameFromContents(){
-        String pattern = "\\[\\*IMG&]\\((.*?)\\)"; //[*IMG&](...)
-        Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(contents);
-
-        List<String> extracted = new ArrayList<>();
-        while (matcher.find()) {
-            extracted.add(matcher.group());
-        }
-        return extracted;
-    }
-
 
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
+    @Getter
     public static class EpisodeKey implements Serializable {
         @Column(name = "series_id")
         private Long seriesId;
