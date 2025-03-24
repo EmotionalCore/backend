@@ -71,6 +71,7 @@ public class CommentController {
     }
 
     @Operation(summary="댓글 삭제")
+    @PreAuthorize("@commentService.isCommentOwner(#number, #seriesId, #commentId, authentication.principal.id)")
     @DeleteMapping("/{seriesId}/{number}/{commentId}")
     public ResponseEntity<Comment> deleteComment(
             @PathVariable Long number,
