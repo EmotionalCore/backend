@@ -24,9 +24,9 @@ public class LikeService {
     private final CommentRepository commentRepository;  // 댓글 레포지토리 추가
 
     @Transactional
-    public void toggleLike(LikeRequestDTO likeRequestDTO) {
+    public void toggleLike(Long id, LikeRequestDTO likeRequestDTO) {
 
-        Member member = memberRepository.findById(likeRequestDTO.getMemberId())
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("멤버 id를 찾을 수 없습니다."));
 
         Like like = null;
@@ -36,7 +36,7 @@ public class LikeService {
             Series series = seriesRepository.findById(likeRequestDTO.getSeriesId())
                     .orElseThrow(() -> new EntityNotFoundException("시리즈 id를 찾을 수 없습니다."));
 
-            like = likeRepository.findByMemberIdAndSeriesId(member.getId(), (long) series.getId()).orElse(null);
+            like = likeRepository.findByMemberIdAndSeriesId(id, (long) series.getId()).orElse(null);
 
             if (like != null) {
                 likeRepository.delete(like);
