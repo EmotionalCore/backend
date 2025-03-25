@@ -3,9 +3,7 @@ package com.example.project.emotionCore.Service;
 import com.example.project.emotionCore.Repository.CommentRepository;
 import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.domain.Comment;
-import com.example.project.emotionCore.domain.Episode;
 import com.example.project.emotionCore.domain.Member;
-import com.example.project.emotionCore.domain.Series;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,9 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
+    public boolean isCommentOwner(Long number,Long seriesId, Long commentId, Long memberId) {
+        Comment comment = commentRepository.findByNumberAndSeriesIdAndCommentId(number,seriesId,commentId)
+                .orElseThrow(()->new EntityNotFoundException("Comment not found"));
+        return comment.getMember().getId().equals(memberId);
+    }
 
     //댓글 생성 C
     public Comment saveComment(Long seriesId, Long number, String content, Member member) {
