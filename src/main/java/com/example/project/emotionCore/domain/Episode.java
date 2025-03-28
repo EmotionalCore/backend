@@ -3,12 +3,13 @@ package com.example.project.emotionCore.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "episode")
@@ -53,14 +54,37 @@ public class Episode {
     @Column(name = "view_count")
     private Long viewCount;
 
+    //@Transient
+    //private List<MultipartFile> images;
+
     public void incrementViewCount() {
         this.viewCount++;
     }
 
+    public void changeFilename(){ //코드 이게 최선인가
+        String regex = "\\[\\*IMG&]\\(([^.]+)\\.([^)]+)\\)"; //[*IMG&](?.?)
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(contents);
+
+        int count = 0;
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String to = "[*IMG&](" + count + "." + matcher.group(2) + ")";
+            matcher.appendReplacement(sb, to);
+            count++;
+        }
+        matcher.appendTail(sb);
+        contents = sb.toString();
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
+    @Getter
     public static class EpisodeKey implements Serializable {
+        @Column(name = "series_id")
         private Long seriesId;
+        @Column(name = "number")
         private Long number;
 
         @Override
