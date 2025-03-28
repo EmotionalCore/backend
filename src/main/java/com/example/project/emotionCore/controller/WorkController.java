@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Default;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -179,14 +180,20 @@ public class WorkController {
         return ResponseEntity.ok(dto);
     }
 
+/*
+    @Operation(summary = "azure sas token 얻어오기")
+    @PreAuthorize("authentication.principal.id != Null") //너무 인증이 적음
+    @GetMapping("/token")
+    public ResponseEntity<String> getSasToken() {
+        return ResponseEntity.ok(workService.getSasToken());
+    }*/
 
-
-    @Operation(summary = "(작업 중) episode 작성 기능")
+    @Operation(summary = "(작업 완료) episode 작성 기능")
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#episodeRequestDTO.seriesId, authentication.principal.id)")
     //ADMIN 혹은 자기글 이여야 작성 가능
     //? 권한 관리는 Service 영역이 깔끔한가?
-    @PostMapping("/episode")
-    public void getSeriesByEpisode(@RequestBody EpisodeRequestDTO episodeRequestDTO) {
+    @PostMapping(value = "/episode", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void getSeriesByEpisode(@ModelAttribute EpisodeRequestDTO episodeRequestDTO) {
         workService.saveNewEpisode(episodeRequestDTO);
     }
 
