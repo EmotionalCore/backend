@@ -24,9 +24,9 @@ public class BookMarkService {
     private final SeriesRepository seriesRepository;
 
     @Transactional
-    public void toggleBookMark(BookMarkRequestDTO bookMarkRequestDTO) {
+    public void toggleBookMark(Long id, BookMarkRequestDTO bookMarkRequestDTO) {
 
-        Member member = memberRepository.findById(bookMarkRequestDTO.getMemberId())
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("멤버 id를 찾을 수 없습니다."));
 
         BookMark bookmark = null;
@@ -35,7 +35,7 @@ public class BookMarkService {
             Series series = seriesRepository.findById(bookMarkRequestDTO.getSeriesId())
                     .orElseThrow(() -> new EntityNotFoundException("시리즈 id를 찾을 수 없습니다."));
 
-            bookmark = bookMarkRepository.findByMemberIdAndSeriesId(member.getId(), (long) series.getId()).orElse(null);
+            bookmark = bookMarkRepository.findByMemberIdAndSeriesId(id, (long) series.getId()).orElse(null);
 
             if (bookmark != null) {
                 bookMarkRepository.delete(bookmark);
