@@ -200,7 +200,7 @@ public class WorkService {
 
     public List<SeriesIdAndNameDTO> getMySeries(Authentication authentication){
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
-        List<Series> entity = seriesRepository.findAllByAuthorInfos_Id(customMemberDetail.getId());
+        List<Series> entity = seriesRepository.findAllByAuthorId(customMemberDetail.getId());
 
         List<SeriesIdAndNameDTO> data = new ArrayList<>();
         for (Series series : entity) {
@@ -232,7 +232,6 @@ public class WorkService {
                 .build();
 
         Episode.EpisodeKey episodeKey = saveNewEpisode(episode);
-        System.out.println("key is : "+episodeKey.getNumber());
         uploadImagesToCloud(episodeKey, dto.getImages());
     }
 
@@ -251,6 +250,11 @@ public class WorkService {
     private void uploadImagesToCloud(Episode.EpisodeKey episodeKey, List<MultipartFile> images){
         checkImagesSecurity(images);
         azureBlobService.uploadImages(episodeKey, images);
+    }
+
+    private void uploadImageToCloud(String filename, MultipartFile image){
+        checkImagesSecurity(Collections.singletonList(image));
+        azureBlobService.uploadImage(filename, image);
     }
 
     private void checkImagesSecurity(List<MultipartFile> images){
@@ -317,10 +321,50 @@ public class WorkService {
         episodeRepository.save(episode);
     }
 
+    @Transactional
+    public void saveNewSeries(SeriesRequestDTO dto, Authentication authentication){
+        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        long authorId = customMemberDetail.getId();
+        Series series = Series.builder()
+                .title(dto.getTitle())
+                .coverImageUrl("coverImage.png")
+                .description(dto.getDescription())
+                .type(dto.getType())
+                .tags(dto.getTags())
+                .authorId(authorId)
+                .build();
+        seriesRepository.save(series);
+        uploadImageToCloud("coverImage.png", dto.getImage());
+    }
+
+    public List<EpisodePreviewDTO> getEpisodeList(long seriesId){
+        List<EpisodePreviewDTO> dtos = new ArrayList<>();
+        List<Episode> episodes = episodeRepository.findBySeriesId(seriesId);
+        for(Episode episode : episodes){
+            EpisodePreviewDTO dto = modelMapper.map(episode, EpisodePreviewDTO.class);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Transactional
+    public void deleteSeries(long seriesId){
+        seriesRepository.deleteById(seriesId);
+    }
+
+    @Transactional
+    public void updateSeries(SeriesModifyDTO dto){
+        Series series = seriesRepository.findById(dto.getId()).get();
+        series.updateSeries(dto);
+        seriesRepository.save(series);
+        uploadImageToCloud("coverImage.png", dto.getImage());
+    }
+
+
     public boolean isOwner(long seriesId, long memberId){
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new CustomBadRequestException(404, "Series not found"));
-        return series.getAuthorInfos().getId().equals(memberId);
+        return series.getAuthorId() == memberId;
     }
 
 

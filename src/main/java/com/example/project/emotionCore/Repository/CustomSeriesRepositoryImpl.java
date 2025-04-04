@@ -35,7 +35,7 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
         return queryFactory
                 .selectFrom(series)
                 .leftJoin(seriesView).on(
-                        series.id.eq(seriesView.seriesId.intValue())
+                        series.id.eq(seriesView.seriesId)
                                 .and(seriesView.viewDate.between(startDate, endDate))
                 )
                 .groupBy(series.id)
@@ -67,8 +67,8 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 sv1.count.coalesce(0).subtract(sv2.count.coalesce(0));
         return queryFactory
                 .selectFrom(series)
-                .join(sv1).on(series.id.eq(sv1.seriesId.intValue()).and(sv1.viewDate.eq(today)))
-                .leftJoin(sv2).on(series.id.eq(sv2.seriesId.intValue()).and(sv2.viewDate.eq(targetDay)))
+                .join(sv1).on(series.id.eq(sv1.seriesId).and(sv1.viewDate.eq(today)))
+                .leftJoin(sv2).on(series.id.eq(sv2.seriesId).and(sv2.viewDate.eq(targetDay)))
                 .where(countDiff.isNotNull())  // 차이가 있는 경우만 필터링
                 .orderBy(countDiff.desc())  // 차이 기준 내림차순 정렬
                 .limit(4)  // 상위 4개만
@@ -134,7 +134,7 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
         return queryFactory
                 .select(series) // Series 엔티티를 기준으로 선택
                 .from(sv) // SeriesView 엔티티를 기준으로 시작
-                .join(series).on(series.id.eq(sv.seriesId.intValue())) // Series와 SeriesView를 조인
+                .join(series).on(series.id.eq(sv.seriesId)) // Series와 SeriesView를 조인
                 .where(sv.viewDate.between(firstDayOfMonth, lastDayOfMonth)) // 이번 달 범위 필터
                 .groupBy(series.id) // 시리즈별로 그룹화
                 .orderBy(sv.count.sum().desc()) // count 합계 기준 내림차순 정렬
@@ -188,8 +188,8 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 ))
                 .from(series)
                 .join(workViewLog).on(workViewLog.memberId.eq(memberId)
-                        .and(series.id.eq(workViewLog.seriesId.intValue())))
-                .join(member).on(series.authorInfos.id.eq(member.id))
+                        .and(series.id.eq(workViewLog.seriesId)))
+                .join(member).on(series.authorId.eq(member.id))
                 .fetch();
     }
 }
