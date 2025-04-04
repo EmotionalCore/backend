@@ -37,7 +37,7 @@ public class Author{
     private String tags;
 
     //나중에 더 추가
-    @OneToMany(mappedBy = "authorInfos", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Series> seriesList = new ArrayList<>();
 
     public Author(String description, String links, String tags) {

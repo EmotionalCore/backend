@@ -17,6 +17,8 @@ public interface SeriesRepository extends JpaRepository<Series, Long>, CustomSer
 
     public List<Series> findAllByTypeOrderByIdDesc(String type, Pageable pageable);
 
-    List<Series> findAllByAuthorInfos_Id(Long authorInfos_id);
+    List<Series> findAllByAuthorId(Long authorId);
+
+    Series findTopByOrderById();
 }
 

@@ -2,6 +2,7 @@ package com.example.project.emotionCore.dto;
 
 import com.example.project.emotionCore.domain.Series;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
+@Builder
 public class EpisodeResponseDTO {
     private long seriesId;
 

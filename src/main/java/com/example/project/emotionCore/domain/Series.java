@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.domain;
 
+import com.example.project.emotionCore.dto.SeriesModifyDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,11 +22,10 @@ public class Series {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id", nullable = false)
-    private Author authorInfos;
+    @Column(name = "author_id", nullable = false)
+    private Long authorId;
 
     @Column(nullable = false)
     private String title;
@@ -57,6 +57,13 @@ public class Series {
             return new ArrayList<>();
         }
         return Arrays.asList(tags.split(", "));
+    }
+
+    public void updateSeries(SeriesModifyDTO dto){
+        title = dto.getTitle();
+        description = dto.getDescription();
+        type = dto.getType();
+        tags = dto.getTags();
     }
 
 

@@ -195,13 +195,13 @@ public class WorkController {
     //ADMIN 혹은 자기글 이여야 작성 가능
     //? 권한 관리는 Service 영역이 깔끔한가?
     @PostMapping(value = "/episode", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void getSeriesByEpisode(@ModelAttribute EpisodeRequestDTO episodeRequestDTO) {
+    public void writeEpisode(@ModelAttribute EpisodeRequestDTO episodeRequestDTO) {
         workService.saveNewEpisode(episodeRequestDTO);
     }
 
     @Operation(summary = "episode 내용 가져오기")
     @GetMapping("/episode")
-    public ResponseEntity<EpisodeResponseDTO> getSeriesByEpisode(
+    public ResponseEntity<EpisodeResponseDTO> getEpisode(
                                                     @RequestParam long seriesId,
                                                     @RequestParam long number,
                                                     Authentication authentication) {
@@ -218,14 +218,51 @@ public class WorkController {
     }
 
     @Operation(summary = "episode 수정 기능")
-    @PutMapping("/episode")
+    @PutMapping(value = "/episode", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#episodeModifyDTO.seriesId, authentication.principal.id)")
-    public void updateEpisode(@RequestBody EpisodeModifyDTO episodeModifyDTO) {
+    public void updateEpisode(@ModelAttribute EpisodeModifyDTO episodeModifyDTO) {
         //반환값 추가하든가 뭐 해야됨. 없는 에피소드 삭제해도 200 이던데
         workService.updateEpisode(episodeModifyDTO);
     }
 
 
+
+
+
+
+
+
+
+    @Operation(summary = "(작업 완료) series 작성 기능")
+    @PreAuthorize("authentication.principal.id != Null")
+    @PostMapping(value = "/series", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void writeSeries(@ModelAttribute SeriesRequestDTO seriesRequestDTO
+                            , Authentication authentication) {
+        workService.saveNewSeries(seriesRequestDTO, authentication);
+    }
+
+    @Operation(summary = "특정 series 회차(에피소드)들 가져오기")
+    @GetMapping("/series")
+    public ResponseEntity<List<EpisodePreviewDTO>> getAllEpisode(@RequestParam long seriesId) {
+        List<EpisodePreviewDTO> episodePreviewDTO = workService.getEpisodeList(seriesId);
+        return ResponseEntity.ok(episodePreviewDTO);
+    }
+
+    @Operation(summary = "series 삭제 기능")
+    @DeleteMapping("/series")
+    @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#seriesId, authentication.principal.id)")
+    public void deleteSeries(@RequestParam long seriesId) {
+        //반환값 추가하든가 뭐 해야됨. 없는 에피소드 삭제해도 200 이던데
+        workService.deleteSeries(seriesId);
+    }
+
+    @Operation(summary = "series 수정 기능")
+    @PutMapping(value = "/series", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#seriesModifyDTO.id, authentication.principal.id)")
+    public void updateSeries(@ModelAttribute SeriesModifyDTO seriesModifyDTO) {
+        //반환값 추가하든가 뭐 해야됨. 없는 에피소드 삭제해도 200 이던데
+        workService.updateSeries(seriesModifyDTO);
+    }
 
 
 

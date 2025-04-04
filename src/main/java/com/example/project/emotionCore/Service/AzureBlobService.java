@@ -81,10 +81,10 @@ public class AzureBlobService {
         }
     }
 
-    private void uploadImage(String fileName, MultipartFile multipartFile){
+    void uploadImage(String fileName, MultipartFile multipartFile){
         BlobClient file = CONTAINER.getBlobClient(fileName);
         try {
-            file.upload(multipartFile.getInputStream());
+            file.upload(multipartFile.getInputStream(), true);
         }
         catch (IOException e){
             throw new CustomBadRequestException(500, "파일 업로드 에러 : "+multipartFile.getOriginalFilename());
