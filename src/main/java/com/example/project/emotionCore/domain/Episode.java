@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.domain;
 
+import com.example.project.emotionCore.dto.EpisodeRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -61,7 +62,7 @@ public class Episode {
         this.viewCount++;
     }
 
-    public void changeFilename(){ //코드 이게 최선인가
+    private void changeFilename(){ //코드 이게 최선인가
         String regex = "\\[\\*IMG&]\\(([^.]+)\\.([^)]+)\\)"; //[*IMG&](?.?)
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(contents);
@@ -69,12 +70,21 @@ public class Episode {
         int count = 0;
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            String to = "[*IMG&](" + count + "." + matcher.group(2) + ")";
+            String to = "[*IMG&](/" + seriesId + "/" + number + "/" + count + "." + matcher.group(2) + ")";
             matcher.appendReplacement(sb, to);
             count++;
         }
         matcher.appendTail(sb);
         contents = sb.toString();
+    }
+
+    public void update(EpisodeRequestDTO dto){
+        this.title = dto.getTitle();
+        this.coverImageUrl = dto.getCoverImageUrl();
+        this.description = dto.getDescription();
+        this.tags = dto.getTags();
+        this.contents = dto.getContents();
+        changeFilename();
     }
 
     @AllArgsConstructor
