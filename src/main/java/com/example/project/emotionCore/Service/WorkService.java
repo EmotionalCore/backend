@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -230,7 +231,14 @@ public class WorkService {
                 .seriesId(episode.getSeriesId())
                 .number(episode.getNumber())
                 .build();
-        uploadImagesToCloud(episodeKey, dto.getImages());
+        if(dto.getCoverImage() != null){
+            uploadImageToCloud(episode.getCoverImageUrl(), dto.getCoverImage());
+        }
+        if(dto.getImages().get(0) != null){
+            uploadImagesToCloud(episodeKey, dto.getImages());
+        }
+
+
     }
 
     private void uploadImagesToCloud(Episode.EpisodeKey episodeKey, List<MultipartFile> images){
@@ -239,6 +247,11 @@ public class WorkService {
     }
 
     private void uploadImageToCloud(String filename, MultipartFile image){
+        if(image == null || image.isEmpty()){
+            InputStream inputStream = azureBlobService.getDefaultImage();
+            azureBlobService.uploadImage(filename, inputStream);
+            return;
+        }
         checkImagesSecurity(Collections.singletonList(image));
         azureBlobService.uploadImage(filename, image);
     }
@@ -299,11 +312,15 @@ public class WorkService {
     @Transactional
     public void updateEpisode(EpisodeModifyDTO dto){
         Episode episode = episodeRepository.findBySeriesIdAndNumber(dto.getSeriesId(), dto.getNumber());
-        episode.setTitle(dto.getTitle());
-        episode.setCoverImageUrl(dto.getCoverImageUrl());
-        episode.setContents(dto.getContents());
-        episode.setDescription(dto.getDescription());
-        episode.setTags(dto.getTags());
+        episode.update(dto);
+
+        if(dto.getImages().get(0) != null){
+            Episode.EpisodeKey episodeKey = Episode.EpisodeKey.builder()
+                    .seriesId(episode.getSeriesId())
+                    .number(episode.getNumber())
+                    .build();
+            uploadImagesToCloud(episodeKey, dto.getImages());
+        }
         episodeRepository.save(episode);
     }
 

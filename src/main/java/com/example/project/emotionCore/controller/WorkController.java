@@ -29,8 +29,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.beans.PropertyEditorSupport;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -195,7 +198,7 @@ public class WorkController {
     //ADMIN 혹은 자기글 이여야 작성 가능
     //? 권한 관리는 Service 영역이 깔끔한가?
     @PostMapping(value = "/episode", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void writeEpisode(@ModelAttribute EpisodeRequestDTO episodeRequestDTO) {
+    public void writeEpisode(@ModelAttribute(value = "dto") EpisodeRequestDTO episodeRequestDTO){
         workService.saveNewEpisode(episodeRequestDTO);
     }
 
@@ -259,15 +262,22 @@ public class WorkController {
     @Operation(summary = "series 수정 기능")
     @PutMapping(value = "/series", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#seriesModifyDTO.id, authentication.principal.id)")
-    public void updateSeries(@ModelAttribute SeriesModifyDTO seriesModifyDTO) {
+    public void updateSeries(@ModelAttribute SeriesModifyDTO seriesModifyDTO){
         //반환값 추가하든가 뭐 해야됨. 없는 에피소드 삭제해도 200 이던데
         workService.updateSeries(seriesModifyDTO);
     }
 
 
 
-
-
+    @InitBinder
+    public void initBinder(WebDataBinder binder) { //MultipartFile이 null일때 대체
+        binder.registerCustomEditor(MultipartFile.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(null);
+            }
+        });
+    }
 
 
 
