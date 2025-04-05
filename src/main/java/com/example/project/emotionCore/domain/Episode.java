@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.domain;
 
+import com.example.project.emotionCore.dto.EpisodeModifyDTO;
 import com.example.project.emotionCore.dto.EpisodeRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -79,7 +80,29 @@ public class Episode {
     }
 
     public void update(EpisodeRequestDTO dto){ //코드 개떡 이게 왜 여깄지
-        String coverImageFileType = dto.getCoverImage().getContentType();
+        String coverImageFileType; //코드 ㄹㅇ 개떡
+        if(dto.getCoverImage() == null){
+            coverImageFileType = "image/png";
+        }
+        else{
+            coverImageFileType = dto.getCoverImage().getContentType();
+        }
+        this.title = dto.getTitle();
+        this.coverImageUrl = seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.description = dto.getDescription();
+        this.tags = dto.getTags();
+        this.contents = dto.getContents();
+        changeFilename();
+    }
+
+    public void update(EpisodeModifyDTO dto){ //코드 개떡 이게 왜 여깄지
+        String coverImageFileType; //코드 ㄹㅇ 개떡
+        if(dto.getCoverImage() == null){
+            coverImageFileType = "image/png";
+        }
+        else{
+            coverImageFileType = dto.getCoverImage().getContentType();
+        }
         this.title = dto.getTitle();
         this.coverImageUrl = seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();

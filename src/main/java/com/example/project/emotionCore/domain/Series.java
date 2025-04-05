@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +60,13 @@ public class Series {
     }
 
     public void updateSeries(SeriesModifyDTO dto){
-        String coverImageFileType = dto.getImage().getContentType();
+        String coverImageFileType; //코드 ㄹㅇ 개떡
+        if(dto.getImage() == null){
+            coverImageFileType = "image/png";
+        }
+        else{
+            coverImageFileType = dto.getImage().getContentType();
+        }
         title = dto.getTitle();
         description = dto.getDescription();
         type = dto.getType();
@@ -68,7 +75,13 @@ public class Series {
     }
 
     public void updateSeries(SeriesRequestDTO dto, long authorId){
-        String coverImageFileType = dto.getImage().getContentType();
+        String coverImageFileType; //코드 ㄹㅇ 개떡
+        if(dto.getImage() == null){
+            coverImageFileType = "image/png";
+        }
+        else{
+            coverImageFileType = dto.getImage().getContentType();
+        }
         title = dto.getTitle();
         description = dto.getDescription();
         type = dto.getType();
