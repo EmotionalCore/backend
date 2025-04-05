@@ -309,18 +309,16 @@ public class WorkService {
 
     @Transactional
     public void saveNewSeries(SeriesRequestDTO dto, Authentication authentication){
+        Series series = Series.builder().build();
+        seriesRepository.save(series);
+        series = seriesRepository.findTopByOrderByIdDesc();
+
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
         long authorId = customMemberDetail.getId();
-        Series series = Series.builder()
-                .title(dto.getTitle())
-                .coverImageUrl("coverImage.png")
-                .description(dto.getDescription())
-                .type(dto.getType())
-                .tags(dto.getTags())
-                .authorId(authorId)
-                .build();
-        seriesRepository.save(series);
-        uploadImageToCloud("coverImage.png", dto.getImage());
+
+        series.updateSeries(dto, authorId);
+        seriesRepository.saveAndFlush(series);
+        uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
     }
 
     public List<EpisodePreviewDTO> getEpisodeList(long seriesId){
@@ -343,7 +341,7 @@ public class WorkService {
         Series series = seriesRepository.findById(dto.getId()).get();
         series.updateSeries(dto);
         seriesRepository.save(series);
-        uploadImageToCloud("coverImage.png", dto.getImage());
+        uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
     }
 
 

@@ -1,12 +1,10 @@
 package com.example.project.emotionCore.domain;
 
 import com.example.project.emotionCore.dto.SeriesModifyDTO;
+import com.example.project.emotionCore.dto.SeriesRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
@@ -18,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Series {
 
     @Id
@@ -60,10 +59,22 @@ public class Series {
     }
 
     public void updateSeries(SeriesModifyDTO dto){
+        String coverImageFileType = dto.getImage().getContentType();
         title = dto.getTitle();
         description = dto.getDescription();
         type = dto.getType();
         tags = dto.getTags();
+        coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+    }
+
+    public void updateSeries(SeriesRequestDTO dto, long authorId){
+        String coverImageFileType = dto.getImage().getContentType();
+        title = dto.getTitle();
+        description = dto.getDescription();
+        type = dto.getType();
+        tags = dto.getTags();
+        coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.authorId = authorId;
     }
 
 
