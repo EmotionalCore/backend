@@ -78,9 +78,10 @@ public class Episode {
         contents = sb.toString();
     }
 
-    public void update(EpisodeRequestDTO dto){
+    public void update(EpisodeRequestDTO dto){ //코드 개떡 이게 왜 여깄지
+        String coverImageFileType = dto.getCoverImage().getContentType();
         this.title = dto.getTitle();
-        this.coverImageUrl = dto.getCoverImageUrl();
+        this.coverImageUrl = seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
         this.tags = dto.getTags();
         this.contents = dto.getContents();

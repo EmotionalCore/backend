@@ -18,7 +18,7 @@ public class EpisodeRequestDTO {
 
     private String title;
 
-    private String coverImageUrl;
+    private MultipartFile coverImage;
 
     private String description;
 
