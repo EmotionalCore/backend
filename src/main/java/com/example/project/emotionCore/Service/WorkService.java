@@ -222,29 +222,15 @@ public class WorkService {
     @Transactional
     public void saveNewEpisode(EpisodeRequestDTO dto) { //코드 개떡
         //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
-        Episode episode = Episode.builder()
-                .seriesId(dto.getSeriesId())
-                .title(dto.getTitle())
-                .coverImageUrl(dto.getCoverImageUrl())
-                .description(dto.getDescription())
-                .contents(dto.getContents())
-                .tags(dto.getTags())
-                .build();
-
-        Episode.EpisodeKey episodeKey = saveNewEpisode(episode);
-        uploadImagesToCloud(episodeKey, dto.getImages());
-    }
-
-    @Transactional
-    protected Episode.EpisodeKey saveNewEpisode(Episode episode){
-        episode.changeFilename();
+        Episode episode = Episode.builder().seriesId(dto.getSeriesId()).build();
         episodeRepository.save(episode);
         episode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(episode.getSeriesId());
-
-        return Episode.EpisodeKey.builder()
+        episode.update(dto);
+        Episode.EpisodeKey episodeKey = Episode.EpisodeKey.builder()
                 .seriesId(episode.getSeriesId())
                 .number(episode.getNumber())
                 .build();
+        uploadImagesToCloud(episodeKey, dto.getImages());
     }
 
     private void uploadImagesToCloud(Episode.EpisodeKey episodeKey, List<MultipartFile> images){
