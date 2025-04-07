@@ -41,8 +41,8 @@ public class Episode {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "tags")
-    private String tags;
+    @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EpisodeTag> tags = new HashSet<>();
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String contents;

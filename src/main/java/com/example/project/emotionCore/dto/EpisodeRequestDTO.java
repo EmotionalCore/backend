@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class EpisodeRequestDTO {
@@ -22,7 +23,7 @@ public class EpisodeRequestDTO {
 
     private String description;
 
-    private String tags;
+    private Set<String> tags;
 
     private String contents;
 

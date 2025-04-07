@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Data
 public class EpisodeResponseDTO {
@@ -21,7 +22,7 @@ public class EpisodeResponseDTO {
 
     private String description;
 
-    private String tags;
+    private Set<String> tags;
 
     private String contents;
 

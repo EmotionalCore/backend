@@ -11,9 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -33,21 +31,36 @@ public class Author{
     @Column(name = "links")
     private String links;
 
-    @Column(name = "tags")
-    private String tags;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AuthorTag> tags = new HashSet<>();
 
     //나중에 더 추가
     @OneToMany(mappedBy = "authorInfos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Series> seriesList = new ArrayList<>();
 
-    public Author(String description, String links, String tags) {
+    public Author(String description, String links, Set<Tag> tags) {
         this.description = description;
         this.links = links;
-        this.tags = tags;
+        for (Tag tag : tags) {
+            AuthorTag authorTag = AuthorTag.builder()
+                    .author(this)
+                    .tag(tag)
+                    .build();
+            this.tags.add(authorTag);
+        }
     }
-    public void updateAuthor(MyPageUpdateDTO dto) {
-        this.description = dto.getDescription();
-        this.links = dto.getLinks();
-        this.tags = dto.getTags();
+
+    public void updateAuthor(String description, String links, Set<Tag> tags) {
+        this.description = description;
+        this.links = links;
+        this.tags.clear();
+
+        for (Tag tag : tags) {
+            AuthorTag authorTag = AuthorTag.builder()
+                    .author(this)
+                    .tag(tag)
+                    .build();
+            this.tags.add(authorTag);
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkService {
@@ -29,11 +30,13 @@ public class WorkService {
     private final WorkViewLogRepository workViewLogRepository;
     private final LikeRepository likeRepository;
     private final BookMarkRepository bookMarkRepository;
+    private final TagRepository tagRepository;
     private final AzureBlobService azureBlobService;
     private final ImageValidatorService imageValidatorService;
+    private final TagService tagService;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository, AzureBlobService azureBlobService, ImageValidatorService imageValidatorService) {
+    public WorkService(SeriesRepository seriesRepository, SearchWorkRepository searchWorkRepository, AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository, SeriesViewRepository seriesViewRepository, WorkViewLogRepository workViewLogRepository, LikeRepository likeRepository, BookMarkRepository bookMarkRepository, TagRepository tagRepository, AzureBlobService azureBlobService, ImageValidatorService imageValidatorService, TagService tagService) {
         this.seriesRepository = seriesRepository;
         this.searchWorkRepository = searchWorkRepository;
         this.authorRepository = authorRepository;
@@ -43,8 +46,10 @@ public class WorkService {
         this.workViewLogRepository = workViewLogRepository;
         this.likeRepository = likeRepository;
         this.bookMarkRepository = bookMarkRepository;
+        this.tagRepository= tagRepository;
         this.azureBlobService = azureBlobService;
         this.imageValidatorService = imageValidatorService;
+        this.tagService = tagService;
     }
 
     public List<SeriesPreviewDTO> getTodayBestSeries(int limit) {
@@ -228,8 +233,15 @@ public class WorkService {
                 .coverImageUrl(dto.getCoverImageUrl())
                 .description(dto.getDescription())
                 .contents(dto.getContents())
-                .tags(dto.getTags())
                 .build();
+
+        Set<EpisodeTag> episodeTags = dto.getTags().stream()
+                .map(tagName -> tagRepository.findByName(tagName)
+                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 태그: " + tagName)))
+                .map(tag -> EpisodeTag.builder().tag(tag).episode(episode).build())
+                .collect(Collectors.toSet());
+
+        episode.setTags(episodeTags);
 
         Episode.EpisodeKey episodeKey = saveNewEpisode(episode);
         System.out.println("key is : "+episodeKey.getNumber());
@@ -313,7 +325,18 @@ public class WorkService {
         episode.setCoverImageUrl(dto.getCoverImageUrl());
         episode.setContents(dto.getContents());
         episode.setDescription(dto.getDescription());
-        episode.setTags(dto.getTags());
+
+        episode.getTags().clear();
+
+        Set<EpisodeTag> Tags = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .map(tag -> EpisodeTag.builder()
+                        .episode(episode)
+                        .tag(tag)
+                        .build())
+                .collect(Collectors.toSet());
+
+        episode.getTags().addAll(Tags);
         episodeRepository.save(episode);
     }
 

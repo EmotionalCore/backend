@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -49,15 +47,7 @@ public class Series {
     @Column(nullable = false, name = "bookmark_count")
     private int bookmarkCount;
 
-    @Column(nullable = false)
-    private String tags;
-
-    public List<String> getTags(){
-        if(tags == null || tags.isEmpty()){
-            return new ArrayList<>();
-        }
-        return Arrays.asList(tags.split(", "));
-    }
-
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SeriesTag> tags = new HashSet<>();
 
 }

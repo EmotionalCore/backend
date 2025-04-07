@@ -1,11 +1,7 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Service.AuthorService;
-import com.example.project.emotionCore.Service.CustomMemberDetail;
-import com.example.project.emotionCore.Service.CustomUserDetailService;
+import com.example.project.emotionCore.Service.*;
 import com.example.project.emotionCore.Service.SearchWorkService;
-import com.example.project.emotionCore.Service.SearchWorkService;
-import com.example.project.emotionCore.Service.WorkService;
 import com.example.project.emotionCore.config.SecurityConfig;
 import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.dto.*;
@@ -40,14 +36,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/work")
 public class WorkController {
+    private final TagService tagService;
     WorkService workService;
     SearchWorkService searchWorkService;
     private final AuthorService authorService;
 
     @Autowired
-    WorkController(WorkService workService, AuthorService authorService) {
+    WorkController(WorkService workService, AuthorService authorService, TagService tagService) {
         this.workService = workService;
         this.authorService = authorService;
+        this.tagService = tagService;
     }
 
     @Operation(summary = "(작업 완료) 오늘의 Best 작품들(조회수 기준)")
@@ -122,6 +120,13 @@ public class WorkController {
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
         List<SeriesPreviewDTO> seriesPreviewDTOS = workService.getAllSeriesByLike(index, num, customMemberDetail.getId());
         return ResponseEntity.ok(seriesPreviewDTOS);
+    }
+
+    @Operation(summary = "(작업 완료) 모든 태그 반환")
+    @GetMapping("/tag/all")
+    public ResponseEntity<List<TagDTO>> getAllTags(){
+        List<TagDTO> tagDTO = tagService.getAllTags();
+        return ResponseEntity.ok(tagDTO);
     }
 
     /**
