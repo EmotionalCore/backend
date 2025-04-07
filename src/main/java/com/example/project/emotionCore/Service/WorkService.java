@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -205,7 +206,7 @@ public class WorkService {
 
     public List<SeriesIdAndNameDTO> getMySeries(Authentication authentication){
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
-        List<Series> entity = seriesRepository.findAllByAuthorInfos_Id(customMemberDetail.getId());
+        List<Series> entity = seriesRepository.findAllByAuthorId(customMemberDetail.getId());
 
         List<SeriesIdAndNameDTO> data = new ArrayList<>();
         for (Series series : entity) {
@@ -225,44 +226,47 @@ public class WorkService {
     //Episode Start
 
     @Transactional
-    public void saveNewEpisode(EpisodeRequestDTO dto) { //코드 개떡
-        //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
-        Episode episode = Episode.builder()
-                .seriesId(dto.getSeriesId())
-                .title(dto.getTitle())
-                .coverImageUrl(dto.getCoverImageUrl())
-                .description(dto.getDescription())
-                .contents(dto.getContents())
-                .build();
-
+    public void saveNewEpisode(EpisodeRequestDTO dto) {
+        episode.changeFilename();
+        Episode episode = Episode.builder().seriesId(dto.getSeriesId()).build();
+        episodeRepository.save(episode);
+      
         Set<EpisodeTag> episodeTags = dto.getTags().stream()
                 .map(tagName -> tagRepository.findByName(tagName)
                         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 태그: " + tagName)))
                 .map(tag -> EpisodeTag.builder().tag(tag).episode(episode).build())
                 .collect(Collectors.toSet());
-
         episode.setTags(episodeTags);
-
-        Episode.EpisodeKey episodeKey = saveNewEpisode(episode);
-        System.out.println("key is : "+episodeKey.getNumber());
-        uploadImagesToCloud(episodeKey, dto.getImages());
-    }
-
-    @Transactional
-    protected Episode.EpisodeKey saveNewEpisode(Episode episode){
-        episode.changeFilename();
-        episodeRepository.save(episode);
+      
         episode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(episode.getSeriesId());
-
-        return Episode.EpisodeKey.builder()
+        episode.update(dto);
+        Episode.EpisodeKey episodeKey = Episode.EpisodeKey.builder()
                 .seriesId(episode.getSeriesId())
                 .number(episode.getNumber())
                 .build();
+        if(dto.getCoverImage() != null){
+            uploadImageToCloud(episode.getCoverImageUrl(), dto.getCoverImage());
+        }
+        if(dto.getImages().get(0) != null){
+            uploadImagesToCloud(episodeKey, dto.getImages());
+        }
+
+
     }
 
     private void uploadImagesToCloud(Episode.EpisodeKey episodeKey, List<MultipartFile> images){
         checkImagesSecurity(images);
         azureBlobService.uploadImages(episodeKey, images);
+    }
+
+    private void uploadImageToCloud(String filename, MultipartFile image){
+        if(image == null || image.isEmpty()){
+            InputStream inputStream = azureBlobService.getDefaultImage();
+            azureBlobService.uploadImage(filename, inputStream);
+            return;
+        }
+        checkImagesSecurity(Collections.singletonList(image));
+        azureBlobService.uploadImage(filename, image);
     }
 
     private void checkImagesSecurity(List<MultipartFile> images){
@@ -321,10 +325,7 @@ public class WorkService {
     @Transactional
     public void updateEpisode(EpisodeModifyDTO dto){
         Episode episode = episodeRepository.findBySeriesIdAndNumber(dto.getSeriesId(), dto.getNumber());
-        episode.setTitle(dto.getTitle());
-        episode.setCoverImageUrl(dto.getCoverImageUrl());
-        episode.setContents(dto.getContents());
-        episode.setDescription(dto.getDescription());
+
 
         episode.getTags().clear();
 
@@ -337,13 +338,62 @@ public class WorkService {
                 .collect(Collectors.toSet());
 
         episode.getTags().addAll(Tags);
+
+        episode.update(dto);
+
+        if(dto.getImages().get(0) != null){
+            Episode.EpisodeKey episodeKey = Episode.EpisodeKey.builder()
+                    .seriesId(episode.getSeriesId())
+                    .number(episode.getNumber())
+                    .build();
+            uploadImagesToCloud(episodeKey, dto.getImages());
+        }
+
         episodeRepository.save(episode);
     }
+
+    @Transactional
+    public void saveNewSeries(SeriesRequestDTO dto, Authentication authentication){
+        Series series = Series.builder().build();
+        seriesRepository.save(series);
+        series = seriesRepository.findTopByOrderByIdDesc();
+
+        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        long authorId = customMemberDetail.getId();
+
+        series.updateSeries(dto, authorId);
+        seriesRepository.saveAndFlush(series);
+        uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
+    }
+
+    public List<EpisodePreviewDTO> getEpisodeList(long seriesId){
+        List<EpisodePreviewDTO> dtos = new ArrayList<>();
+        List<Episode> episodes = episodeRepository.findBySeriesId(seriesId);
+        for(Episode episode : episodes){
+            EpisodePreviewDTO dto = modelMapper.map(episode, EpisodePreviewDTO.class);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Transactional
+    public void deleteSeries(long seriesId){
+        seriesRepository.deleteById(seriesId);
+    }
+
+    @Transactional
+    public void updateSeries(SeriesModifyDTO dto){
+        Series series = seriesRepository.findById(dto.getId()).get();
+        series.updateSeries(dto);
+        seriesRepository.save(series);
+        uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
+    }
+
 
     public boolean isOwner(long seriesId, long memberId){
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new CustomBadRequestException(404, "Series not found"));
-        return series.getAuthorInfos().getId().equals(memberId);
+        return series.getAuthorId() == memberId;
     }
 
 
