@@ -1,13 +1,12 @@
 package com.example.project.emotionCore.Repository;
 
-import com.example.project.emotionCore.domain.QSeries;
-import com.example.project.emotionCore.domain.QSeriesView;
-import com.example.project.emotionCore.domain.Series;
+import com.example.project.emotionCore.domain.*;
 import com.example.project.emotionCore.dto.SeriesViewedPreviewDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -75,25 +74,22 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .fetch();
     }
 
-    @Override
     public List<Series> findAllByTagsContaining(List<String> tags) {
+        System.out.println("tags.size(): " + tags.size()); // ✅ 여기
         QSeries series = QSeries.series;
+        QSeriesTag seriesTag = QSeriesTag.seriesTag;
+        QTag tag = QTag.tag;
 
-        // 모든 태그를 포함하는 조건 생성
-        BooleanExpression condition = null;
-        for (String tag : tags) {
-            BooleanExpression containsTag = series.tags.like("%" + tag + "%");
-            condition = (condition == null) ? containsTag : condition.and(containsTag);
-        }
-
-        // Query 실행
         return queryFactory
-                .selectFrom(series)
-                .where(condition)
+                .select(series)
+                .from(series)
+                .join(series.tags, seriesTag)
+                .join(seriesTag.tag, tag)
+                .where(tag.name.in(tags))
+                .groupBy(series.id)
+                .having(tag.name.countDistinct().eq((long) tags.size()))
                 .fetch();
     }
-
-
 
     private BooleanExpression containsKeyword(String keyword){
         return containsKeywordInDescription(keyword)
@@ -119,7 +115,7 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
 
     private BooleanExpression containsKeywordInTags(String keyword){
         if(keyword == null || keyword.isEmpty()) return null;
-        return series.tags.contains(keyword);
+        return series.tags.any().tag.name.containsIgnoreCase(keyword);
     }
 
     @Override

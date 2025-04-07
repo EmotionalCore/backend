@@ -79,7 +79,7 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository{
 
     private BooleanExpression containsKeywordInTags(String keyword){
         if(keyword == null || keyword.isEmpty()) return null;
-        return author.tags.contains(keyword);
+        return author.tags.any().tag.name.containsIgnoreCase(keyword);
     }
 
     private BooleanExpression containsKeywordInUsername(String keyword){

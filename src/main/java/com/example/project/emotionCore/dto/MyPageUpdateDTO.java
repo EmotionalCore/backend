@@ -3,6 +3,7 @@ package com.example.project.emotionCore.dto;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,6 +20,6 @@ public class MyPageUpdateDTO {
     //Author 쪽
     private String description;
     private String links;
-    private String tags;
+    private Set<String> tags;
 
 }
