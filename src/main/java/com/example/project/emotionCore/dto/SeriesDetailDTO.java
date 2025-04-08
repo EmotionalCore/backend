@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Schema(description = "작품에 대한 상세 정보")
 @Data
@@ -40,5 +41,5 @@ public class SeriesDetailDTO {
     private int bookmarkCount;
 
     @Schema(description = "태그들", example = "[\"판타지\", \"마법\"]")
-    private List<String> tags;
+    private Set<String> tags;
 }

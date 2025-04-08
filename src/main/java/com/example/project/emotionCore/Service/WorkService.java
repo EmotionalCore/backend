@@ -206,7 +206,7 @@ public class WorkService {
 
     public List<SeriesIdAndNameDTO> getMySeries(Authentication authentication){
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
-        List<Series> entity = seriesRepository.findAllByAuthorInfos_Id(customMemberDetail.getId());
+        List<Series> entity = seriesRepository.findAllByAuthorId(customMemberDetail.getId());
 
         List<SeriesIdAndNameDTO> data = new ArrayList<>();
         for (Series series : entity) {
@@ -230,7 +230,7 @@ public class WorkService {
         //? toEntity, ofEntity 는 대체 어떻게 해야 깔끔 할까?
         Episode episode = Episode.builder().seriesId(dto.getSeriesId()).build();
         episodeRepository.save(episode);
-        episode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(episode.getSeriesId());
+        Episode savedEpisode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(episode.getSeriesId());
 
         Set<EpisodeTag> episodeTags = dto.getTags().stream()
                 .map(tagName -> tagRepository.findByName(tagName)
@@ -238,15 +238,15 @@ public class WorkService {
                 .map(tag -> EpisodeTag.builder().tag(tag).episode(episode).build())
                 .collect(Collectors.toSet());
 
-        episode.setTags(episodeTags);
+        savedEpisode.setTags(episodeTags);
 
-        episode.update(dto);
+        savedEpisode.update(dto, tagService);
         Episode.EpisodeKey episodeKey = Episode.EpisodeKey.builder()
-                .seriesId(episode.getSeriesId())
-                .number(episode.getNumber())
+                .seriesId(savedEpisode.getSeriesId())
+                .number(savedEpisode.getNumber())
                 .build();
         if(dto.getCoverImage() != null){
-            uploadImageToCloud(episode.getCoverImageUrl(), dto.getCoverImage());
+            uploadImageToCloud(savedEpisode.getCoverImageUrl(), dto.getCoverImage());
         }
         if(dto.getImages().get(0) != null){
             uploadImagesToCloud(episodeKey, dto.getImages());
@@ -254,6 +254,17 @@ public class WorkService {
 
 
     }
+
+    private void uploadImageToCloud(String filename, MultipartFile image){
+        if(image == null || image.isEmpty()){
+            InputStream inputStream = azureBlobService.getDefaultImage();
+            azureBlobService.uploadImage(filename, inputStream);
+            return;
+        }
+        checkImagesSecurity(Collections.singletonList(image));
+        azureBlobService.uploadImage(filename, image);
+    }
+
 
     private void uploadImagesToCloud(Episode.EpisodeKey episodeKey, List<MultipartFile> images){
         checkImagesSecurity(images);
@@ -316,7 +327,7 @@ public class WorkService {
     @Transactional
     public void updateEpisode(EpisodeModifyDTO dto){
         Episode episode = episodeRepository.findBySeriesIdAndNumber(dto.getSeriesId(), dto.getNumber());
-        episode.update(dto);
+        episode.update(dto, tagService);
 
 
         episode.getTags().clear();
@@ -352,7 +363,7 @@ public class WorkService {
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
         long authorId = customMemberDetail.getId();
 
-        series.updateSeries(dto, authorId);
+        series.updateSeries(dto, authorId, tagService);
         seriesRepository.saveAndFlush(series);
         uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
     }
@@ -375,7 +386,7 @@ public class WorkService {
     @Transactional
     public void updateSeries(SeriesModifyDTO dto){
         Series series = seriesRepository.findById(dto.getId()).get();
-        series.updateSeries(dto);
+        series.updateSeries(dto, tagService);
         seriesRepository.save(series);
         uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
     }
