@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.domain;
 
+import com.example.project.emotionCore.Service.TagService;
 import com.example.project.emotionCore.dto.SeriesModifyDTO;
 import com.example.project.emotionCore.dto.SeriesRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,9 +9,8 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -52,7 +52,7 @@ public class Series {
     private Set<SeriesTag> tags = new HashSet<>();
 
 
-    public void updateSeries(SeriesModifyDTO dto){
+    public void updateSeries(SeriesModifyDTO dto, TagService tagService){
         String coverImageFileType; //코드 ㄹㅇ 개떡
         if(dto.getImage() == null){
             coverImageFileType = "image/png";
@@ -63,11 +63,22 @@ public class Series {
         title = dto.getTitle();
         description = dto.getDescription();
         type = dto.getType();
-        tags = dto.getTags();
+
+        Set<Tag> tagSet = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .collect(Collectors.toSet());
+        for (Tag tag : tagSet) {
+            SeriesTag seriesTag = SeriesTag.builder()
+                    .series(this)
+                    .tag(tag)
+                    .build();
+            this.tags.add(seriesTag);
+        }
+
         coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
     }
 
-    public void updateSeries(SeriesRequestDTO dto, long authorId){
+    public void updateSeries(SeriesRequestDTO dto, long authorId, TagService tagService){
         String coverImageFileType; //코드 ㄹㅇ 개떡
         if(dto.getImage() == null){
             coverImageFileType = "image/png";
@@ -78,7 +89,19 @@ public class Series {
         title = dto.getTitle();
         description = dto.getDescription();
         type = dto.getType();
-        tags = dto.getTags();
+
+        Set<Tag> tagSet = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .collect(Collectors.toSet());
+        for (Tag tag : tagSet) {
+            SeriesTag seriesTag = SeriesTag.builder()
+                    .series(this)
+                    .tag(tag)
+                    .build();
+            this.tags.add(seriesTag);
+        }
+
+
         coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.authorId = authorId;
     }

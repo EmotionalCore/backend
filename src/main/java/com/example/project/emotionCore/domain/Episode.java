@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.domain;
 
+import com.example.project.emotionCore.Service.TagService;
 import com.example.project.emotionCore.dto.EpisodeModifyDTO;
 import com.example.project.emotionCore.dto.EpisodeRequestDTO;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "episode")
@@ -79,7 +81,7 @@ public class Episode {
         contents = sb.toString();
     }
 
-    public void update(EpisodeRequestDTO dto){ //코드 개떡 이게 왜 여깄지
+    public void update(EpisodeRequestDTO dto, TagService tagService){ //코드 개떡 이게 왜 여깄지
         String coverImageFileType; //코드 ㄹㅇ 개떡
         if(dto.getCoverImage() == null){
             coverImageFileType = "image/png";
@@ -90,12 +92,25 @@ public class Episode {
         this.title = dto.getTitle();
         this.coverImageUrl = seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
-        this.tags = dto.getTags();
+
+        Set<Tag> tagSet = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .collect(Collectors.toSet());
+        for (Tag tag : tagSet) {
+            EpisodeTag episodeTag = EpisodeTag.builder()
+                    .episode(this)
+                    .tag(tag)
+                    .build();
+            this.tags.add(episodeTag);
+        }
+
+
+
         this.contents = dto.getContents();
         changeFilename();
     }
 
-    public void update(EpisodeModifyDTO dto){ //코드 개떡 이게 왜 여깄지
+    public void update(EpisodeModifyDTO dto, TagService tagService){ //코드 개떡 이게 왜 여깄지
         String coverImageFileType; //코드 ㄹㅇ 개떡
         if(dto.getCoverImage() == null){
             coverImageFileType = "image/png";
@@ -106,7 +121,20 @@ public class Episode {
         this.title = dto.getTitle();
         this.coverImageUrl = seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
-        this.tags = dto.getTags();
+
+
+        Set<Tag> tagSet = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .collect(Collectors.toSet());
+        for (Tag tag : tagSet) {
+            EpisodeTag episodeTag = EpisodeTag.builder()
+                    .episode(this)
+                    .tag(tag)
+                    .build();
+            this.tags.add(episodeTag);
+        }
+
+
         this.contents = dto.getContents();
         changeFilename();
     }
