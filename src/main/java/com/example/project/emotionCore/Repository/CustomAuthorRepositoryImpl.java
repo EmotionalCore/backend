@@ -44,7 +44,7 @@ public class CustomAuthorRepositoryImpl implements CustomAuthorRepository{
                 .selectFrom(author)
                 .join(author.seriesList, series)
                 .leftJoin(seriesView).on(
-                        series.id.eq(seriesView.seriesId.intValue())
+                        series.id.eq(seriesView.seriesId)
                                 .and(seriesView.viewDate.between(startDate, endDate)))
                 .groupBy(author.id) // 작가별 그룹화
                 .orderBy(series.likeCount.sum().coalesce(0).desc())

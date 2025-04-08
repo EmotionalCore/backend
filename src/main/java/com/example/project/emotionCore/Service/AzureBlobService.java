@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -74,6 +75,7 @@ public class AzureBlobService {
     public void uploadImages(Episode.EpisodeKey episodeKey, List<MultipartFile> multipartFiles){
         int count = 0;
         for(MultipartFile multipartFile : multipartFiles){
+            if(multipartFile == null || multipartFile.isEmpty()) continue;
             String extension = imageValidatorService.getExtension(multipartFile);
             String fileName = episodeKey.getSeriesId() + "/" + episodeKey.getNumber() + "/" + count + extension;
             uploadImage(fileName, multipartFile);
@@ -81,14 +83,25 @@ public class AzureBlobService {
         }
     }
 
-    private void uploadImage(String fileName, MultipartFile multipartFile){
-        BlobClient file = CONTAINER.getBlobClient(fileName);
+    void uploadImage(String filename, MultipartFile multipartFile){
+        if(multipartFile == null || multipartFile.isEmpty()) return;
+        BlobClient file = CONTAINER.getBlobClient(filename);
         try {
-            file.upload(multipartFile.getInputStream());
+            file.upload(multipartFile.getInputStream(), true);
         }
         catch (IOException e){
             throw new CustomBadRequestException(500, "파일 업로드 에러 : "+multipartFile.getOriginalFilename());
         }
+    }
+
+    public void uploadImage(String filename, InputStream inputStream){
+        BlobClient file = CONTAINER.getBlobClient(filename);
+        file.upload(inputStream, true);
+    }
+
+    public InputStream getDefaultImage(){
+        BlobClient file = CONTAINER.getBlobClient("default.png");
+        return file.openInputStream();
     }
 
 

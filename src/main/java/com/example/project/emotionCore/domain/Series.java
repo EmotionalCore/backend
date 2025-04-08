@@ -1,14 +1,16 @@
 package com.example.project.emotionCore.domain;
 
+import com.example.project.emotionCore.dto.SeriesModifyDTO;
+import com.example.project.emotionCore.dto.SeriesRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,11 +21,10 @@ public class Series {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id", nullable = false)
-    private Author authorInfos;
+    @Column(name = "author_id", nullable = false)
+    private Long authorId;
 
     @Column(nullable = false)
     private String title;
@@ -49,5 +50,37 @@ public class Series {
 
     @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SeriesTag> tags = new HashSet<>();
+
+
+    public void updateSeries(SeriesModifyDTO dto){
+        String coverImageFileType; //코드 ㄹㅇ 개떡
+        if(dto.getImage() == null){
+            coverImageFileType = "image/png";
+        }
+        else{
+            coverImageFileType = dto.getImage().getContentType();
+        }
+        title = dto.getTitle();
+        description = dto.getDescription();
+        type = dto.getType();
+        tags = dto.getTags();
+        coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+    }
+
+    public void updateSeries(SeriesRequestDTO dto, long authorId){
+        String coverImageFileType; //코드 ㄹㅇ 개떡
+        if(dto.getImage() == null){
+            coverImageFileType = "image/png";
+        }
+        else{
+            coverImageFileType = dto.getImage().getContentType();
+        }
+        title = dto.getTitle();
+        description = dto.getDescription();
+        type = dto.getType();
+        tags = dto.getTags();
+        coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.authorId = authorId;
+    }
 
 }
