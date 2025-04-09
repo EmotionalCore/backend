@@ -363,7 +363,12 @@ public class WorkService {
         CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
         long authorId = customMemberDetail.getId();
 
-        series.updateSeries(dto, authorId, tagService);
+
+        Set<Tag> tagEntities = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .collect(Collectors.toSet());
+
+        series.updateSeries(dto.getTitle(),dto.getDescription(),dto.getType(),tagEntities,dto.getImage(), authorId);
         seriesRepository.saveAndFlush(series);
         uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
     }
@@ -386,7 +391,12 @@ public class WorkService {
     @Transactional
     public void updateSeries(SeriesModifyDTO dto){
         Series series = seriesRepository.findById(dto.getId()).get();
-        series.updateSeries(dto, tagService);
+
+        Set<Tag> tagEntities = dto.getTags().stream()
+                .map(tagService::findOrCreateByName)
+                .collect(Collectors.toSet());
+
+        series.updateSeries(dto.getTitle(),dto.getDescription(),dto.getType(),tagEntities,dto.getImage());
         seriesRepository.save(series);
         uploadImageToCloud(series.getCoverImageUrl(), dto.getImage());
     }
