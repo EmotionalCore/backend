@@ -51,23 +51,24 @@ public class Series {
     @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SeriesTag> tags = new HashSet<>();
 
-
-    public void updateSeries(SeriesModifyDTO dto, TagService tagService){
+    public void updateSeries(String title, String description, String type, Set<Tag> tags, MultipartFile image){
         String coverImageFileType; //코드 ㄹㅇ 개떡
-        if(dto.getImage() == null){
+        if(image == null){
             coverImageFileType = "image/png";
         }
         else{
-            coverImageFileType = dto.getImage().getContentType();
+            coverImageFileType = image.getContentType();
         }
-        title = dto.getTitle();
-        description = dto.getDescription();
-        type = dto.getType();
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        if (this.tags == null) {
+            this.tags = new HashSet<>();
+        } else {
+            this.tags.clear(); // 이전 태그 제거
+        }
 
-        Set<Tag> tagSet = dto.getTags().stream()
-                .map(tagService::findOrCreateByName)
-                .collect(Collectors.toSet());
-        for (Tag tag : tagSet) {
+        for (Tag tag : tags) {
             SeriesTag seriesTag = SeriesTag.builder()
                     .series(this)
                     .tag(tag)
@@ -78,22 +79,24 @@ public class Series {
         coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
     }
 
-    public void updateSeries(SeriesRequestDTO dto, long authorId, TagService tagService){
+    public void updateSeries(String title, String description, String type, Set<Tag> tags, MultipartFile image, long authorId){
         String coverImageFileType; //코드 ㄹㅇ 개떡
-        if(dto.getImage() == null){
+        if(image == null){
             coverImageFileType = "image/png";
         }
         else{
-            coverImageFileType = dto.getImage().getContentType();
+            coverImageFileType = image.getContentType();
         }
-        title = dto.getTitle();
-        description = dto.getDescription();
-        type = dto.getType();
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        if (this.tags == null) {
+            this.tags = new HashSet<>();
+        } else {
+            this.tags.clear(); // 이전 태그 제거
+        }
 
-        Set<Tag> tagSet = dto.getTags().stream()
-                .map(tagService::findOrCreateByName)
-                .collect(Collectors.toSet());
-        for (Tag tag : tagSet) {
+        for (Tag tag : tags) {
             SeriesTag seriesTag = SeriesTag.builder()
                     .series(this)
                     .tag(tag)
