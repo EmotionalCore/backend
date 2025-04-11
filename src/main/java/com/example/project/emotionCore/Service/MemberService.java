@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class MemberService {
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
     private final SeriesRepository seriesRepository;
+    private final CustomUserDetailService customUserDetailService;
 
 
     //3
@@ -71,13 +73,13 @@ public class MemberService {
 
 
     //2
-    public String signUpWithSocial(String email, String username) {
+    public JwtTokenDTO signUpWithSocial(String email, String username) {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setEmail(email);
         memberDTO.setUsername(username);
         memberDTO.setPassword("");  // 소셜 로그인이라 비밀번호는 필요 없음
         memberRepository.save(MemberMapper.toEntity(memberDTO));
-        return "소셜 회원가입 완료";
+        return signInWithSocial(email);
     }
 
     //11
@@ -119,7 +121,9 @@ public class MemberService {
     // 소셜 로그인 시 기존 사용자 처리
     public JwtTokenDTO signInWithSocial(String email) {
         // 소셜 로그인은 비밀번호 없이 이메일만으로 로그인
-        return jwtTokenProvider.generateToken(new UsernamePasswordAuthenticationToken(email, ""));
+        UserDetails userDetails = customUserDetailService.loadUserByEmail(email);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+        return jwtTokenProvider.generateToken(authentication);
     }
 
 
