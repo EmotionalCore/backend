@@ -1,6 +1,7 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.KakaoService;
+import com.example.project.emotionCore.dto.JwtTokenDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class KakaoController {
     }
 
     @GetMapping()
-    public void kakaoLogin(@RequestParam String code) {
-        kakaoService.socialLogin(code);
+    public JwtTokenDTO kakaoLogin(@RequestParam String code) {
+        return kakaoService.socialLogin(code);
     }
 }

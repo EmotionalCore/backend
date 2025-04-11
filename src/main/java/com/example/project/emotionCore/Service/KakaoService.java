@@ -1,5 +1,6 @@
 package com.example.project.emotionCore.Service;
 
+import com.example.project.emotionCore.dto.JwtTokenDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
@@ -20,7 +21,7 @@ public class KakaoService {
         this.memberService = memberService;
     }
 
-    public void socialLogin(String code) {
+    public JwtTokenDTO socialLogin(String code) {
         String accessToken = getAccessToken(code);
         JsonNode userResourceNode = getUserResource(accessToken);
         String userId = userResourceNode.get("id").asText()+"@local_kakao.com";
@@ -28,12 +29,11 @@ public class KakaoService {
 
         if (memberService.isEmailRegistered(userId)) {
             // 이미 이메일이 존재하면 로그인
-            memberService.signInWithSocial(userId); // username 추가
+            return memberService.signInWithSocial(userId); // username 추가
         } else {
             // 이메일이 존재하지 않으면 회원가입
-            memberService.signUpWithSocial(userId, username); // username 추가
+            return memberService.signUpWithSocial(userId, username); // username 추가
         }
-
     }
 
     private String getAccessToken(String authorizationCode) {
