@@ -26,7 +26,7 @@ public class KakaoController {
     @GetMapping()
     public ResponseEntity<Void> kakaoLogin(@RequestParam String code) {
         JwtTokenDTO jwtTokenDTO = kakaoService.socialLogin(code);
-        String redirectUrl = "https://yourfrontend.com/oauth/kakao/success"
+        String redirectUrl = "https://emotioncores.com/auth/oauth2/kakao"
                 + "?accessToken=" + jwtTokenDTO.getAccessToken()
                 + "&refreshToken=" +jwtTokenDTO.getRefreshToken();
 
