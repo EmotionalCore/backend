@@ -23,15 +23,8 @@ public class KakaoController {
         this.kakaoService = kakaoService;
     }
 
-    @GetMapping()
-    public ResponseEntity<Void> kakaoLogin(@RequestParam String code) {
-        JwtTokenDTO jwtTokenDTO = kakaoService.socialLogin(code);
-        String redirectUrl = "https://emotioncores.com/auth/oauth2/kakao"
-                + "?accessToken=" + jwtTokenDTO.getAccessToken()
-                + "&refreshToken=" +jwtTokenDTO.getRefreshToken();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(redirectUrl));
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    @PostMapping()
+    public JwtTokenDTO kakaoLogin(@RequestParam String code) {
+        return kakaoService.socialLogin(code);
     }
 }
