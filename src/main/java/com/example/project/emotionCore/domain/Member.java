@@ -40,6 +40,6 @@ public class Member{
     public void updateProfile(MyPageUpdateDTO dto) {
         this.profileImageUrl = dto.getProfileImageUrl();
         this.username = dto.getUsername();
-        this.email = dto.getUsername();
+        this.email = dto.getEmail();
     }
 }
