@@ -93,6 +93,11 @@ public class WorkService {
         for (Series series : entity) {
             SeriesDetailDTO dto = modelMapper.map(series, SeriesDetailDTO.class);
             dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            Set<String> tagNames = series.getTags().stream()
+                    .map(seriesTag -> seriesTag.getTag().getName())
+                    .collect(Collectors.toSet());
+            dto.setTags(tagNames);
+
             data.add(dto);
         }
         return data;
