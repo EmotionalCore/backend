@@ -27,13 +27,12 @@ public class AuthorService {
 
     private final MemberRepository memberRepository;
     private final EpisodeRepository episodeRepository;
-
     private final AuthorRepository authorRepository;
     private final TagService tagService;
     ModelMapper modelMapper = new ModelMapper();
 
 
-    public AuthorService(AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository,  TagService tagService) {{
+    public AuthorService(AuthorRepository authorRepository, MemberRepository memberRepository, EpisodeRepository episodeRepository,  TagService tagService) {
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
         this.episodeRepository = episodeRepository;
