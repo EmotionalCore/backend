@@ -46,6 +46,12 @@ public class AuthorService {
             AuthorDTO dto = modelMapper.map(author, AuthorDTO.class);
             dto.setAuthorName(memberRepository.findById((long) dto.getId()).get().getUsername());
             dto.setProfileImageUrl(memberRepository.findById((long) dto.getId()).get().getProfileImageUrl());
+
+            Set<String> tagNames = author.getTags().stream()
+                    .map(authorTag -> authorTag.getTag().getName())
+                    .collect(Collectors.toSet());
+            dto.setTags(tagNames);
+
             data.add(dto);
         }
         return data;
