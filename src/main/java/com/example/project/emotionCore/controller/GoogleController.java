@@ -1,6 +1,8 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.GoogleService;
+import com.example.project.emotionCore.dto.CodeRequestDTO;
+import com.example.project.emotionCore.dto.JwtTokenDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,8 @@ public class GoogleController {
         this.googleService = googleService;
     }
 
-    @GetMapping("/code/{registrationId}")
-    public void googleLogin(@RequestParam String code, @PathVariable String registrationId) {
-        googleService.socialLogin(code, registrationId);
+    @PostMapping("/code/{registrationId}")
+    public JwtTokenDTO googleLogin(@RequestBody CodeRequestDTO dto) {
+        return googleService.socialLogin(dto.getCode());
     }
 }
