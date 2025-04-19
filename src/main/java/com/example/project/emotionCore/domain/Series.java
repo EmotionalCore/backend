@@ -105,7 +105,7 @@ public class Series {
         }
 
 
-        coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        coverImageUrl = "/"+id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.authorId = authorId;
     }
 
