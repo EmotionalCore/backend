@@ -388,6 +388,18 @@ public class WorkService {
         return dtos;
     }
 
+    public SeriesDetailDTO getSeriesInfo(long seriesId){
+        Series series = seriesRepository.findById(seriesId).orElseThrow(() -> new CustomBadRequestException(400, "찾을수 없는 series"));
+        SeriesDetailDTO dto = modelMapper.map(series, SeriesDetailDTO.class);
+        dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+        Set<String> tagNames = series.getTags().stream()
+                .map(seriesTag -> seriesTag.getTag().getName())
+                .collect(Collectors.toSet());
+        dto.setTags(tagNames);
+        return dto;
+    }
+
+
     @Transactional
     public void deleteSeries(long seriesId){
         seriesRepository.deleteById(seriesId);

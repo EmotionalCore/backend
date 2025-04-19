@@ -256,6 +256,13 @@ public class WorkController {
         return ResponseEntity.ok(episodePreviewDTO);
     }
 
+    @Operation(summary = "특정 series 정보 가져오기")
+    @GetMapping("/series/info")
+    public ResponseEntity<SeriesDetailDTO> getSeriesInfo(@RequestParam long seriesId) {
+        SeriesDetailDTO seriesDetailDTO = workService.getSeriesInfo(seriesId);
+        return ResponseEntity.ok(seriesDetailDTO);
+    }
+
     @Operation(summary = "series 삭제 기능")
     @DeleteMapping("/series")
     @PreAuthorize("hasRole('ADMIN') or @workService.isOwner(#seriesId, authentication.principal.id)")
