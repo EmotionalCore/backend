@@ -25,8 +25,6 @@ public class EpisodeRequestDTO {
 
     private String description;
 
-    private Set<String> tags;
-
     private String contents;
 
     private List<MultipartFile> images;

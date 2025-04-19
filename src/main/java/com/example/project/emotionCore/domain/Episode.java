@@ -45,9 +45,6 @@ public class Episode {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EpisodeTag> tags = new HashSet<>();
-
     @Column(columnDefinition = "TEXT", nullable = false)
     private String contents;
 
@@ -55,7 +52,7 @@ public class Episode {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "view_count")
+    @Column(name = "view_count", insertable = false, updatable = true)
     private Long viewCount;
 
     //@Transient
@@ -93,6 +90,7 @@ public class Episode {
         this.coverImageUrl = seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
 
+        /*
         Set<Tag> tagSet = dto.getTags().stream()
                 .map(tagService::findOrCreateByName)
                 .collect(Collectors.toSet());
@@ -103,7 +101,7 @@ public class Episode {
                     .build();
             this.tags.add(episodeTag);
         }
-
+        */
 
 
         this.contents = dto.getContents();
@@ -122,7 +120,7 @@ public class Episode {
         this.coverImageUrl = "/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
 
-
+    /*
         Set<Tag> tagSet = dto.getTags().stream()
                 .map(tagService::findOrCreateByName)
                 .collect(Collectors.toSet());
@@ -133,7 +131,7 @@ public class Episode {
                     .build();
             this.tags.add(episodeTag);
         }
-
+    */
 
         this.contents = dto.getContents();
         changeFilename();
