@@ -237,6 +237,7 @@ public class WorkService {
         episodeRepository.save(episode);
         Episode savedEpisode = episodeRepository.findTopBySeriesIdOrderByCreatedAtDesc(episode.getSeriesId());
 
+        /*
         Set<EpisodeTag> episodeTags = dto.getTags().stream()
                 .map(tagName -> tagRepository.findByName(tagName)
                         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 태그: " + tagName)))
@@ -244,7 +245,7 @@ public class WorkService {
                 .collect(Collectors.toSet());
 
         savedEpisode.setTags(episodeTags);
-
+        */
         savedEpisode.update(dto, tagService);
         Episode.EpisodeKey episodeKey = Episode.EpisodeKey.builder()
                 .seriesId(savedEpisode.getSeriesId())
@@ -334,7 +335,7 @@ public class WorkService {
         Episode episode = episodeRepository.findBySeriesIdAndNumber(dto.getSeriesId(), dto.getNumber());
         episode.update(dto, tagService);
 
-
+    /*
         episode.getTags().clear();
 
         Set<EpisodeTag> Tags = dto.getTags().stream()
@@ -346,7 +347,7 @@ public class WorkService {
                 .collect(Collectors.toSet());
 
         episode.getTags().addAll(Tags);
-
+    */
 
 
         if(dto.getImages().get(0) != null){

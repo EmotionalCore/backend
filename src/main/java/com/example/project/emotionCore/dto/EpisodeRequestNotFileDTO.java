@@ -17,8 +17,6 @@ public class EpisodeRequestNotFileDTO {
 
     private String description;
 
-    private String tags;
-
     private String contents;
 
     //private List<MultipartFile> images;
