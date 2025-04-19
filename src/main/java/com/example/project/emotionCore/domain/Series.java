@@ -76,7 +76,7 @@ public class Series {
             this.tags.add(seriesTag);
         }
 
-        coverImageUrl = id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        coverImageUrl = "/"+id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
     }
 
     public void updateSeries(String title, String description, String type, Set<Tag> tags, MultipartFile image, long authorId){
