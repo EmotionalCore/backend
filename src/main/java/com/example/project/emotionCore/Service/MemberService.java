@@ -107,7 +107,7 @@ public class MemberService {
         ///////////////////////////////////////////////
         // JWT Token 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                member, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
+                new CustomMemberDetail(member), null, Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
         );
 
         return jwtTokenProvider.generateToken(authentication);
