@@ -48,6 +48,8 @@ public class NaverService {
         params.add("client_secret", clientSecret);
         params.add("code", code);
         params.add("state", state);
+        params.add("redirect_uri", redirectUri);
+
 
         // API 요청
         ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, params, Map.class);
