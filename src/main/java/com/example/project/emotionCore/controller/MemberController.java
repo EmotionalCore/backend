@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -71,10 +73,33 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/signin")  // 로그인
-    public ResponseEntity<JwtTokenDTO> signIn(@RequestBody SigninRequestDTO signinRequestDTO) {
+    public ResponseEntity<Void> signIn(@RequestBody SigninRequestDTO signinRequestDTO) {
         try{
-            JwtTokenDTO tokenDTO = memberService.singIn(signinRequestDTO.getEmail(), signinRequestDTO.getPassword());
-            return ResponseEntity.ok(tokenDTO);
+            JwtTokenDTO tokens = memberService.singIn(signinRequestDTO.getEmail(), signinRequestDTO.getPassword());
+
+            // Access Token 쿠키 생성
+            ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
+                    .httpOnly(true)    // 클라이언트 JavaScript에서 접근 불가
+                    .secure(true)      // HTTPS 통신에서만 전송
+                    .path("/")         // 쿠키 경로
+                    .maxAge(3600)      // 1시간 유지
+                    .sameSite("Strict")
+                    .build();
+
+            // Refresh Token 쿠키 생성
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(604800)    // 7일 유지
+                    .sameSite("Strict")
+                    .build();
+
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                    .build();
         }
         catch(AuthenticationException e){
             throw new CustomBadRequestException(401, e.getMessage());
@@ -88,11 +113,34 @@ public class MemberController {
     })
     @PostMapping("/token/refresh")
     public ResponseEntity<JwtTokenDTO> refreshToken(@RequestParam String refreshToken){
-        JwtTokenDTO tokenDTO = memberService.getNewToken(refreshToken);
-        if(tokenDTO == null){
+        JwtTokenDTO tokens = memberService.getNewToken(refreshToken);
+        if(tokens == null){
             throw new CustomBadRequestException(401, "Invalid Refresh Token");
         }
-        return ResponseEntity.ok(tokenDTO);
+
+        // Access Token 쿠키 생성
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
+                .httpOnly(true)    // 클라이언트 JavaScript에서 접근 불가
+                .secure(true)      // HTTPS 통신에서만 전송
+                .path("/")         // 쿠키 경로
+                .maxAge(3600)      // 1시간 유지
+                .sameSite("Strict")
+                .build();
+
+        // Refresh Token 쿠키 생성
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(604800)    // 7일 유지
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .build();
     }
 
     @Operation(description = "매번 로그인하는거 귀찮아서 만듦")
