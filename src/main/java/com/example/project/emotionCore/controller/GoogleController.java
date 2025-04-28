@@ -32,7 +32,7 @@ public class GoogleController {
                 .secure(true)      // HTTPS 통신에서만 전송
                 .path("/")         // 쿠키 경로
                 .maxAge(3600)      // 1시간 유지
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         // Refresh Token 쿠키 생성
@@ -41,7 +41,7 @@ public class GoogleController {
                 .secure(true)
                 .path("/")
                 .maxAge(604800)    // 7일 유지
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         return ResponseEntity
