@@ -24,17 +24,8 @@ public class NaverController {
      * @return JwtTokenDTO (AccessToken, RefreshToken 포함)
      */
     @PostMapping("/naver")
-    public ResponseEntity<Void> naverSignIn(@RequestBody NaverCodeRequestDTO dto) {
+    public ResponseEntity<String> naverSignIn(@RequestBody NaverCodeRequestDTO dto) {
         JwtTokenDTO tokens = memberService.naverLogin(dto.getCode(), dto.getState());
-
-        // Access Token 쿠키 생성
-        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokens.getAccessToken())
-                .httpOnly(true)    // 클라이언트 JavaScript에서 접근 불가
-                .secure(true)      // HTTPS 통신에서만 전송
-                .path("/")         // 쿠키 경로
-                .maxAge(3600)      // 1시간 유지
-                .sameSite("Lax")
-                .build();
 
         // Refresh Token 쿠키 생성
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
@@ -47,8 +38,7 @@ public class NaverController {
 
         return ResponseEntity
                 .ok()
-                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .build();
+                .body(tokens.getAccessToken());
     }
 }
