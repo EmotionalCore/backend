@@ -5,6 +5,7 @@ import com.example.project.emotionCore.Service.CustomMemberDetail;
 import com.example.project.emotionCore.Service.MemberService;
 import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.domain.Member;
+import com.example.project.emotionCore.dto.MemberDetailDTO;
 import com.example.project.emotionCore.dto.MyPageUpdateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -46,4 +47,18 @@ public class MyPageController {
             authorService.updateAuthor(id, mypageupdateDTO);
         return ResponseEntity.ok("회원정보가 업데이트 되었습니다.");
     }
+
+
+    @Operation(summary="본인Detail 가져오기")
+    @GetMapping("/mydetail")
+    public ResponseEntity<Long> getMyId(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+        if(customMemberDetail == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(null);  // 혹은 .build()로 빈 바디 반환
+        }
+        Long memberId = customMemberDetail.getId();
+        return ResponseEntity.ok(memberId);
+    }
+
+
 }
