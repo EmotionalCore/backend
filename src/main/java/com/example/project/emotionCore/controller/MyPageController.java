@@ -1,5 +1,7 @@
 package com.example.project.emotionCore.controller;
 
+import com.example.project.emotionCore.Repository.AuthorRepository;
+import com.example.project.emotionCore.Repository.MemberRepository;
 import com.example.project.emotionCore.Service.AuthorService;
 import com.example.project.emotionCore.Service.CustomMemberDetail;
 import com.example.project.emotionCore.Service.MemberService;
@@ -16,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/mypage")
@@ -24,6 +27,8 @@ public class MyPageController {
 
     private final MemberService memberService;
     private final AuthorService authorService;
+    private final MemberRepository memberRepository;
+    private final AuthorRepository authorRepository;
 
     @Operation(summary="회원 탈퇴")
     @DeleteMapping("/delete")
@@ -51,13 +56,31 @@ public class MyPageController {
 
     @Operation(summary="본인Detail 가져오기")
     @GetMapping("/mydetail")
-    public ResponseEntity<Long> getMyId(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+    public ResponseEntity<MyPageUpdateDTO> getMyId(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
         if(customMemberDetail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(null);  // 혹은 .build()로 빈 바디 반환
         }
         Long memberId = customMemberDetail.getId();
-        return ResponseEntity.ok(memberId);
+        Member member = memberRepository.findById(memberId).orElse(null);
+        Author author = authorRepository.findById(memberId);
+
+        // DTO에 값 세팅
+        MyPageUpdateDTO dto = new MyPageUpdateDTO();
+        dto.setUsername(member.getUsername());
+        dto.setEmail(member.getEmail());
+        dto.setProfileImageUrl(member.getProfileImageUrl());
+
+        dto.setDescription(author.getDescription());
+        dto.setLinks(author.getLinks());
+        // tags 가 Set<Tag> 형태라면, 이름(String)만 뽑아낼 수 있도록 변환
+        // AuthorTag 엔티티에서 태그명만 뽑아서 Set<String>으로 변환
+        dto.setTags(author.getTags().stream()
+                .map(authorTag -> authorTag.getTag().getName())
+                .collect(Collectors.toSet())
+        );
+        // 200 OK + DTO 반환
+        return ResponseEntity.ok(dto);
     }
 
 
