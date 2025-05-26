@@ -71,14 +71,17 @@ public class MyPageController {
         dto.setEmail(member.getEmail());
         dto.setProfileImageUrl(member.getProfileImageUrl());
 
-        dto.setDescription(author.getDescription());
-        dto.setLinks(author.getLinks());
-        // tags 가 Set<Tag> 형태라면, 이름(String)만 뽑아낼 수 있도록 변환
-        // AuthorTag 엔티티에서 태그명만 뽑아서 Set<String>으로 변환
-        dto.setTags(author.getTags().stream()
-                .map(authorTag -> authorTag.getTag().getName())
-                .collect(Collectors.toSet())
-        );
+        if(author != null){
+            dto.setDescription(author.getDescription());
+            dto.setLinks(author.getLinks());
+            // tags 가 Set<Tag> 형태라면, 이름(String)만 뽑아낼 수 있도록 변환
+            // AuthorTag 엔티티에서 태그명만 뽑아서 Set<String>으로 변환
+            dto.setTags(author.getTags().stream()
+                    .map(authorTag -> authorTag.getTag().getName())
+                    .collect(Collectors.toSet())
+            );
+        }
+
         // 200 OK + DTO 반환
         return ResponseEntity.ok(dto);
     }
