@@ -1,6 +1,7 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.GoogleService;
+import com.example.project.emotionCore.dto.AccessTokenDTO;
 import com.example.project.emotionCore.dto.CodeRequestDTO;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class GoogleController {
     }
 
     @PostMapping("/code/{registrationId}")
-    public ResponseEntity<String> googleLogin(@RequestBody CodeRequestDTO dto) {
+    public ResponseEntity<AccessTokenDTO> googleLogin(@RequestBody CodeRequestDTO dto) {
         JwtTokenDTO tokens = googleService.socialLogin(dto.getCode());
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
@@ -34,9 +35,10 @@ public class GoogleController {
                 .sameSite("Lax")
                 .build();
 
+        AccessTokenDTO googleAccessTokenDTO = new AccessTokenDTO(tokens.getAccessToken());
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(tokens.getAccessToken());
+                .body(googleAccessTokenDTO);
     }
 }

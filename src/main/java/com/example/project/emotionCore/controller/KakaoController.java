@@ -1,6 +1,7 @@
 package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.KakaoService;
+import com.example.project.emotionCore.dto.AccessTokenDTO;
 import com.example.project.emotionCore.dto.CodeRequestDTO;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class KakaoController {
     }
 
     @PostMapping()
-    public ResponseEntity<String> kakaoLogin(@RequestBody CodeRequestDTO dto) {
+    public ResponseEntity<AccessTokenDTO> kakaoLogin(@RequestBody CodeRequestDTO dto) {
         JwtTokenDTO tokens = kakaoService.socialLogin(dto.getCode());
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
@@ -34,9 +35,11 @@ public class KakaoController {
                 .sameSite("Lax")
                 .build();
 
+        AccessTokenDTO kakaoAccessTokenDTO = new AccessTokenDTO(tokens.getAccessToken());
+
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(tokens.getAccessToken());
+                .body(kakaoAccessTokenDTO);
     }
 }

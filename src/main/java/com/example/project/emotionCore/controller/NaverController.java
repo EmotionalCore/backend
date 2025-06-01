@@ -2,7 +2,7 @@ package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.Service.MemberService;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
-import com.example.project.emotionCore.dto.NaverAccessTokenDTO;
+import com.example.project.emotionCore.dto.AccessTokenDTO;
 import com.example.project.emotionCore.dto.NaverCodeRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +25,7 @@ public class NaverController {
      * @return JwtTokenDTO (AccessToken, RefreshToken 포함)
      */
     @PostMapping("/naver")
-    public ResponseEntity<NaverAccessTokenDTO> naverSignIn(@RequestBody NaverCodeRequestDTO dto) {
+    public ResponseEntity<AccessTokenDTO> naverSignIn(@RequestBody NaverCodeRequestDTO dto) {
         JwtTokenDTO tokens = memberService.naverLogin(dto.getCode(), dto.getState());
 
         // Refresh Token 쿠키 생성
@@ -37,7 +37,7 @@ public class NaverController {
                 .sameSite("Lax")
                 .build();
 
-        NaverAccessTokenDTO naverAccessTokenDTO = new NaverAccessTokenDTO(tokens.getAccessToken());
+        AccessTokenDTO naverAccessTokenDTO = new AccessTokenDTO(tokens.getAccessToken());
 
         return ResponseEntity
                 .ok()

@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "네이버 로그인시 토큰 넘기는 용도 DTO")
-public class NaverAccessTokenDTO{
+@Schema(description = "소셜 로그인시 토큰 넘기는 용도 DTO")
+public class AccessTokenDTO {
     private String access_token;
 
     public void setAccess_token(String access_token){
