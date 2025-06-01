@@ -101,7 +101,7 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/token/refresh")
-    public ResponseEntity<String> refreshToken(@RequestParam String refreshToken){
+    public ResponseEntity<String> refreshToken(@CookieValue(value = "refreshToken") String refreshToken) {
         JwtTokenDTO tokens = memberService.getNewToken(refreshToken);
         if(tokens == null){
             throw new CustomBadRequestException(401, "Invalid Refresh Token");
@@ -119,7 +119,6 @@ public class MemberController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(tokens.getAccessToken());
-
     }
 
     @Operation(description = "매번 로그인하는거 귀찮아서 만듦")

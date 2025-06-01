@@ -1,12 +1,14 @@
 package com.example.project.emotionCore.dto;
 
 
+import com.example.project.emotionCore.domain.AuthorTag;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -26,5 +28,5 @@ public class MemberDetailDTO {
 
     private String links;
 
-    private String tags;
+    private Set<String> tags;
 }
