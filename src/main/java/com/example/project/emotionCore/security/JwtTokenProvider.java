@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     private final CustomUserDetailService customUserDetailService;
 
     // access 토큰 만료 30분
-    final static int accessTokenExpiration = (30 * 60 * 1000);
+    final static int accessTokenExpiration = (10 * 60 * 1000);
 
     // refresh 토큰 만료 1주일
     final static int refreshTokenExpiration = (7 * 24 * 60 * 60 * 1000);
