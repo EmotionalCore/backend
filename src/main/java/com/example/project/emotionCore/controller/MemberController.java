@@ -123,9 +123,20 @@ public class MemberController {
 
     @Operation(description = "매번 로그인하는거 귀찮아서 만듦")
     @GetMapping("/W0W_Y0U_AR3_ADM1N")
-    public ResponseEntity<JwtTokenDTO> W0W_Y0U_AR3_ADM1N(){
+    public ResponseEntity<String> W0W_Y0U_AR3_ADM1N(){
         JwtTokenDTO tokenDTO = memberService.singIn("test@localhost.com", "test123!");
-        return ResponseEntity.ok(tokenDTO);
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokenDTO.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(604800)    // 7일 유지
+                .sameSite("Lax")
+                .build();
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(tokenDTO.getAccessToken());
     }
 
     @PostMapping("/findpassword")   // 비밀번호 찾기
