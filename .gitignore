@@ -41,3 +41,5 @@ out/
 
 ### private ###
 /src/main/resources/application.properties
+
+/Dockerfile
