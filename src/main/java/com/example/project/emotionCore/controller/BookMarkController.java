@@ -1,7 +1,7 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Service.BookMarkService;
-import com.example.project.emotionCore.Service.CustomMemberDetail;
+import com.example.project.emotionCore.service.BookMarkService;
+import com.example.project.emotionCore.service.CustomMemberDetail;
 import com.example.project.emotionCore.dto.BookMarkRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

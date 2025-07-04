@@ -1,16 +1,11 @@
 package com.example.project.emotionCore.domain;
 
-import com.example.project.emotionCore.Service.TagService;
-import com.example.project.emotionCore.dto.SeriesModifyDTO;
-import com.example.project.emotionCore.dto.SeriesRequestDTO;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter

@@ -1,6 +1,6 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Service.GoogleService;
+import com.example.project.emotionCore.service.GoogleService;
 import com.example.project.emotionCore.dto.AccessTokenDTO;
 import com.example.project.emotionCore.dto.CodeRequestDTO;
 import com.example.project.emotionCore.dto.JwtTokenDTO;

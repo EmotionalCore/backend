@@ -1,19 +1,17 @@
 package com.example.project.emotionCore.domain;
 
-import com.example.project.emotionCore.Service.TagService;
+import com.example.project.emotionCore.service.TagService;
 import com.example.project.emotionCore.dto.EpisodeModifyDTO;
 import com.example.project.emotionCore.dto.EpisodeRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "episode")
