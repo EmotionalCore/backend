@@ -1,6 +1,6 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Service.KakaoService;
+import com.example.project.emotionCore.service.KakaoService;
 import com.example.project.emotionCore.dto.AccessTokenDTO;
 import com.example.project.emotionCore.dto.CodeRequestDTO;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
