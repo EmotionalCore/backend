@@ -64,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://emotional-core.vercel.app", "http://localhost:3000")); // 허용할 도메인
+        configuration.setAllowedOrigins(Arrays.asList("https://emotional-core.vercel.app", "http://localhost:3000", "https://emotionalcore.vercel.app")); // 허용할 도메인
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // 허용할 헤더
         configuration.addExposedHeader("Authorization"); //프론트엔드 요청사항
