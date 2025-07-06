@@ -22,8 +22,12 @@ import java.util.*;
 public class Author{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                    // 데이터베이스 상 관리하는 고객 번호
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name="id")
+    private Member member;
 
     @Column(name = "description")
     private String description;
@@ -38,9 +42,10 @@ public class Author{
     @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Series> seriesList = new ArrayList<>();
 
-    public Author(String description, String links, Set<Tag> tags) {
-        this.description = description;
-        this.links = links;
+    public Author(Member member, String description, String links, Set<Tag> tags) {
+        this.member = member;
+        this.description = description != null ? description : "";
+        this.links = links != null ? links : "";
         for (Tag tag : tags) {
             AuthorTag authorTag = AuthorTag.builder()
                     .author(this)

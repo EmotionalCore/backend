@@ -1,5 +1,7 @@
 package com.example.project.emotionCore.service;
 
+import com.example.project.emotionCore.domain.Author;
+import com.example.project.emotionCore.repository.AuthorRepository;
 import com.example.project.emotionCore.repository.MemberRepository;
 import com.example.project.emotionCore.repository.SeriesRepository;
 import com.example.project.emotionCore.domain.Member;
@@ -18,10 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +33,7 @@ public class MemberService {
     private final ModelMapper modelMapper;
     private final SeriesRepository seriesRepository;
     private final CustomUserDetailService customUserDetailService;
+    private final AuthorRepository authorRepository;
 
 
     //3
@@ -52,7 +52,10 @@ public class MemberService {
             throw new CustomBadRequestException(400, "Username already exists");
         }
         try{
-            memberRepository.save(MemberMapper.toEntity(signUpDTO));
+            Member savedMember=memberRepository.save(MemberMapper.toEntity(signUpDTO));
+
+            Author author = new Author(savedMember, "", "", new HashSet<>());
+            authorRepository.save(author);
         }
         catch (Exception e){
             throw new CustomBadRequestException(400, "Error code D92130. 관리자에게 연락해주세요."); //에러코드 암거나씀
