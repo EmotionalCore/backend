@@ -1,7 +1,7 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Service.CustomMemberDetail;
-import com.example.project.emotionCore.Service.LikeService;
+import com.example.project.emotionCore.service.CustomMemberDetail;
+import com.example.project.emotionCore.service.LikeService;
 import com.example.project.emotionCore.dto.LikeRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

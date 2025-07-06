@@ -1,6 +1,6 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Service.MemberService;
+import com.example.project.emotionCore.service.MemberService;
 import com.example.project.emotionCore.dto.JwtTokenDTO;
 import com.example.project.emotionCore.dto.AccessTokenDTO;
 import com.example.project.emotionCore.dto.NaverCodeRequestDTO;

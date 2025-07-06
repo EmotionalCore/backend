@@ -1,23 +1,20 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Repository.AuthorRepository;
-import com.example.project.emotionCore.Repository.MemberRepository;
-import com.example.project.emotionCore.Service.AuthorService;
-import com.example.project.emotionCore.Service.CustomMemberDetail;
-import com.example.project.emotionCore.Service.MemberService;
+import com.example.project.emotionCore.repository.AuthorRepository;
+import com.example.project.emotionCore.repository.MemberRepository;
+import com.example.project.emotionCore.service.AuthorService;
+import com.example.project.emotionCore.service.CustomMemberDetail;
+import com.example.project.emotionCore.service.MemberService;
 import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.domain.Member;
-import com.example.project.emotionCore.dto.MemberDetailDTO;
 import com.example.project.emotionCore.dto.MyPageUpdateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController

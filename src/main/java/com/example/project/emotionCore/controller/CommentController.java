@@ -1,12 +1,10 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.Repository.MemberRepository;
-import com.example.project.emotionCore.Service.CommentService;
-import com.example.project.emotionCore.Service.CustomMemberDetail;
+import com.example.project.emotionCore.repository.MemberRepository;
+import com.example.project.emotionCore.service.CommentService;
+import com.example.project.emotionCore.service.CustomMemberDetail;
 import com.example.project.emotionCore.domain.Comment;
-import com.example.project.emotionCore.domain.Episode;
 import com.example.project.emotionCore.domain.Member;
-import com.example.project.emotionCore.domain.Series;
 import com.example.project.emotionCore.dto.CommentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Tag(name = "댓글 API", description = "댓글에 대한 CRUD 기능 담당")
 @RestController
