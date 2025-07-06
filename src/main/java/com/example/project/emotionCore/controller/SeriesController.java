@@ -4,6 +4,7 @@ import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.enums.WorkType;
 import com.example.project.emotionCore.service.AuthorService;
 import com.example.project.emotionCore.service.CustomMemberDetail;
+import com.example.project.emotionCore.service.SearchWorkService;
 import com.example.project.emotionCore.service.SeriesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +29,7 @@ import java.util.List;
 public class SeriesController {
     private final SeriesService seriesService;
     private final AuthorService authorService;
+    private final SearchWorkService searchWorkService;
 
     @Operation(summary = "오늘의 Best 작품들(조회수 기준)")
     @GetMapping("/best/today")
@@ -110,12 +112,15 @@ public class SeriesController {
         return ResponseEntity.ok(seriesPreviewDTOS);
     }
 
-    @Operation(summary = "특정 키워드의 검색 결과 반환")
+    @Operation(summary = "특정 키워드의 검색 결과 반환 + 키워드 검색횟수 증가 반영")
     @GetMapping("/search")
-    public ResponseEntity<SearchResponseDTO> getSeriesByKeywords(@P("Horror Comedy") String keyword) {
+    public ResponseEntity<SearchResponseDTO> getSeriesByKeywords(@RequestParam String keyword) {
         List<String> keywords = Arrays.stream(keyword.split(" ")).toList();
         List<SeriesDetailDTO> seriesDetailDTOS = seriesService.getSeriesByKeywords(keywords);
         List<AuthorDTO> authorDTOS = authorService.getAllByKeywords(keywords);
+
+        searchWorkService.processSearch(keyword.trim());
+
         return ResponseEntity.ok(new SearchResponseDTO(seriesDetailDTOS, authorDTOS));
     }
 
