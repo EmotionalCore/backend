@@ -20,6 +20,7 @@ public class SearchWorkService {
 
     @Transactional
     public void processSearch(String searchWord) {
+        // searchWord에 해당하는 엔티티를 검색
         SearchWork searchWork = searchWorkRepository.findBySearchWord(searchWord)
                 .orElseGet(() -> {
                     // 없다면 새로 생성
