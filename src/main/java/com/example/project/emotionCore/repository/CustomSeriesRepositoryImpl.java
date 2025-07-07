@@ -74,7 +74,6 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
     }
 
     public List<Series> findAllByTagsContaining(List<String> tags) {
-        System.out.println("tags.size(): " + tags.size()); // ✅ 여기
         QSeries series = QSeries.series;
         QSeriesTag seriesTag = QSeriesTag.seriesTag;
         QTag tag = QTag.tag;
@@ -85,6 +84,25 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .join(series.tags, seriesTag)
                 .join(seriesTag.tag, tag)
                 .where(tag.name.in(tags))
+                .groupBy(series.id)
+                .having(tag.name.countDistinct().eq((long) tags.size()))
+                .fetch();
+    }
+
+    public List<Series> findAllByTypeAndTags(String type, List<String> tags) {
+        QSeries series = QSeries.series;
+        QSeriesTag seriesTag = QSeriesTag.seriesTag;
+        QTag tag = QTag.tag;
+
+        return queryFactory
+                .select(series)
+                .from(series)
+                .join(series.tags, seriesTag)
+                .join(seriesTag.tag, tag)
+                .where(
+                        series.type.eq(type)
+                                .and(tag.name.in(tags))
+                )
                 .groupBy(series.id)
                 .having(tag.name.countDistinct().eq((long) tags.size()))
                 .fetch();
@@ -120,21 +138,21 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
     @Override
     public List<Series> findMonthlyBestSeries(int limit) {
         LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1); // 이번 달의 첫 날
-        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth()); // 이번 달의 마지막 날
+        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth());
 
-        QSeries series = QSeries.series; // Series 엔티티
-        QSeriesView sv = seriesView; // SeriesView 엔티티
+        QSeries series = QSeries.series;
+        QSeriesView sv = seriesView;
 
         return queryFactory
-                .select(series) // Series 엔티티를 기준으로 선택
-                .from(sv) // SeriesView 엔티티를 기준으로 시작
-                .join(series).on(series.id.eq(sv.seriesId)) // Series와 SeriesView를 조인
-                .where(sv.viewDate.between(firstDayOfMonth, lastDayOfMonth)) // 이번 달 범위 필터
-                .groupBy(series.id) // 시리즈별로 그룹화
-                .orderBy(sv.count.sum().desc()) // count 합계 기준 내림차순 정렬
-                .limit(limit) // 상위 limit개의 결과만 반환
-                .fetch(); // 결과 fetch
+                .select(series)
+                .from(sv)
+                .join(series).on(series.id.eq(sv.seriesId))
+                .where(sv.viewDate.between(firstDayOfMonth, lastDayOfMonth))
+                .groupBy(series.id)
+                .orderBy(sv.count.sum().desc())
+                .limit(limit)
+                .fetch();
     }
 
     @Override

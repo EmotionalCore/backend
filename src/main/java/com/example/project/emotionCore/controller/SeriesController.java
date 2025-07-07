@@ -7,6 +7,7 @@ import com.example.project.emotionCore.service.CustomMemberDetail;
 import com.example.project.emotionCore.service.SearchWorkService;
 import com.example.project.emotionCore.service.SeriesService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -101,6 +102,17 @@ public class SeriesController {
     @GetMapping("/tag")
     public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
         List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTag(tags);
+        return ResponseEntity.ok(series);
+    }
+
+    @Operation(summary = "특정 타입과 태그들을 모두 포함하는 작품 반환")
+    @GetMapping("/type/tag")
+    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTypeAndTag( @Parameter(description = "작품 타입(시, 소설, 웹툰)", example = "웹툰")
+                                                                                @RequestParam String type,
+
+                                                                            @Parameter(description = "작품 태그", example = "[아카데미, 개그]")
+                                                                                @RequestParam List<String> tags) {
+        List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTypeAndTags(type,tags);
         return ResponseEntity.ok(series);
     }
 

@@ -98,6 +98,18 @@ public class SeriesService {
         return data;
     }
 
+    public List<SeriesPreviewDTO> getAllSeriesByTypeAndTags(String type,List<String> tags) {
+        List<Series> entity = seriesRepository.findAllByTypeAndTags(type,tags);
+        List<SeriesPreviewDTO> data = new ArrayList<>();
+        for (Series series : entity) {
+            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
+            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
+            data.add(dto);
+        }
+        return data;
+    }
+
+
 
     public List<SeriesPreviewDTO> getMonthlyBestSeries(int limit) {
         LocalDate today = LocalDate.now();
