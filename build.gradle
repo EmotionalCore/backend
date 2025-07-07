@@ -67,11 +67,8 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-bootBuildImage {
-	imageName = "emotioncore"
-
-	nativeBuildArgs = [
-			"--initialize-at-run-time=org.slf4j.helpers.Reporter",
-			 "--initialize-at-run-time=com.mysql.cj.jdbc.Driver"
-	]
+graalvmNative {
+	binaries.all {
+		buildArgs.add("--initialize-at-build-time=org.slf4j.helpers")
+	}
 }
