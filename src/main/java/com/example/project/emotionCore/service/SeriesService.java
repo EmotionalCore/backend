@@ -9,6 +9,7 @@ import com.example.project.emotionCore.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -98,8 +99,10 @@ public class SeriesService {
         return data;
     }
 
-    public List<SeriesPreviewDTO> getAllSeriesByTypeAndTags(String type,List<String> tags) {
-        List<Series> entity = seriesRepository.findAllByTypeAndTags(type,tags);
+    public List<SeriesPreviewDTO> getAllSeriesByTypeAndTags(int index, int size, String type,List<String> tags) {
+        Pageable pageable = PageRequest.of(index,size);
+
+        List<Series> entity = seriesRepository.findAllByTypeAndTags(pageable,type,tags);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
             SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
