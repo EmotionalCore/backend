@@ -46,7 +46,7 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew bootBuildImage
 
     - name: Build Docker image # repo 이름이 소문자여야됨.
       run: |
