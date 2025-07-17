@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -89,22 +90,30 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .fetch();
     }
 
-    public List<Series> findAllByTypeAndTags(String type, List<String> tags) {
+    public List<Series> findAllByTypeAndTags(Pageable pageable, String type, List<String> tags) {
         QSeries series = QSeries.series;
         QSeriesTag seriesTag = QSeriesTag.seriesTag;
         QTag tag = QTag.tag;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if(!type.equals("전체")){
+            builder.and(series.type.eq(type));
+        }
+
+        builder.and(tag.name.in(tags));
 
         return queryFactory
                 .select(series)
                 .from(series)
                 .join(series.tags, seriesTag)
                 .join(seriesTag.tag, tag)
-                .where(
-                        series.type.eq(type)
-                                .and(tag.name.in(tags))
-                )
+                .where(builder)
                 .groupBy(series.id)
                 .having(tag.name.countDistinct().eq((long) tags.size()))
+                .orderBy(series.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
     }
 

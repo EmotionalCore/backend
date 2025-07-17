@@ -107,12 +107,13 @@ public class SeriesController {
 
     @Operation(summary = "특정 타입과 태그들을 모두 포함하는 작품 반환")
     @GetMapping("/type/tag")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTypeAndTag( @Parameter(description = "작품 타입(시, 소설, 웹툰)", example = "웹툰")
+    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTypeAndTag( @RequestParam int index, @RequestParam int num,
+                                                                            @Parameter(description = "작품 타입(전체, 시, 소설, 웹툰)", example = "웹툰")
                                                                                 @RequestParam String type,
 
                                                                             @Parameter(description = "작품 태그", example = "[아카데미, 개그]")
                                                                                 @RequestParam List<String> tags) {
-        List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTypeAndTags(type,tags);
+        List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTypeAndTags(index,num,type,tags);
         return ResponseEntity.ok(series);
     }
 
