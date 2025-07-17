@@ -28,14 +28,6 @@ public class NaverService {
     @Value("${spring.security.oauth2.client.registration.naver.redirect-uri}")
     private String redirectUri;
 
-    @Configuration
-    public class RestTemplateConfig {
-        @Bean
-        public RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
-    }
-
 
     // 네이버 API에서 AccessToken 가져오기
     public String getAccessToken(String code, String state) {
