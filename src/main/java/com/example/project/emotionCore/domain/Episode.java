@@ -68,7 +68,7 @@ public class Episode {
         int count = 0;
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            String to = "[*IMG&](/" + seriesId + "/" + number + "/" + count + "." + matcher.group(2) + ")";
+            String to = "[*IMG&](https://drive.emotioncores.com/main/" + seriesId + "/" + number + "/" + count + "." + matcher.group(2) + ")";
             matcher.appendReplacement(sb, to);
             count++;
         }
