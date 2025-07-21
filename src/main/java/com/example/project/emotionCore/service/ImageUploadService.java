@@ -32,7 +32,7 @@ public class ImageUploadService {
         azureBlobService.uploadImages(episodeKey, images);
     }
 
-    public void checkImagesSecurity(List<MultipartFile> images) {
+    private void checkImagesSecurity(List<MultipartFile> images) {
         for (MultipartFile image : images) {
             if (!imageValidatorService.isValidImage(image)) {
                 throw new CustomBadRequestException(400, "Invalid image");
