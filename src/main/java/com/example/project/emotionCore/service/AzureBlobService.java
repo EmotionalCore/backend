@@ -70,7 +70,7 @@ public class AzureBlobService {
         for(MultipartFile multipartFile : multipartFiles){
             if(multipartFile == null || multipartFile.isEmpty()) continue;
             String extension = imageValidatorService.getExtension(multipartFile);
-            String fileName = "https://drive.emotioncores.com/main/"+episodeKey.getSeriesId() + "/" + episodeKey.getNumber() + "/" + count + extension;
+            String fileName = episodeKey.getSeriesId() + "/" + episodeKey.getNumber() + "/" + count + extension;
             uploadImage(fileName, multipartFile);
             count++;
         }
@@ -78,7 +78,8 @@ public class AzureBlobService {
 
     void uploadImage(String filename, MultipartFile multipartFile){
         if(multipartFile == null || multipartFile.isEmpty()) return;
-        BlobClient file = CONTAINER.getBlobClient(filename);
+            filename = filename.replace("https://drive.emotioncores.com/main/", "");
+            BlobClient file = CONTAINER.getBlobClient(filename);
         try {
             file.upload(multipartFile.getInputStream(), true);
         }
@@ -88,6 +89,7 @@ public class AzureBlobService {
     }
 
     public void uploadImage(String filename, InputStream inputStream){
+        filename = filename.replace("https://drive.emotioncores.com/main/", "");
         BlobClient file = CONTAINER.getBlobClient(filename);
         file.upload(inputStream, true);
     }
