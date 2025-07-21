@@ -85,7 +85,7 @@ public class Episode {
             coverImageFileType = dto.getCoverImage().getContentType();
         }
         this.title = dto.getTitle();
-        this.coverImageUrl = "/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.coverImageUrl = "https://drive.emotioncores.com/main/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
 
         /*
@@ -115,7 +115,7 @@ public class Episode {
             coverImageFileType = dto.getCoverImage().getContentType();
         }
         this.title = dto.getTitle();
-        this.coverImageUrl = "/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.coverImageUrl = "https://drive.emotioncores.com/main/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
 
     /*

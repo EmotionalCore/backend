@@ -70,7 +70,7 @@ public class AzureBlobService {
         for(MultipartFile multipartFile : multipartFiles){
             if(multipartFile == null || multipartFile.isEmpty()) continue;
             String extension = imageValidatorService.getExtension(multipartFile);
-            String fileName = episodeKey.getSeriesId() + "/" + episodeKey.getNumber() + "/" + count + extension;
+            String fileName = "https://drive.emotioncores.com/main/"+episodeKey.getSeriesId() + "/" + episodeKey.getNumber() + "/" + count + extension;
             uploadImage(fileName, multipartFile);
             count++;
         }

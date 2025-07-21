@@ -50,7 +50,7 @@ public class MyPageController {
             memberService.updateMember(id, mypageupdateDTO);
             authorService.updateAuthor(id, mypageupdateDTO);
             String fileExtension = imageValidatorService.getExtension(mypageupdateDTO.getProfileImage());
-            imageUploadService.uploadImageToCloud("user/"+id+"/profile."+fileExtension, mypageupdateDTO.getProfileImage());
+            imageUploadService.uploadImageToCloud("https://drive.emotioncores.com/main/user/"+id+"/profile."+fileExtension, mypageupdateDTO.getProfileImage());
         return ResponseEntity.ok("회원정보가 업데이트 되었습니다.");
     }
 
