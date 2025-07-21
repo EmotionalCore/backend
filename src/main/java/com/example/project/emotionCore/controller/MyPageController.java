@@ -27,6 +27,7 @@ public class MyPageController {
     private final AuthorRepository authorRepository;
     private final ImageUploadService imageUploadService;
     private final AzureBlobService azureBlobService;
+    private final ImageValidatorService imageValidatorService;
 
     @Operation(summary="회원 탈퇴")
     @DeleteMapping("/delete")
@@ -48,7 +49,8 @@ public class MyPageController {
             long id = customMemberDetail.getId();
             memberService.updateMember(id, mypageupdateDTO);
             authorService.updateAuthor(id, mypageupdateDTO);
-            imageUploadService.uploadImageToCloud("user/"+id+"/profile.png", mypageupdateDTO.getProfileImage());
+            String fileExtension = imageValidatorService.getExtension(mypageupdateDTO.getProfileImage());
+            imageUploadService.uploadImageToCloud("user/"+id+"/profile."+fileExtension, mypageupdateDTO.getProfileImage());
         return ResponseEntity.ok("회원정보가 업데이트 되었습니다.");
     }
 
