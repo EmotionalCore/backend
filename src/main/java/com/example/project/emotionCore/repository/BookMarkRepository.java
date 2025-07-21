@@ -17,4 +17,6 @@ public interface BookMarkRepository extends JpaRepository<BookMark, Long> {
 
     @Query("SELECT b.series FROM BookMark b WHERE b.member.id = :memberId")
     List<Series> findSeriesByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+    int countByMemberId(Long memberId);
 }

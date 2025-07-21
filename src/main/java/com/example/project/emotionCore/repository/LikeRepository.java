@@ -26,5 +26,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     @Query("SELECT b.series FROM Like b WHERE b.member.id = :memberId")
     List<Series> findSeriesByMemberId(long memberId, Pageable pageable);
+
+    int countByMemberId(Long memberId);
 }
 

@@ -12,10 +12,10 @@ import java.util.List;
 @Repository
 public interface EpisodeRepository extends JpaRepository<Episode, Integer> {
     Episode findBySeriesIdAndNumber(long seriesId, long number);
-    List<Episode> findBySeriesId(long seriesId);
+    List<Episode> findBySeriesId(Pageable pageable,long seriesId);
     void deleteBySeriesIdAndNumber(long seriesId, long number);
     Episode findTopBySeriesIdOrderByCreatedAtDesc(Long seriesId);
-
+    int countBySeriesId(long seriesId);
     @Query("""
     SELECT new com.example.project.emotionCore.dto.NewAuthorDTO(
         s.authorId,

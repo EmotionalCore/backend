@@ -1,9 +1,6 @@
 package com.example.project.emotionCore.controller;
 
-import com.example.project.emotionCore.dto.EpisodeModifyDTO;
-import com.example.project.emotionCore.dto.EpisodePreviewDTO;
-import com.example.project.emotionCore.dto.EpisodeRequestDTO;
-import com.example.project.emotionCore.dto.EpisodeResponseDTO;
+import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.service.EpisodeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,9 +23,10 @@ public class EpisodeController {
 
     @Operation(summary = "특정 series 회차(에피소드)들 가져오기")
     @GetMapping("/series")
-    public ResponseEntity<List<EpisodePreviewDTO>> getAllEpisode(@RequestParam long seriesId) {
-        List<EpisodePreviewDTO> episodePreviewDTO = episodeService.getEpisodeList(seriesId);
-        return ResponseEntity.ok(episodePreviewDTO);
+    public ResponseEntity<PagedResponseDTO<EpisodePreviewDTO>> getAllEpisode(@RequestParam int index, @RequestParam int size, @RequestParam long seriesId) {
+        List<EpisodePreviewDTO> episodePreviewDTO = episodeService.getEpisodeList(index,size,seriesId);
+        int totalCount = episodeService.getEpisodeCount(seriesId);
+        return ResponseEntity.ok(new PagedResponseDTO<>(episodePreviewDTO,totalCount));
     }
 
     //episode

@@ -73,7 +73,7 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .limit(4)  // 상위 4개만
                 .fetch();
     }
-
+    @Override
     public List<Series> findAllByTagsContaining(List<String> tags) {
         QSeries series = QSeries.series;
         QSeriesTag seriesTag = QSeriesTag.seriesTag;
@@ -88,6 +88,25 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .groupBy(series.id)
                 .having(tag.name.countDistinct().eq((long) tags.size()))
                 .fetch();
+    }
+
+    @Override
+    public int countByTags(List<String> tags) {
+        QSeries series = QSeries.series;
+        QSeriesTag seriesTag = QSeriesTag.seriesTag;
+        QTag tag = QTag.tag;
+
+        List<Long> result = queryFactory
+                .select(series.id)
+                .from(series)
+                .join(series.tags, seriesTag)
+                .join(seriesTag.tag, tag)
+                .where(tag.name.in(tags))
+                .groupBy(series.id)
+                .having(tag.name.countDistinct().eq((long) tags.size()))
+                .fetch();
+
+        return result.size();
     }
 
     public List<Series> findAllByTypeAndTags(Pageable pageable, String type, List<String> tags) {
@@ -115,6 +134,34 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public int countByTypeAndTags(String type, List<String> tags) {
+        QSeries series = QSeries.series;
+        QSeriesTag seriesTag = QSeriesTag.seriesTag;
+        QTag tag = QTag.tag;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (!type.equals("전체")) {
+            builder.and(series.type.eq(type));
+        }
+
+        if (tags != null && !tags.isEmpty()) {
+            builder.and(tag.name.in(tags));
+        }
+
+        return queryFactory
+                .select(series.id)
+                .from(series)
+                .join(series.tags, seriesTag)
+                .join(seriesTag.tag, tag)
+                .where(builder)
+                .groupBy(series.id)
+                .having(tag.name.countDistinct().eq((long) tags.size()))
+                .fetch()
+                .size();
     }
 
     private BooleanExpression containsKeyword(String keyword){

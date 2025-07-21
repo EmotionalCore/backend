@@ -18,5 +18,7 @@ public interface SeriesRepository extends JpaRepository<Series, Long>, CustomSer
     List<Series> findAllByAuthorId(Long authorId);
 
     Series findTopByOrderByIdDesc();
+
+    int countByType(String type);
 }
 

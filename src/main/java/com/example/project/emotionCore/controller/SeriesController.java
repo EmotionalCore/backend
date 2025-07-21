@@ -19,6 +19,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.print.Pageable;
 import java.beans.PropertyEditorSupport;
 import java.util.Arrays;
 import java.util.List;
@@ -70,51 +71,39 @@ public class SeriesController {
 
     @Operation(summary = "전체 작품 반환(최신순)")
     @GetMapping("/all")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeries(@RequestParam int index,@RequestParam int num) {
+    public ResponseEntity<PagedResponseDTO<SeriesPreviewDTO>> getAllSeries(@RequestParam int index,@RequestParam int num) {
         List<SeriesPreviewDTO> seriesPreviewDTOS = seriesService.getAllSeriesByCreatedDate(index, num);
-        return ResponseEntity.ok(seriesPreviewDTOS);
+        int totalCount = seriesService.getAllSeriesCount();
+        return ResponseEntity.ok(new PagedResponseDTO<>(seriesPreviewDTOS, totalCount));
     }
 
     @Operation(summary = "특정 타입의 작품 반환")
     @GetMapping("/type")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam int index,@RequestParam int num, @RequestParam String type) {
+    public ResponseEntity<PagedResponseDTO<SeriesPreviewDTO>> getAllSeriesByType(@RequestParam int index, @RequestParam int num, @RequestParam String type) {
         List<SeriesPreviewDTO> seriesPreviewDTOS = seriesService.getAllSeriesByType(index, num, type);
-        return ResponseEntity.ok(seriesPreviewDTOS);
-    }
-
-    @Operation(summary = "(서재) 북마크 작품 반환")
-    @GetMapping("/bookmark")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByBookMark(@RequestParam int index, @RequestParam int num, Authentication authentication) {
-        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
-        List<SeriesPreviewDTO> seriesPreviewDTOS = seriesService.getAllSeriesByBookMark(index, num, customMemberDetail.getId());
-        return ResponseEntity.ok(seriesPreviewDTOS);
-    }
-
-    @Operation(summary = "(서재) 좋아요 작품 반환")
-    @GetMapping("/like")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByLike(@RequestParam int index, @RequestParam int num, Authentication authentication) {
-        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
-        List<SeriesPreviewDTO> seriesPreviewDTOS = seriesService.getAllSeriesByLike(index, num, customMemberDetail.getId());
-        return ResponseEntity.ok(seriesPreviewDTOS);
+        int totalCount = seriesService.getSeriesCountByType(type);
+        return ResponseEntity.ok(new PagedResponseDTO<>(seriesPreviewDTOS, totalCount));
     }
 
     @Operation(summary = "특정 태그들을 모두 포함하는 작품 반환")
     @GetMapping("/tag")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
-        List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTag(tags);
-        return ResponseEntity.ok(series);
+    public ResponseEntity<PagedResponseDTO<SeriesPreviewDTO>> getAllSeriesByTag(@RequestParam List<String> tags) {
+        List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTags(tags);
+        int totalCount = seriesService.getSeriesCountByTags(tags);
+        return ResponseEntity.ok(new PagedResponseDTO<>(series, totalCount));
     }
 
     @Operation(summary = "특정 타입과 태그들을 모두 포함하는 작품 반환")
     @GetMapping("/type/tag")
-    public ResponseEntity<List<SeriesPreviewDTO>> getAllSeriesByTypeAndTag( @RequestParam int index, @RequestParam int num,
+    public ResponseEntity<PagedResponseDTO<SeriesPreviewDTO>> getAllSeriesByTypeAndTag( @RequestParam int index, @RequestParam int num,
                                                                             @Parameter(description = "작품 타입(전체, 시, 소설, 웹툰)", example = "웹툰")
                                                                                 @RequestParam String type,
 
                                                                             @Parameter(description = "작품 태그", example = "[아카데미, 개그]")
                                                                                 @RequestParam List<String> tags) {
         List<SeriesPreviewDTO> series = seriesService.getAllSeriesByTypeAndTags(index,num,type,tags);
-        return ResponseEntity.ok(series);
+        int totalCount = seriesService.getSeriesCountByTypeAndTags(type,tags);
+        return ResponseEntity.ok(new PagedResponseDTO<>(series, totalCount));
     }
 
     @Operation(summary = "신규 작품들 반환")

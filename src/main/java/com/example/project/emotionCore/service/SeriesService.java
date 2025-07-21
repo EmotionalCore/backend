@@ -88,7 +88,7 @@ public class SeriesService {
         return data;
     }
 
-    public List<SeriesPreviewDTO> getAllSeriesByTag(List<String> tags) {
+    public List<SeriesPreviewDTO> getAllSeriesByTags(List<String> tags) {
         List<Series> entity = seriesRepository.findAllByTagsContaining(tags);
         List<SeriesPreviewDTO> data = new ArrayList<>();
         for (Series series : entity) {
@@ -233,29 +233,19 @@ public class SeriesService {
         return series.getAuthorId() == memberId;
     }
 
-    public List<SeriesPreviewDTO> getAllSeriesByBookMark(int index, int size, long memberId) {
-        Pageable pageable = PageRequest.of(index, size);
-
-        List<Series> seriesData = bookMarkRepository.findSeriesByMemberId(memberId,pageable);
-        List<SeriesPreviewDTO> data = new ArrayList<>();
-        for (Series series : seriesData) {
-            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
-            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
-            data.add(dto);
-        }
-        return data;
+    public int getAllSeriesCount() {
+        return (int)seriesRepository.count();
     }
 
-    public List<SeriesPreviewDTO> getAllSeriesByLike(int index, int size, long memberId) {
-        Pageable pageable = PageRequest.of(index, size);
+    public int getSeriesCountByType(String type) {
+        return seriesRepository.countByType(type);
+    }
 
-        List<Series> seriesData = likeRepository.findSeriesByMemberId(memberId,pageable);
-        List<SeriesPreviewDTO> data = new ArrayList<>();
-        for (Series series : seriesData) {
-            SeriesPreviewDTO dto = modelMapper.map(series, SeriesPreviewDTO.class);
-            dto.setAuthorName(memberRepository.findById((long) dto.getAuthorId()).get().getUsername());
-            data.add(dto);
-        }
-        return data;
+    public int getSeriesCountByTags(List<String> tags) {
+        return seriesRepository.countByTags(tags);
+    }
+
+    public int getSeriesCountByTypeAndTags(String type, List<String> tags) {
+        return seriesRepository.countByTypeAndTags(type,tags);
     }
 }

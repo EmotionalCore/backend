@@ -12,6 +12,8 @@ import com.example.project.emotionCore.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -141,13 +143,19 @@ public class EpisodeService {
         episodeRepository.save(episode);
     }
 
-    public List<EpisodePreviewDTO> getEpisodeList(long seriesId){
+    public List<EpisodePreviewDTO> getEpisodeList(int index, int size, long seriesId){
+        Pageable pageable = PageRequest.of(index,size);
+
         List<EpisodePreviewDTO> dtos = new ArrayList<>();
-        List<Episode> episodes = episodeRepository.findBySeriesId(seriesId);
+        List<Episode> episodes = episodeRepository.findBySeriesId(pageable,seriesId);
         for(Episode episode : episodes){
             EpisodePreviewDTO dto = modelMapper.map(episode, EpisodePreviewDTO.class);
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    public int getEpisodeCount(long seriesId) {
+        return episodeRepository.countBySeriesId(seriesId);
     }
 }

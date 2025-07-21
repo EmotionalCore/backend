@@ -12,11 +12,13 @@ public interface CustomSeriesRepository {
     List<Series> findByKeywords(List<String> keyword);
     List<Series> findTodayBestSeries(int days, int limit);
     List<Series> findAllByTagsContaining(List<String> tags);
-    List<Series> findAllByTypeAndTags(Pageable pageable,String type, List<String> tags);
+    List<Series> findAllByTypeAndTags(Pageable pageable, String type, List<String> tags);
     List<Series> findMonthlyBestSeries(int limit);
     void addLikeCount(Series Series);
     void subLikeCount(Series Series);
     void addBookMarkCount(Series Series);
     void subBookMarkCount(Series Series);
     List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId);
+    int countByTypeAndTags(String type, List<String> tags);
+    int countByTags(List<String> tags);
 }
