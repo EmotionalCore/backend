@@ -2,15 +2,14 @@ package com.example.project.emotionCore.controller;
 
 import com.example.project.emotionCore.repository.AuthorRepository;
 import com.example.project.emotionCore.repository.MemberRepository;
-import com.example.project.emotionCore.service.AuthorService;
-import com.example.project.emotionCore.service.CustomMemberDetail;
-import com.example.project.emotionCore.service.MemberService;
+import com.example.project.emotionCore.service.*;
 import com.example.project.emotionCore.domain.Author;
 import com.example.project.emotionCore.domain.Member;
 import com.example.project.emotionCore.dto.MyPageUpdateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,9 @@ public class MyPageController {
     private final AuthorService authorService;
     private final MemberRepository memberRepository;
     private final AuthorRepository authorRepository;
+    private final ImageUploadService imageUploadService;
+    private final AzureBlobService azureBlobService;
+    private final ImageValidatorService imageValidatorService;
 
     @Operation(summary="회원 탈퇴")
     @DeleteMapping("/delete")
@@ -39,14 +41,16 @@ public class MyPageController {
     }
 
     @Operation(summary="마이페이지 회원 정보 수정")
-    @PutMapping("/update")
+    @PutMapping(value="/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateMyPage(
             @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
-            @RequestBody MyPageUpdateDTO mypageupdateDTO
+            @ModelAttribute MyPageUpdateDTO mypageupdateDTO
     ) {
             long id = customMemberDetail.getId();
             memberService.updateMember(id, mypageupdateDTO);
             authorService.updateAuthor(id, mypageupdateDTO);
+            String fileExtension = imageValidatorService.getExtension(mypageupdateDTO.getProfileImage());
+            imageUploadService.uploadImageToCloud("https://drive.emotioncores.com/main/user/"+id+"/profile."+fileExtension, mypageupdateDTO.getProfileImage());
         return ResponseEntity.ok("회원정보가 업데이트 되었습니다.");
     }
 
@@ -66,7 +70,7 @@ public class MyPageController {
         MyPageUpdateDTO dto = new MyPageUpdateDTO();
         dto.setUsername(member.getUsername());
         dto.setEmail(member.getEmail());
-        dto.setProfileImageUrl(member.getProfileImageUrl());
+        //dto.setProfileImageUrl(null); /// <<-- DTO 안맞아서 임시로 null
 
         if(author != null){
             dto.setDescription(author.getDescription());

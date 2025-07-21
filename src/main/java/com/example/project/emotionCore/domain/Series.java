@@ -71,7 +71,7 @@ public class Series {
             this.tags.add(seriesTag);
         }
 
-        coverImageUrl = "/"+id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        coverImageUrl = "https://drive.emotioncores.com/main/"+id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
     }
 
     public void updateSeries(String title, String description, String type, Set<Tag> tags, MultipartFile image, long authorId){
@@ -100,7 +100,7 @@ public class Series {
         }
 
 
-        coverImageUrl = "/"+id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        coverImageUrl = "https://drive.emotioncores.com/main/"+id+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.authorId = authorId;
     }
 

@@ -68,7 +68,7 @@ public class Episode {
         int count = 0;
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            String to = "[*IMG&](/" + seriesId + "/" + number + "/" + count + "." + matcher.group(2) + ")";
+            String to = "[*IMG&](https://drive.emotioncores.com/main/" + seriesId + "/" + number + "/" + count + "." + matcher.group(2) + ")";
             matcher.appendReplacement(sb, to);
             count++;
         }
@@ -85,7 +85,7 @@ public class Episode {
             coverImageFileType = dto.getCoverImage().getContentType();
         }
         this.title = dto.getTitle();
-        this.coverImageUrl = "/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.coverImageUrl = "https://drive.emotioncores.com/main/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
 
         /*
@@ -115,7 +115,7 @@ public class Episode {
             coverImageFileType = dto.getCoverImage().getContentType();
         }
         this.title = dto.getTitle();
-        this.coverImageUrl = "/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
+        this.coverImageUrl = "https://drive.emotioncores.com/main/"+seriesId+"/"+number+"/coverImage."+coverImageFileType.substring(coverImageFileType.lastIndexOf("/")+1);
         this.description = dto.getDescription();
 
     /*
