@@ -18,7 +18,7 @@ public interface CustomSeriesRepository {
     void subLikeCount(Series Series);
     void addBookMarkCount(Series Series);
     void subBookMarkCount(Series Series);
-    List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId);
+    List<SeriesViewedPreviewDTO> findViewListByMemberId(Pageable pageable,long memberId);
     int countByTypeAndTags(String type, List<String> tags);
     int countByTags(List<String> tags);
 }

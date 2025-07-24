@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "작품에 대한 간략한 정보(index, 작가정보, 제목, 커버이미지)")
+@Schema(description = "작품에 대한 간략한 정보(시리즈id, 작가정보, 제목, 커버이미지)")
 public class SeriesViewedPreviewDTO {
-    @Schema(description = "index", example = "1")
-    private int id;
+    @Schema(description = "시리즈 id", example = "1")
+    private long id;
 
     @Schema(description = "작가 index", example = "55")
     private long authorId;

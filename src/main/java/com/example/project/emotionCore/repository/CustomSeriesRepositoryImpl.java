@@ -244,7 +244,7 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
     }
 
     @Override
-    public List<SeriesViewedPreviewDTO> findViewListByMemberId(long memberId) {
+    public List<SeriesViewedPreviewDTO> findViewListByMemberId(Pageable pageable, long memberId) {
         return queryFactory
                 .select(Projections.constructor(
                         SeriesViewedPreviewDTO.class,
@@ -259,6 +259,8 @@ public class CustomSeriesRepositoryImpl implements CustomSeriesRepository {
                 .join(workViewLog).on(workViewLog.memberId.eq(memberId)
                         .and(series.id.eq(workViewLog.seriesId)))
                 .join(member).on(series.authorId.eq(member.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
     }
 }

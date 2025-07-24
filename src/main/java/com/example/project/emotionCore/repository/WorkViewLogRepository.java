@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface WorkViewLogRepository extends JpaRepository<WorkViewLog, Long> {
     Optional<WorkViewLog> findBySeriesIdAndEpisodeNumberAndMemberId(long seriesId, long episodeNumber, long memberId);
+
+    int countByMemberId(Long memberId);
 }

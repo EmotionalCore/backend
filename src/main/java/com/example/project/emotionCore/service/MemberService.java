@@ -8,9 +8,12 @@ import com.example.project.emotionCore.domain.Member;
 import com.example.project.emotionCore.dto.*;
 import com.example.project.emotionCore.exception.CustomBadRequestException;
 import com.example.project.emotionCore.module.mapper.MemberMapper;
+import com.example.project.emotionCore.repository.WorkViewLogRepository;
 import com.example.project.emotionCore.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,6 +37,7 @@ public class MemberService {
     private final SeriesRepository seriesRepository;
     private final CustomUserDetailService customUserDetailService;
     private final AuthorRepository authorRepository;
+    private final WorkViewLogRepository workViewLogRepository;
 
 
     //3
@@ -127,10 +131,16 @@ public class MemberService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-
-    public List<SeriesViewedPreviewDTO> getViewedEpisode(Authentication authentication){
+    public List<SeriesViewedPreviewDTO> getViewedEpisode(int index, int size, Authentication authentication){
+        Pageable pageable = PageRequest.of(index,size);
         CustomMemberDetail memberDetail = (CustomMemberDetail) authentication.getPrincipal();
-        return seriesRepository.findViewListByMemberId(memberDetail.getId());
+        return seriesRepository.findViewListByMemberId(pageable,memberDetail.getId());
+    }
+
+    public int getViewedEpisodeCount(Authentication authentication) {
+        CustomMemberDetail customMemberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        Long memberId = customMemberDetail.getId();
+        return workViewLogRepository.countByMemberId(memberId);
     }
 
 

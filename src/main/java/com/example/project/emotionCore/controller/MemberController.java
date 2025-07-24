@@ -166,15 +166,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberDetail(memberId));
     }
 
-
-
-
-
     @Operation(summary = "특정 유저가 최근에 본 작품 기록 반환")
     @GetMapping("/list/view")
-    public ResponseEntity<List<SeriesViewedPreviewDTO>> getViewedEpisode(Authentication authentication){
-        List<SeriesViewedPreviewDTO> data = memberService.getViewedEpisode(authentication);
-        return ResponseEntity.ok(data);
+    public ResponseEntity<PagedResponseDTO<SeriesViewedPreviewDTO>> getViewedEpisode(@RequestParam int index,@RequestParam int num,Authentication authentication){
+        List<SeriesViewedPreviewDTO> data = memberService.getViewedEpisode(index,num,authentication);
+        int totalCount = memberService.getViewedEpisodeCount(authentication);
+        return ResponseEntity.ok(new PagedResponseDTO<>(data,totalCount));
     }
 
 

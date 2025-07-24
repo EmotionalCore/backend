@@ -55,7 +55,6 @@ public class MineStorageController {
     @GetMapping("/comment")
     public ResponseEntity<List<Episode>> getMyEpisodes(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
 
-
         long id=customMemberDetail.getId();
         Member member = memberRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("해당 회원을 찾을 수 없습니다."));
