@@ -79,11 +79,22 @@ public class MemberService {
 
     //2
     public JwtTokenDTO signUpWithSocial(String email, String username) {
+        String finalUsername = username;
+        if (memberRepository.existsByUsername(finalUsername)) {
+            Random random = new Random();
+            do {
+                int randomNumber = random.nextInt(10000); // 0~9999
+                finalUsername = username + randomNumber;
+            } while (memberRepository.existsByUsername(finalUsername));
+        }
+
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setEmail(email);
-        memberDTO.setUsername(username);
+        memberDTO.setUsername(finalUsername);
         memberDTO.setPassword("");  // 소셜 로그인이라 비밀번호는 필요 없음
-        memberRepository.save(MemberMapper.toEntity(memberDTO));
+        Member savedMember = memberRepository.save(MemberMapper.toEntity(memberDTO));
+        Author author = new Author(savedMember,"", "", new HashSet<>());
+        authorRepository.save(author);
         return signInWithSocial(email);
     }
 
@@ -100,12 +111,29 @@ public class MemberService {
         // DB에서 사용자 확인, 없으면 신규 생성
         Member member = memberRepository.findByEmail(email)
                 .orElseGet(() -> {
+                    // 닉네임 중복 시 랜덤 숫자 붙이기
+                    String finalUsername = nickname;
+                    if (memberRepository.existsByUsername(finalUsername)) {
+                        Random random = new Random();
+                        do {
+                            int randomNumber = random.nextInt(10000); // 0~9999
+                            finalUsername = nickname + randomNumber;
+                        } while (memberRepository.existsByUsername(finalUsername));
+                    }
+
+                    // Member 저장
                     Member newMember = Member.builder()
-                            .username(nickname)
+                            .username(finalUsername)
                             .email(email)
                             .password("NaverLogin") // 비밀번호는 네이버 로그인의 경우 사용하지 않음
                             .build();
-                    return memberRepository.save(newMember);
+                    Member savedMember = memberRepository.save(newMember);
+
+                    // Author 저장 (MapsId 매핑)
+                    Author author = new Author(savedMember, "", "", new HashSet<>());
+                    authorRepository.save(author);
+
+                    return savedMember;
                 });
 
 
