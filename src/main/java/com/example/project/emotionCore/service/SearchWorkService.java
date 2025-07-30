@@ -20,15 +20,11 @@ public class SearchWorkService {
 
     @Transactional
     public void processSearch(String searchWord) {
-        // searchWord에 해당하는 엔티티를 검색
         SearchWork searchWork = searchWorkRepository.findBySearchWord(searchWord)
-                .orElseGet(() -> {
-                    // 없다면 새로 생성
-                    SearchWork newSearchWork = new SearchWork(searchWord);
-                    return searchWorkRepository.save(newSearchWork);
-                });
-
-        // 검색 횟수 증가
+                .orElse(null);
+        if (searchWork == null) {
+            searchWork = new SearchWork(searchWord); // count = 0 이어야 함
+        }
         searchWork.incrementSearchCount();
         searchWorkRepository.save(searchWork);
     }

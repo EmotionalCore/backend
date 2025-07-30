@@ -59,7 +59,6 @@ public class NaverService {
             throw new RuntimeException("Failed to get access token from Naver");
         }
     }
-
     // 네이버 API에서 사용자 정보 가져오기
     public Map<String, Object> getUserInfo(String accessToken) {
         String userInfoUrl = "https://openapi.naver.com/v1/nid/me";
@@ -76,4 +75,5 @@ public class NaverService {
             throw new RuntimeException("Failed to get user info from Naver");
         }
     }
+
 }
